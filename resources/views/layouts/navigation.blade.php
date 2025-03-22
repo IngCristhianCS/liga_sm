@@ -12,7 +12,7 @@
             <a href="javascript:void(0);" class="fullscreen" data-provide="fullscreen"><i class="zmdi zmdi-fullscreen"></i></a>
             <a href="javascript:void(0);" class="btn_overlay"><i class="zmdi zmdi-sort-amount-desc"></i></a>
             <a href="javascript:void(0);" class="js-right-sidebar"><i class="zmdi zmdi-settings zmdi-hc-spin"></i></a>
-            <a href="/login" class="mega-menu"><i class="zmdi zmdi-power"></i></a>
+            <a href="javascript:void(0);" class="mega-menu"><i class="zmdi zmdi-power"></i></a>
         </li>        
     </ul>
     </div>
@@ -23,7 +23,8 @@
         <div class="row">
             <div class="col-md-12">                
                 <ul class="h-menu">
-                    <li><a href="#"><i class="zmdi zmdi-home"></i> Clasificación</a></li>
+                    <li><a href="/"><i class="zmdi zmdi-home"></i> Clasificación</a></li>
+                    <li><a href="/resultados"><i class="zmdi zmdi-view-dashboard"></i> Resultados</a></li>
                 </ul>
             </div>
         </div>
