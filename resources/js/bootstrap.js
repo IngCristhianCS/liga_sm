@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 window.axios = axios;
-window.axios.defaults.baseURL = 'http://localhost:8000'; // Añade esto
+window.axios.defaults.baseURL = 'https://liga-san-miguel-develop-vjpi3t.laravel.cloud'; // Añade esto
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 // Añadir CSRF Token
