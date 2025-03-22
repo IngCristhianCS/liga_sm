@@ -15,7 +15,12 @@ class ClasificacionRepository
                 ->orOn('e.id', '=', 'p.equipo_visitante_id');
         })
         ->join('torneo AS t', 'p.torneo_id', '=', 't.id')
-        ->where('t.nombre', 'Varonil libre') // Reemplaza 'NombreDelTorneo' con el nombre de tu torneo
+        ->where('t.nombre', 'Varonil libre')
+        ->where(function ($query) {
+            $query->whereRaw('p.goles_equipo_local != p.goles_equipo_visitante')
+                  ->orWhereNull('p.goles_equipo_local')
+                  ->orWhereNull('p.goles_equipo_visitante');
+        })
         ->select(
             'e.nombre AS equipo',
             DB::raw('COUNT(p.id) AS PJ'),
