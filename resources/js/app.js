@@ -3,7 +3,7 @@ import "/resources/js/bootstrap.js";
 import { createApp } from 'vue'
 import ClasificacionComponent from "/resources/js/components/ClasificacionComponent.vue";
 import RegisterComponent from "/resources/js/components/RegisterComponent.vue";
-import Swal from "/node_modules/.vite/deps/sweetalert2.js?v=4969aabe";
+import Swal from "/node_modules/sweetalert2/dist/sweetalert2.min.js";
 
 // Configuración de SweetAlert
 const Toast = Swal.mixin({
