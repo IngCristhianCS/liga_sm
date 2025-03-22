@@ -7,8 +7,6 @@
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^5.2.3",
-        "alpinejs": "^3.4.2",
-        "autoprefixer": "^10.4.2",
         "axios": "^1.8.2",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^1.2.0",
@@ -17,8 +15,9 @@
     },
     "dependencies": {
         "pinia": "^3.0.1",
-        "sweetalert2": "^11.17.2",
-        "vue-i18n": "^9.14.3",
-        "vue-router": "^4.5.0"
+        "sweetalert2": "^11.17.2"
+    },
+    "optionalDependencies": {
+        "@rollup/rollup-linux-x64-gnu": "4.9.5"
     }
 }
