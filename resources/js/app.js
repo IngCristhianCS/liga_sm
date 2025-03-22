@@ -3,20 +3,8 @@ import "/resources/js/bootstrap.js";
 import { createApp } from 'vue'
 import ClasificacionComponent from "/resources/js/components/ClasificacionComponent.vue";
 import RegisterComponent from "/resources/js/components/RegisterComponent.vue";
-import Swal from "/node_modules/sweetalert2/dist/sweetalert2.min.js";
+import ResultadosComponent from "/resources/js/components/ResultadosComponent.vue";
 
-// Configuración de SweetAlert
-const Toast = Swal.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
-    }
-})
 
 
 
@@ -26,7 +14,7 @@ const app = createApp({})
 // Registrar componentes
 app.component('clasificacion-component', ClasificacionComponent);
 app.component('register-component', RegisterComponent);
-
+app.component('resultados-component', ResultadosComponent)
 app.mount('#app')
 
 console.log("se monto app")

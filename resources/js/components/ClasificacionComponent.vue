@@ -7,7 +7,7 @@
           </div>
           <div class="col-lg-7 col-md-7 col-sm-12">
             <ul class="breadcrumb float-md-right padding-0">
-              <li class="breadcrumb-item"><a href="index.html"><i class="zmdi zmdi-home"></i></a></li>
+              <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i></a></li>
               <li class="breadcrumb-item"><a href="javascript:void(0);">Clasificación</a></li>
               <li class="breadcrumb-item active">Tabla General</li>
             </ul>

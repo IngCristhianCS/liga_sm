@@ -2,48 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Torneo;
 use Illuminate\Http\Request;
+use App\Services\JornadaService;
 
 class TorneoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $jornadaService;
+
+    public function __construct(JornadaService $jornadaService)
     {
-        //
+        $this->jornadaService = $jornadaService;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function jornadas($torneoId)
     {
-        //
-    }
+        $jornadas = $this->jornadaService->obtenerJornadasPorTorneo($torneoId);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Torneo $torneo)
-    {
-        //
-    }
+        $resultadosPorJornada = [];
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Torneo $torneo)
-    {
-        //
-    }
+        foreach ($jornadas as $jornadaId) {
+            $resultados = $this->jornadaService->obtenerResultadosPorJornada($torneoId, $jornadaId);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Torneo $torneo)
-    {
-        //
+            $resultadosPorJornada[] = [
+                'jornada_id' => $jornadaId,
+                'resultados' => $resultados,
+            ];
+        }
+
+        return response()->json($resultadosPorJornada);
     }
 }

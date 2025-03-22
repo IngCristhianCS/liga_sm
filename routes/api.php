@@ -4,12 +4,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClasificacionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TorneoController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
 Route::get('/clasificacion', [ClasificacionController::class, 'index']);
+Route::get('/torneos/{torneoId}/jornadas', [TorneoController::class, 'jornadas']);
 
 // Rutas de Administración
 Route::middleware(['can:admin-access'])->group(function () {
