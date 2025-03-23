@@ -4,7 +4,7 @@
         <li>
             <div class="navbar-header">
                 <a href="javascript:void(0);" class="h-bars"></a>
-                <a class="navbar-brand" href="index.html"><img src="assets/images/logo-black.svg" width="35" alt="Alpino"><span class="m-l-10">Alpino</span></a>
+                <a class="navbar-brand" href="/"><img src="assets/images/logo.png" width="50" alt="San Miguel"><span class="m-l-10">San Miguel</span></a>
             </div>
         </li>
         
