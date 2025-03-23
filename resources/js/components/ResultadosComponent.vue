@@ -65,7 +65,7 @@ export default {
   },
   methods: {
     obtenerResultadosJornadas() {
-      axios.get('/api/torneos/2/jornadas?nocache='+ new Date()) // Reemplaza 1 con el ID del torneo
+      axios.get('/api/torneos/2/jornadas?nocache=' + new  Date (). getTime()) // Reemplaza 1 con el ID del torneo
         .then(response => {
           this.jornadas = response.data;
         })

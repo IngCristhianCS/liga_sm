@@ -9,8 +9,8 @@ export default {
 
     const fetchClasificacion = async () => {
       try {
-        await axios.get('/sanctum/csrf-cookie');
-        const response = await axios.get('/api/clasificacion');
+        await axios.get('/sanctum/csrf-cookie?nocache=' + new  Date (). getTime());
+        const response = await axios.get('/api/clasificacion?nocache=' + new  Date (). getTime());
         clasificacion.value = response.data;
       } catch (err) {
         error.value = 'Error al cargar los datos';

@@ -17,16 +17,3 @@
     </ul>
     </div>
 </nav>
-
-<div class="menu-container">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">                
-                <ul class="h-menu">
-                    <li><a href="/"><i class="zmdi zmdi-home"></i> Clasificación</a></li>
-                    <li><a href="/resultados"><i class="zmdi zmdi-view-dashboard"></i> Resultados</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>

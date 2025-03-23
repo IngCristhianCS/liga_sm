@@ -15,7 +15,8 @@
     },
     "dependencies": {
         "pinia": "^3.0.1",
-        "sweetalert2": "^11.17.2"
+        "sweetalert2": "^11.17.2",
+        "vue-router": "^4.5.0"
     },
     "optionalDependencies": {
         "@rollup/rollup-linux-x64-gnu": "4.9.5"
