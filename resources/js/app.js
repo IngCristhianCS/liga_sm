@@ -17,6 +17,11 @@ const router = createRouter({
       path: '/registro',
       name: 'Registro',
       component: () => import(/* webpackChunkName: "registro" */ './components/RegisterComponent.vue')
+    },    
+    {
+      path: '/usuarios',
+      name: 'Usuarios',
+      component: () => import(/* webpackChunkName: "usuarios" */ './components/usuarios/UsuariosComponent.vue')
     },
     {
       path: '/resultados',

@@ -24,7 +24,7 @@ use App\Http\Controllers\UbicacionController;
 Route::get('/', function () {return view('dashboard');})->name('dashboard');
 Route::get('/clasificacion', function () {return view('dashboard');})->name('clasificacion');
 Route::get('/resultados', function () {return view('dashboard');})->name('resultados');
-Route::get('/galeria', function () {return view('galeria');})->name('galeria');
+Route::get('/usuarios', function () {return view('dashboard');})->name('usuarios');
 Route::get('/reglamento', function () {return view('galeria');})->name('reglamento');
 Route::get('/contacto', function () {return view('contacto');})->name('contacto');
 Route::get('/patrocinadores', function () {return view('galeria');})->name('patrocinadores');
