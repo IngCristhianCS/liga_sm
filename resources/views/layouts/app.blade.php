@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js " lang="en">
+<html class="no-js " lang="es_MX">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -11,7 +11,7 @@
 
     <title>{{ config('app.name', 'Liga San Miguel') }}</title>
     
-@vite(['resources/js/app.js'])
+    @vite(['resources/js/app.js'])
 
     <!-- Styles -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
