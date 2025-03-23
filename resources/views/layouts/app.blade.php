@@ -34,16 +34,9 @@
 <div class="overlay"></div><!-- Overlay For Sidebars -->
 
 @include('layouts.navigation')
-
 <!-- Main Content -->
-<div id="app">
-    <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
-</div>
-<!-- Jquery Core Js --> 
+ {{ $slot }}
+<!-- Jquery Core Js -->
 <script src="assets/bundles/libscripts.bundle.js"></script> <!-- Lib Scripts Plugin Js --> 
 <script src="assets/bundles/vendorscripts.bundle.js"></script> <!-- Lib Scripts Plugin Js --> 
 

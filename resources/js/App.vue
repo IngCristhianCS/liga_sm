@@ -1,31 +1,26 @@
+<script setup>
+import { useUIStore } from '@/stores/ui'
+import { watch } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const uiStore = useUIStore()
+
+// Configurar observadores de navegación
+router.beforeEach(() => {
+    uiStore.isLoading = true
+})
+
+router.afterEach(() => {
+    uiStore.isLoading = false
+})
+</script>
+
 <template>
-    
     <AppNavigation />
-    <div>
-      <router-view />
+
+    <div v-if="uiStore.isLoading" class="global-loader">
+        Cargando aplicación...
     </div>
-  </template>
-  
-  <script>
-  import { inject } from 'vue' // Añadir esta línea
-  
-  export default {
-    name: 'App',
-    setup() {
-      const isLoading = inject('isLoading') // Ahora funcionará correctamente
-      return { isLoading }
-    }
-  }
-  </script>
-  
-  <style>
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 0.3s;
-  }
-  
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
-  }
-  </style>
+    <router-view v-else />
+</template>

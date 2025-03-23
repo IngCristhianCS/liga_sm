@@ -1,6 +1,8 @@
 <template>
   <section class="content blog-page">
-    <div class="container">
+    <div v-if="store.loading" class="loading">Cargando resultados...</div>
+    <div v-else-if="store.error" class="error">{{ store.error }}</div>
+    <div v-else class="container">
       <div class="block-header">
         <div class="row clearfix">
           <div class="col-lg-5 col-md-5 col-sm-12">
@@ -16,7 +18,7 @@
         </div>
       </div>
       <div class="row clearfix">
-        <div class="col-lg-6 col-md-12" v-for="jornada in jornadas" :key="jornada.jornada_id">
+        <div class="col-lg-6 col-md-12" v-for="jornada in store.jornadas" :key="jornada.jornada_id">
           <div class="card single_post">
             <div class="body">
               <h3 class="m-t-0 m-b-5"><a href="javascript:void(0);">Jornada {{ jornada.jornada_id }}</a></h3>
@@ -51,28 +53,16 @@
   </section>
 </template>
 
-<script>
-import axios from 'axios';
+<script setup>
+import { onMounted } from 'vue' // Importar hook
+import { useResultadosStore } from '@/stores/resultados'
 
-export default {
-  data() {
-    return {
-      jornadas: [],
-    };
-  },
-  mounted() {
-    this.obtenerResultadosJornadas();
-  },
-  methods: {
-    obtenerResultadosJornadas() {
-      axios.get('/api/torneos/2/jornadas?nocache=' + new  Date (). getTime()) // Reemplaza 1 con el ID del torneo
-        .then(response => {
-          this.jornadas = response.data;
-        })
-        .catch(error => {
-          console.error('Error al obtener los resultados:', error);
-        });
-    },
-  },
-};
+const store = useResultadosStore()
+const torneoId = 2
+
+onMounted(() => {
+  if (store.jornadas.length === 0) {
+    store.fetchJornadas(torneoId)
+  }
+})
 </script>

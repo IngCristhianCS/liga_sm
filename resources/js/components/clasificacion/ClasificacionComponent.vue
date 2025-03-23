@@ -1,6 +1,10 @@
 <template>
   <section class="content">
-    <div class="container">
+    <div v-if="store.loading">Cargando datos...</div>
+    <div v-else-if="store.error" class="text-red-500">
+      Error: {{ store.error }}
+    </div>
+    <div v-else class="container">
       <div class="block-header">
         <div class="row clearfix">
           <div class="col-lg-5 col-md-5 col-sm-12">
@@ -34,16 +38,6 @@
               <div class="card" id="details">
                 <div class="body">
                   <h4 class="margin-0"></h4>
-                  <!-- Mensaje de carga -->
-                  <div v-if="loading" class="text-gray-600">
-                    Cargando datos...
-                  </div>
-
-                  <!-- Mensaje de error -->
-                  <div v-else-if="error" class="text-red-500">
-                    Error: {{ error }}
-                  </div>
-
                   <div class="mt-40"></div>
                   <div class="row">
                     <div class="col-md-12">
@@ -63,9 +57,18 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr v-for="(equipo, index) in clasificacion" :key="equipo.equipo" class="border-b">
+                            <tr v-for="(equipo, index) in store.clasificacion" :key="equipo.equipo" class="border-b">
                               <td>{{ index + 1 }}</td>
-                              <td>{{ equipo.equipo }}</td>
+                              <td>
+                                  <!-- Imagen del equipo si existe -->
+                                  <img v-if="equipo.imagen" :src="`data:image/png;base64,${equipo.imagen}`"
+                                    alt="Escudo del equipo" width="30" height="30" class="rounded-circle">
+
+                                  <!-- Imagen por defecto si no existe -->
+                                  <img v-else src="/assets/images/xs/avatar1.jpg" alt="Escudo predeterminado" width="30"
+                                    height="30" class="rounded-circle bg-light">
+                                  {{ equipo.equipo }}
+                              </td>
                               <td>{{ equipo.PJ }}</td>
                               <td>{{ equipo.PG }}</td>
                               <td>{{ equipo.PP }}</td>
@@ -149,5 +152,15 @@
   </section>
 
 </template>
+<script setup>
+import { onMounted } from 'vue' // Importar hook
+import { useClasificacionStore } from '@/stores/clasificacion'
 
-<script src="./ClasificacionComponent.js"></script>
+const store = useClasificacionStore()
+
+onMounted(() => {
+  if (store.clasificacion.length === 0) {
+    store.fetchClasificacion()
+  }
+})
+</script>

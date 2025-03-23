@@ -1,4 +1,5 @@
-import { createApp, ref} from 'vue'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 import Navigation from './components/NavegacionComponent.vue'
@@ -10,7 +11,7 @@ const router = createRouter({
     {
       path: '/clasificacion',
       name: 'Clasificacion',
-      component: () => import(/* webpackChunkName: "clasificacion" */ './components/ClasificacionComponent.vue')
+      component: () => import(/* webpackChunkName: "clasificacion" */ './components/clasificacion/ClasificacionComponent.vue')
     },
     {
       path: '/registro',
@@ -20,7 +21,7 @@ const router = createRouter({
     {
       path: '/resultados',
       name: 'Resultados',
-      component: () => import(/* webpackChunkName: "resultados" */ './components/ResultadosComponent.vue')
+      component: () => import(/* webpackChunkName: "resultados" */ './components/resultados/ResultadosComponent.vue')
     },
     { 
       path: '/', 
@@ -32,26 +33,11 @@ const router = createRouter({
 
 // Crear instancia de Vue
 const app = createApp(App)
+const pinia = createPinia()
 
+app.use(pinia)
 // Registrar componente de navegación globalmente
 app.component('AppNavigation', Navigation)
-
-// Manejo de errores de carga de componentes
-router.onError((error) => {
-  console.error('Error loading component:', error)
-  router.push({ name: 'NotFound' })
-})
-
-// Estado de carga global
-app.config.globalProperties.$isLoading = ref(false)
-
-router.beforeEach(() => {
-  app.config.globalProperties.$isLoading.value = true
-})
-
-router.afterEach(() => {
-  app.config.globalProperties.$isLoading.value = false
-})
 
 app.use(router)
 app.mount('#app')

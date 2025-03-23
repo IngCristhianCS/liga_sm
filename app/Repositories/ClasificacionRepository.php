@@ -23,6 +23,7 @@ class ClasificacionRepository
         })
         ->select(
             'e.nombre AS equipo',
+            DB::raw('e.imagen AS imagen'),
             DB::raw('COUNT(p.id) AS PJ'),
             DB::raw("SUM(CASE WHEN p.equipo_local_id = e.id AND p.goles_equipo_local > p.goles_equipo_visitante THEN 1 WHEN p.equipo_visitante_id = e.id AND p.goles_equipo_visitante > p.goles_equipo_local THEN 1 ELSE 0 END) AS PG"),
             DB::raw('0 AS PE'), // Partidos Empatados (siempre 0)
@@ -33,6 +34,7 @@ class ClasificacionRepository
             DB::raw("SUM(CASE WHEN p.equipo_local_id = e.id AND p.goles_equipo_local > p.goles_equipo_visitante THEN 3 WHEN p.equipo_visitante_id = e.id AND p.goles_equipo_visitante > p.goles_equipo_local THEN 3 ELSE 0 END) AS PTS")
         )
         ->groupBy('e.nombre')
+        ->groupBy('e.imagen')
         ->orderBy('PTS', 'DESC')
         ->orderBy('DIF', 'DESC')
         ->get();
