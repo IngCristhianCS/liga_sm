@@ -5,9 +5,6 @@ import ClasificacionComponent from "/resources/js/components/ClasificacionCompon
 import RegisterComponent from "/resources/js/components/RegisterComponent.vue";
 import ResultadosComponent from "/resources/js/components/ResultadosComponent.vue";
 
-
-
-
 // Crear instancia de Vue
 const app = createApp({})
 
@@ -16,6 +13,4 @@ app.component('clasificacion-component', ClasificacionComponent);
 app.component('register-component', RegisterComponent);
 app.component('resultados-component', ResultadosComponent)
 app.mount('#app')
-
-console.log("se monto app")
 
