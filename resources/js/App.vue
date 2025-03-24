@@ -19,8 +19,8 @@ router.afterEach(() => {
 <template>
     <AppNavigation />
 
-    <div v-if="uiStore.isLoading" class="global-loader">
-        Cargando aplicación...
+    <div v-if="uiStore.isLoading">
+        <AppLoader/>
     </div>
     <router-view v-else />
 </template>

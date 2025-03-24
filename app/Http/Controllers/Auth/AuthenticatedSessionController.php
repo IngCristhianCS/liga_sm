@@ -28,6 +28,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Generar token Sanctum
+        $user = Auth::user(); //Obtienes el usuario autenticado.
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        // Almacenar el token en la sesión (opcional, pero útil)
+        $request->session()->put('api_token', $token);
+
+        // Puedes retornar el token en una vista o redirigir y usarlo desde la sesion.
+        // Ejemplo de retornar en una vista
+        // return view('dashboard', ['token' => $token]);
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -36,6 +47,9 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        //Revocar los tokens de sanctum.
+        $request->user()->tokens()->delete();
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

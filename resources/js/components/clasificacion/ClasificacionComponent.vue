@@ -1,6 +1,8 @@
 <template>
   <section class="content">
-    <div v-if="store.loading">Cargando datos...</div>
+    <div v-if="store.loading">
+        <AppLoader/>
+    </div>
     <div v-else-if="store.error" class="text-red-500">
       Error: {{ store.error }}
     </div>

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClasificacionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TorneoController;
+use App\Http\Controllers\UsuarioController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -40,4 +41,8 @@ Route::prefix('roles')->group(function () {
     Route::get('/{id}', [RoleController::class, 'show']);
     Route::put('/{id}', [RoleController::class, 'update']);
     Route::delete('/{id}', [RoleController::class, 'destroy']);
+});
+
+Route::middleware(['auth:sanctum'])->group(function () {    
+    Route::apiResource('users', UsuarioController::class);
 });

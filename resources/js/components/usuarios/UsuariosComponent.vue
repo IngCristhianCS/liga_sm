@@ -4,13 +4,12 @@
             <div class="block-header">
                 <div class="row clearfix">
                     <div class="col-lg-5 col-md-5 col-sm-12">
+                        <h2>Gestión de Usuarios</h2>
                     </div>
                     <div class="col-lg-7 col-md-7 col-sm-12">
                         <ul class="breadcrumb float-md-right padding-0">
-                            <li class="breadcrumb-item"><a href="javascript:void(0);"><i class="zmdi zmdi-home"></i></a>
-                            </li>
-                            <li class="breadcrumb-item"><a href="javascript:void(0);">Administración</a></li>
-                            <li class="breadcrumb-item active">Usuarios</li>
+                            <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i> Inicio</a></li>
+                            <li class="breadcrumb-item active">Administración de Usuarios</li>
                         </ul>
                     </div>
                 </div>
@@ -20,500 +19,37 @@
                     <div class="card">
                         <div class="body m-b-10">
                             <ul class="nav nav-tabs padding-0">
-                                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#Grid">Grid</a>
-                                </li>
-                                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#List">List</a></li>
-                                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Addnew">Add New</a>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#largeModal" data-toggle="modal"
+                                        data-target="#largeModal">
+                                        {{ mode === 'create' ? 'Nuevo Usuario' : 'Editar Usuario' }}
+                                    </a>
                                 </li>
                             </ul>
                         </div>
                     </div>
-                    <!-- Tab panes -->
+
                     <div class="tab-content">
-                        <div class="tab-pane active" id="Grid">
-                            <div class="row">
-                                <div class="col-lg-3 col-md-6 col-sm-12">
-                                    <div class="card">
-                                        <div class="body text-center">
-                                            <div class="chart easy-pie-chart-1" data-percent="75"> <span><img
-                                                        src="assets/images/sm/avatar1.jpg" alt="user"
-                                                        class="rounded-circle" /></span> </div>
-                                            <h6>John Smith</h6>
-                                            <ul class="social-links list-unstyled">
-                                                <li><a title="facebook" href="#"><i class="zmdi zmdi-facebook"></i></a>
-                                                </li>
-                                                <li><a title="twitter" href="#"><i class="zmdi zmdi-twitter"></i></a>
-                                                </li>
-                                                <li><a title="instagram" href="javascript:void(0);"><i
-                                                            class="zmdi zmdi-instagram"></i></a></li>
-                                            </ul>
-                                            <small>795 Folsom Ave, Suite 600 San Francisco,<br> CADGE 94107</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-12">
-                                    <div class="card">
-                                        <div class="body text-center">
-                                            <div class="chart easy-pie-chart-1" data-percent="67"> <span><img
-                                                        src="assets/images/sm/avatar2.jpg" alt="user"
-                                                        class="rounded-circle" /></span> </div>
-                                            <h6>Hossein Shams</h6>
-                                            <ul class="social-links list-unstyled">
-                                                <li><a title="google-plus" href="#"><i
-                                                            class="zmdi zmdi-google-plus-box"></i></a></li>
-                                                <li><a title="twitter" href="#"><i class="zmdi zmdi-twitter"></i></a>
-                                                </li>
-                                                <li><a title="linkedin" href="javascript:void(0);"><i
-                                                            class="zmdi zmdi-linkedin-box"></i></a></li>
-                                            </ul>
-                                            <small>795 Folsom Ave, Suite 600 San Francisco,<br> CADGE 94107</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-12">
-                                    <div class="card">
-                                        <div class="body text-center">
-                                            <div class="chart easy-pie-chart-1" data-percent="23"> <span><img
-                                                        src="assets/images/sm/avatar3.jpg" alt="user"
-                                                        class="rounded-circle" /></span> </div>
-                                            <h6>Maryam Amiri</h6>
-                                            <ul class="social-links list-unstyled">
-                                                <li><a title="facebook" href="#"><i class="zmdi zmdi-facebook"></i></a>
-                                                </li>
-                                                <li><a title="twitter" href="#"><i class="zmdi zmdi-twitter"></i></a>
-                                                </li>
-                                                <li><a title="instagram" href="javascript:void(0);"><i
-                                                            class="zmdi zmdi-instagram"></i></a></li>
-                                            </ul>
-                                            <small>795 Folsom Ave, Suite 600 San Francisco,<br> CADGE 94107</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-12">
-                                    <div class="card">
-                                        <div class="body text-center">
-                                            <div class="chart easy-pie-chart-1" data-percent="49"> <span><img
-                                                        src="assets/images/sm/avatar4.jpg" alt="user"
-                                                        class="rounded-circle" /></span> </div>
-                                            <h6>Tim Hank</h6>
-                                            <ul class="social-links list-unstyled">
-                                                <li><a title="linkedin" href="#"><i
-                                                            class="zmdi zmdi-linkedin-box"></i></a></li>
-                                                <li><a title="twitter" href="#"><i class="zmdi zmdi-twitter"></i></a>
-                                                </li>
-                                                <li><a title="instagram" href="javascript:void(0);"><i
-                                                            class="zmdi zmdi-instagram"></i></a></li>
-                                            </ul>
-                                            <small>795 Folsom Ave, Suite 600 San Francisco,<br> CADGE 94107</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-3 col-md-6 col-sm-12">
-                                    <div class="card">
-                                        <div class="body text-center">
-                                            <div class="chart easy-pie-chart-1" data-percent="75"> <span><img
-                                                        src="assets/images/sm/avatar5.jpg" alt="user"
-                                                        class="rounded-circle" /></span> </div>
-                                            <h6>John Smith</h6>
-                                            <ul class="social-links list-unstyled">
-                                                <li><a title="facebook" href="#"><i class="zmdi zmdi-facebook"></i></a>
-                                                </li>
-                                                <li><a title="twitter" href="#"><i class="zmdi zmdi-twitter"></i></a>
-                                                </li>
-                                                <li><a title="instagram" href="javascript:void(0);"><i
-                                                            class="zmdi zmdi-instagram"></i></a></li>
-                                            </ul>
-                                            <small>795 Folsom Ave, Suite 600 San Francisco,<br> CADGE 94107</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-12">
-                                    <div class="card">
-                                        <div class="body text-center">
-                                            <div class="chart easy-pie-chart-1" data-percent="88"> <span><img
-                                                        src="assets/images/sm/avatar1.jpg" alt="user"
-                                                        class="rounded-circle" /></span> </div>
-                                            <h6>Frank Camly</h6>
-                                            <ul class="social-links list-unstyled">
-                                                <li><a title="google-plus" href="#"><i
-                                                            class="zmdi zmdi-google-plus-box"></i></a></li>
-                                                <li><a title="twitter" href="#"><i class="zmdi zmdi-twitter"></i></a>
-                                                </li>
-                                                <li><a title="linkedin" href="javascript:void(0);"><i
-                                                            class="zmdi zmdi-linkedin-box"></i></a></li>
-                                            </ul>
-                                            <small>795 Folsom Ave, Suite 600 San Francisco,<br> CADGE 94107</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-12">
-                                    <div class="card">
-                                        <div class="body text-center">
-                                            <div class="chart easy-pie-chart-1" data-percent="37"> <span><img
-                                                        src="assets/images/sm/avatar2.jpg" alt="user"
-                                                        class="rounded-circle" /></span> </div>
-                                            <h6>Gary Camara</h6>
-                                            <ul class="social-links list-unstyled">
-                                                <li><a title="facebook" href="#"><i class="zmdi zmdi-facebook"></i></a>
-                                                </li>
-                                                <li><a title="twitter" href="#"><i class="zmdi zmdi-twitter"></i></a>
-                                                </li>
-                                                <li><a title="instagram" href="javascript:void(0);"><i
-                                                            class="zmdi zmdi-instagram"></i></a></li>
-                                            </ul>
-                                            <small>795 Folsom Ave, Suite 600 San Francisco,<br> CADGE 94107</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 col-sm-12">
-                                    <div class="card">
-                                        <div class="body text-center">
-                                            <div class="chart easy-pie-chart-1" data-percent="79"> <span><img
-                                                        src="assets/images/sm/avatar6.jpg" alt="user"
-                                                        class="rounded-circle" /></span> </div>
-                                            <h6>Fidel Tonn</h6>
-                                            <ul class="social-links list-unstyled">
-                                                <li><a title="linkedin" href="#"><i
-                                                            class="zmdi zmdi-linkedin-box"></i></a></li>
-                                                <li><a title="twitter" href="#"><i class="zmdi zmdi-twitter"></i></a>
-                                                </li>
-                                                <li><a title="instagram" href="javascript:void(0);"><i
-                                                            class="zmdi zmdi-instagram"></i></a></li>
-                                            </ul>
-                                            <small>795 Folsom Ave, Suite 600 San Francisco,<br> CADGE 94107</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane" id="List">
+                        <!-- Listado de Usuarios -->
+                        <div class="tab-pane active" id="List">
                             <div class="card">
                                 <div class="body">
                                     <div class="table-responsive">
-                                        <table class="table table-hover m-b-0 c_list">
+                                        <table id="usuarios"
+                                            class="table table-bordered table-striped table-hover js-basic-example dataTable">
                                             <thead>
                                                 <tr>
-                                                    <th>#</th>
-                                                    <th>Name</th>
-                                                    <th data-breakpoints="xs">Phone</th>
-                                                    <th data-breakpoints="xs sm md">Address</th>
-                                                    <th data-breakpoints="xs">Action</th>
+                                                    <th>Nombre</th>
+                                                    <th>Email</th>
+                                                    <th>Rol</th>
+                                                    <th>Fecha Nacimiento</th>
+                                                    <th>Género</th>
+                                                    <th>Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <div class="checkbox">
-                                                            <input id="delete_2" type="checkbox">
-                                                            <label for="delete_2">&nbsp;</label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/xs/avatar1.jpg"
-                                                            class="rounded-circle avatar" alt="">
-                                                        <p class="c_name">John Smith <span
-                                                                class="badge badge-default m-l-10 hidden-sm-down">Family</span>
-                                                        </p>
-                                                    </td>
-                                                    <td>
-                                                        <span class="phone"><i
-                                                                class="zmdi zmdi-phone m-r-10"></i>264-625-2583</span>
-                                                    </td>
-                                                    <td>
-                                                        <address><i class="zmdi zmdi-pin"></i>123 6th St. Melbourne, FL
-                                                            32904</address>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-edit"></i></button>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-delete"></i></button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="checkbox">
-                                                            <input id="delete_3" type="checkbox">
-                                                            <label for="delete_3">&nbsp;</label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/xs/avatar3.jpg"
-                                                            class="rounded-circle avatar" alt="">
-                                                        <p class="c_name">Hossein Shams <span
-                                                                class="badge badge-info m-l-10 hidden-sm-down">Google</span>
-                                                        </p>
-                                                    </td>
-                                                    <td>
-                                                        <span class="phone"><i
-                                                                class="zmdi zmdi-phone m-r-10"></i>264-625-5689</span>
-                                                    </td>
-                                                    <td>
-                                                        <address><i class="zmdi zmdi-pin"></i>44 Shirley Ave. West
-                                                            Chicago, IL 60185</address>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-edit"></i></button>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-delete"></i></button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="checkbox">
-                                                            <input id="delete_4" type="checkbox">
-                                                            <label for="delete_4">&nbsp;</label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/xs/avatar4.jpg"
-                                                            class="rounded-circle avatar" alt="">
-                                                        <p class="c_name">Maryam Amiri</p>
-                                                    </td>
-                                                    <td>
-                                                        <span class="phone"><i
-                                                                class="zmdi zmdi-phone m-r-10"></i>264-625-9513</span>
-                                                    </td>
-                                                    <td>
-                                                        <address><i class="zmdi zmdi-pin"></i>123 6th St. Melbourne, FL
-                                                            32904</address>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-edit"></i></button>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-delete"></i></button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="checkbox">
-                                                            <input id="delete_5" type="checkbox">
-                                                            <label for="delete_5">&nbsp;</label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/xs/avatar6.jpg"
-                                                            class="rounded-circle avatar" alt="">
-                                                        <p class="c_name">Tim Hank<span
-                                                                class="badge badge-default m-l-10 hidden-sm-down">Family</span>
-                                                        </p>
-                                                    </td>
-                                                    <td>
-                                                        <span class="phone"><i
-                                                                class="zmdi zmdi-phone m-r-10"></i>264-625-1212</span>
-                                                    </td>
-                                                    <td>
-                                                        <address><i class="zmdi zmdi-pin"></i>70 Bowman St. South
-                                                            Windsor, CT 06074</address>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-edit"></i></button>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-delete"></i></button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="checkbox">
-                                                            <input id="delete_6" type="checkbox">
-                                                            <label for="delete_6">&nbsp;</label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/xs/avatar7.jpg"
-                                                            class="rounded-circle avatar" alt="">
-                                                        <p class="c_name">Fidel Tonn<span
-                                                                class="badge badge-default m-l-10 hidden-sm-down">Family</span>
-                                                        </p>
-                                                    </td>
-                                                    <td>
-                                                        <span class="phone"><i
-                                                                class="zmdi zmdi-phone m-r-10"></i>264-625-2323</span>
-                                                    </td>
-                                                    <td>
-                                                        <address><i class="zmdi zmdi-pin"></i>514 S. Magnolia St.
-                                                            Orlando, FL 32806</address>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-edit"></i></button>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-delete"></i></button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="checkbox">
-                                                            <input id="delete_7" type="checkbox">
-                                                            <label for="delete_7">&nbsp;</label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/xs/avatar8.jpg"
-                                                            class="rounded-circle avatar" alt="">
-                                                        <p class="c_name">Gary Camara<span
-                                                                class="badge badge-success m-l-10 hidden-sm-down">Work</span>
-                                                        </p>
-                                                    </td>
-                                                    <td>
-                                                        <span class="phone"><i
-                                                                class="zmdi zmdi-phone m-r-10"></i>264-625-1005</span>
-                                                    </td>
-                                                    <td>
-                                                        <address><i class="zmdi zmdi-pin"></i>44 Shirley Ave. West
-                                                            Chicago, IL 60185</address>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-edit"></i></button>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-delete"></i></button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="checkbox">
-                                                            <input id="delete_8" type="checkbox">
-                                                            <label for="delete_8">&nbsp;</label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/xs/avatar9.jpg"
-                                                            class="rounded-circle avatar" alt="">
-                                                        <p class="c_name">Frank Camly</p>
-                                                    </td>
-                                                    <td>
-                                                        <span class="phone"><i
-                                                                class="zmdi zmdi-phone m-r-10"></i>264-625-9999</span>
-                                                    </td>
-                                                    <td>
-                                                        <address><i class="zmdi zmdi-pin"></i>123 6th St. Melbourne, FL
-                                                            32904</address>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-edit"></i></button>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-delete"></i></button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="checkbox">
-                                                            <input id="delete_9" type="checkbox">
-                                                            <label for="delete_9">&nbsp;</label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <img src="assets/images/xs/avatar10.jpg"
-                                                            class="rounded-circle avatar" alt="">
-                                                        <p class="c_name">Tim Hank<span
-                                                                class="badge badge-default m-l-10 hidden-sm-down">Family</span>
-                                                        </p>
-                                                    </td>
-                                                    <td>
-                                                        <span class="phone"><i
-                                                                class="zmdi zmdi-phone m-r-10"></i>264-625-1212</span>
-                                                    </td>
-                                                    <td>
-                                                        <address><i class="zmdi zmdi-pin"></i>70 Bowman St. South
-                                                            Windsor, CT 06074</address>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-edit"></i></button>
-                                                        <button class="btn btn-icon btn-neutral btn-icon-mini"><i
-                                                                class="zmdi zmdi-delete"></i></button>
-                                                    </td>
-                                                </tr>
                                             </tbody>
                                         </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane" id="Addnew">
-                            <div class="card">
-                                <div class="header">
-                                    <h2><strong>Add</strong> & New Contact</h2>
-                                    <ul class="header-dropdown">
-                                        <li class="dropdown"> <a href="javascript:void(0);" class="dropdown-toggle"
-                                                data-toggle="dropdown" role="button" aria-haspopup="true"
-                                                aria-expanded="false"> <i class="zmdi zmdi-more"></i> </a>
-                                            <ul class="dropdown-menu slideUp">
-                                                <li><a href="javascript:void(0);">Action</a></li>
-                                                <li><a href="javascript:void(0);">Another action</a></li>
-                                                <li><a href="javascript:void(0);">Something else</a></li>
-                                                <li><a href="javascript:void(0);" class="boxs-close">Delete</a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="body">
-                                    <div class="row clearfix">
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <input type="text" class="form-control" placeholder="First Name">
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <input type="password" class="form-control" placeholder="Last Name">
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <input type="number" class="form-control" placeholder="Phone Number">
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <input type="number" class="form-control" placeholder="Enter Address">
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <input type="file" class="form-control-file" id="exampleInputFile"
-                                                    aria-describedby="fileHelp">
-                                                <small id="fileHelp" class="form-text text-muted">This is some
-                                                    placeholder block-level help text for the above input. It's a bit
-                                                    lighter and easily wraps to a new line.</small>
-                                            </div>
-                                            <button class="btn btn-primary btn-round">Save</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="body m-t-10">
-                                    <div class="row clearfix">
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <input type="text" class="form-control" placeholder="Facebook">
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <input type="password" class="form-control" placeholder="Twitter">
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <input type="number" class="form-control" placeholder="Linkedin">
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <input type="number" class="form-control" placeholder="instagram">
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <button class="btn btn-primary btn-round">Save All</button>
-                                            <button class="btn btn-primary btn-simple btn-round">Cancel</button>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -523,12 +59,305 @@
             </div>
         </div>
     </section>
+    <div class="modal fade" id="largeModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="title" id="largeModalLabel">{{ mode === 'create' ? 'Nuevo Usuario' : 'Editar Usuario' }}
+                    </h4>
+                </div>
+                <form @submit.prevent="handleSubmit">
+                    <div class="modal-body">
+                        <div class="row clearfix">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Nombre Completo</label>
+                                    <input type="text" class="form-control" v-model="currentUser.name" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control" v-model="currentUser.email" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" v-if="mode === 'create'">
+                                <div class="form-group">
+                                    <label>Contraseña</label>
+                                    <input type="password" class="form-control" v-model="currentUser.password"
+                                        :required="mode === 'create'">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Rol</label>
+                                    <select class="form-control" v-model="currentUser.role.id" required>
+                                        <option v-for="role in roles" :value="role.id" :key="role.id">
+                                            {{ role.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Fecha de Nacimiento</label>
+                                    <input type="date" class="form-control" v-model="currentUser.fecha_nacimiento">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Género</label>
+                                    <select class="form-control" v-model="currentUser.genero">
+                                        <option value="masculino">Masculino</option>
+                                        <option value="femenino">Femenino</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-default btn-round waves-effect">{{ mode === 'create' ?
+                            'Crear Usuario' : 'Actualizar Usuario' }}</button>
+                        <button type="button" class="btn btn-danger btn-simple btn-round waves-effect"
+                            data-dismiss="modal" @click="resetForm">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue';
+import axios from 'axios';
+import Swal from 'sweetalert2'; // Importar SweetAlert
 
+const users = ref([]);
+const roles = ref([]);
+const mode = ref('create');
+
+const defaultUser = {
+    name: '',
+    email: '',
+    password: '',
+    role: {},
+    fecha_nacimiento: '',
+    genero: ''
+};
+
+const currentUser = reactive({ ...defaultUser });
+
+// Métodos
+const loadUsers = async () => {
+    try {
+        const response = await axios.get('/api/users');
+        users.value = response.data.data;
+        inicializarDataTable();
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al cargar usuarios',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    }
+};
+
+const loadRoles = async () => {
+    try {
+        const response = await axios.get('/api/roles');
+        roles.value = response.data.data;
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al cargar roles',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    }
+};
+
+const editUser = (user) => {
+    mode.value = 'edit';
+    Object.assign(currentUser, user);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+const deleteUser = async (id) => {
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¡No podrás revertir esta acción!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await axios.delete(`/api/users/${id}`);
+            await loadUsers();
+            Swal.fire({
+                icon: 'success',
+                title: '¡Eliminado!',
+                text: 'Usuario eliminado correctamente',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al eliminar usuario',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        }
+    }
+};
+
+const handleSubmit = async () => {
+    try {
+        const url = mode.value === 'create'
+            ? '/api/users'
+            : `/api/users/${currentUser.id}`;
+
+        const method = mode.value === 'create' ? 'post' : 'put';
+        await axios[method](url, { 
+            ...currentUser, 
+            role_id: currentUser.role.id, 
+            password_confirmation: currentUser.password 
+        });
+        
+        await loadUsers();
+        
+        Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: `Usuario ${mode.value === 'create' ? 'creado' : 'actualizado'} correctamente`,
+            timer: 3000,
+            showConfirmButton: false
+        });
+
+        $("#largeModal").modal('hide');
+        resetForm();
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al guardar usuario',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    }
+};
+
+const resetForm = () => {
+    mode.value = 'create';
+    Object.assign(currentUser, defaultUser);
+};
+
+const getRoleName = (roleId) => {
+    const role = roles.value.find(r => r.id === roleId);
+    return role ? role.name : 'Desconocido';
+};
+
+const getRoleBadge = (roleId) => {
+    const badges = {
+        1: 'primary',   // Admin
+        2: 'success',   // Entrenador
+        3: 'info',      // Jugador
+        4: 'warning'    // Arbitro
+    };
+    return badges[roleId] || 'secondary';
+};
+
+const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('es-ES');
+};
+
+const inicializarDataTable = () => {
+    const tabla = "#usuarios";
+
+    if ($.fn.DataTable.isDataTable(tabla)) {
+        const table = $(tabla).DataTable();
+        table.clear().rows.add(users.value).draw();
+    } else {
+        $(tabla).DataTable({
+            paging: true,
+            pageLength: 10,
+            lengthChange: false,
+            searching: true,
+            ordering: true,
+            data: users.value,
+            columns: [
+                {
+                    data: null,
+                    render: (data, type, row) => `<img src="${row.avatar || '/assets/images/xs/avatar1.jpg'}" class="rounded-circle avatar" alt="Avatar"> ${row.name}`
+                },
+                { data: 'email' },
+                {
+                    data: null,
+                    render: (data, type, row) => `<span class="badge badge-${getRoleBadge(row.role.id)}">${getRoleName(row.role.id)}</span>`
+                },
+                {
+                    data: 'fecha_nacimiento',
+                    render: (data, type, row) => formatDate(data)
+                },
+                { data: 'genero', defaultContent: 'N/A' },
+                {
+                    data: null,
+                    render: (data, type, row) => `<button class="btn btn-icon btn-neutral btn-icon-mini btnEditar" 
+                            data-id="${row.id}" 
+                            data-toggle="modal" 
+                            data-target="#largeModal">
+                        <i class="zmdi zmdi-edit"></i>
+                    </button>
+                    <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar" 
+                            data-id="${row.id}">
+                        <i class="zmdi zmdi-delete"></i>
+                    </button>`
+                }
+            ]
+        });
+    }
+    attachDataTableEvents(); // Inicializar eventos después de crear la tabla
+};
+
+const attachDataTableEvents = () => {
+    const tabla = "#usuarios";
+    const tbody = $(tabla + ' tbody');
+    
+    // Limpiar eventos previos para evitar duplicados
+    tbody.off('click', '.btnEditar');
+    tbody.off('click', '.btnEliminar');
+
+    // Evento para editar
+    tbody.on('click', '.btnEditar', function() {
+        const userId = $(this).data('id');
+        const user = users.value.find(u => u.id === userId);
+        if (user) editUser(user);
+    });
+
+    // Evento para eliminar
+    tbody.on('click', '.btnEliminar', function() {
+        const userId = $(this).data('id');
+        deleteUser(userId);
+    });
+}
+
+// Ciclo de vida
 onMounted(() => {
-
-})
+    loadRoles();
+    loadUsers();
+});
 </script>

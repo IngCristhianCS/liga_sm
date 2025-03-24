@@ -4,7 +4,7 @@ import axios from 'axios'
 
 export const useClasificacionStore = defineStore('clasificacion', {
   state: () => ({
-    clasificacion: [], // Asegurar propiedad definida
+    clasificacion: [],
     loading: false,
     error: null
   }),
