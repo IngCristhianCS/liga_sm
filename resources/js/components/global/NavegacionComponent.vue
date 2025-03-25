@@ -6,12 +6,12 @@
                     <ul class="h-menu">
                         <template v-if="!authStore.user">
                             <li>
-                                <router-link to="/" class="nav-link" active-class="open active">
+                                <router-link to="/" class="nav-link" @click="closeMobileMenu" active-class="open active">
                                     <i class="zmdi zmdi-view-list"></i> Clasificación
                                 </router-link>
                             </li>
                             <li>
-                                <router-link to="/resultados" class="nav-link" active-class="open active">
+                                <router-link to="/resultados" class="nav-link" @click="closeMobileMenu" active-class="open active">
                                     <i class="zmdi zmdi-chart"></i> Resultados
                                 </router-link>
                             </li>
@@ -19,12 +19,12 @@
 
                         <template v-else>
                             <li>
-                                <router-link to="/" class="nav-link" active-class="open active">
+                                <router-link to="/" class="nav-link" @click="closeMobileMenu" active-class="open active">
                                     <i class="zmdi zmdi-view-list"></i> Clasificación
                                 </router-link>
                             </li>
                             <li>
-                                <router-link to="/resultados" class="nav-link" active-class="open active">
+                                <router-link to="/resultados" class="nav-link" @click="closeMobileMenu" active-class="open active">
                                     <i class="zmdi zmdi-chart"></i> Resultados
                                 </router-link>
                             </li>
@@ -34,18 +34,18 @@
                                     <i class="zmdi zmdi-chevron-down"></i>
                                 </a>
                                 <ul class="sub-menu">
-                                    <li><router-link to="/usuarios" class="nav-link"  active-class="open active">Usuarios</router-link></li>
+                                    <li><router-link to="/usuarios" class="nav-link" @click="closeMobileMenu"  active-class="open active">Usuarios</router-link></li>
                                 </ul>
                             </li>
 
                             <template v-if="isEntrenador">
                                 <li>
-                                    <router-link to="/mi-equipo" class="nav-link">
+                                    <router-link to="/mi-equipo" @click="closeMobileMenu" class="nav-link">
                                         <i class="zmdi zmdi-accounts"></i> Mi Equipo
                                     </router-link>
                                 </li>
                                 <li>
-                                    <router-link to="/calendario" class="nav-link">
+                                    <router-link to="/calendario" @click="closeMobileMenu" class="nav-link">
                                         <i class="zmdi zmdi-calendar"></i> Calendario
                                     </router-link>
                                 </li>
@@ -53,7 +53,7 @@
 
                             <template v-if="isJugador">
                                 <li>
-                                    <router-link to="/mis-estadisticas" class="nav-link">
+                                    <router-link to="/mis-estadisticas" @click="closeMobileMenu" class="nav-link">
                                         <i class="zmdi zmdi-chart-donut"></i> Mis Stats
                                     </router-link>
                                 </li>
@@ -74,14 +74,11 @@ export default {
     name: 'AppNavigation',
     setup() {
         const authStore = useAuthStore();
-
-        const adminMenuOpen = ref(false);
-        const userMenuOpen = ref(false);
+        const mobileMenuOpen = ref(false);
 
         return {
             authStore,
-            adminMenuOpen,
-            userMenuOpen,
+            mobileMenuOpen,
             isAdmin: computed(() => authStore.isAdmin),
             isEntrenador: computed(() => authStore.isEntrenador),
             isJugador: computed(() => authStore.isJugador),
@@ -89,13 +86,9 @@ export default {
         };
     },
     methods: {
-        toggleUserMenu() {
-            this.userMenuOpen = !this.userMenuOpen;
-            this.adminMenuOpen = false;
-        },
-        logout() {
-            this.authStore.logout();
-        },
+        closeMobileMenu() {
+            $(".h-menu").toggleClass("show-on-mobile");
+        }
     },
 };
 </script>
