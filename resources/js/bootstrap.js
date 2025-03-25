@@ -12,12 +12,8 @@ if (token) {
     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
 }
 
-// Antes de configurar axios
-console.log('Token:', window.authUser.apiToken);
-
 if (window.authUser && window.authUser.apiToken) {
     window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + window.authUser.apiToken;
-    console.log('Headers:', window.axios.defaults.headers.common);
 } else {
     console.log('Token no disponible');
 }

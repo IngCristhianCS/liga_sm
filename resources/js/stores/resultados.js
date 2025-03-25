@@ -10,7 +10,9 @@ export const useResultadosStore = defineStore('resultados', {
     async fetchJornadas(torneoId) {
       try {
         this.loading = true
-        const response = await fetch(`/api/torneos/${torneoId}/jornadas`)
+        const response = await fetch(`/api/torneos/${torneoId}/jornadas`, {
+          params: { nocache: new Date().getTime() }
+        })
         this.jornadas = await response.json()
       } catch (error) {
         this.error = error.message
