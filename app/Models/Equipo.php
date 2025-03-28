@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Equipo extends Model
 {
     use HasFactory;
+    protected $table = 'equipo';
 
     protected $fillable = ['nombre', 'imagen', 'categoria_id', 'entrenador_id'];
 
@@ -18,11 +19,16 @@ class Equipo extends Model
 
     public function entrenador()
     {
-        return $this->belongsTo(Persona::class, 'entrenador_id');
+        return $this->belongsTo(User::class, 'entrenador_id');
     }
 
     public function torneos()
     {
         return $this->belongsToMany(Torneo::class, 'torneo_equipo');
+    }
+
+    public function jugadores()
+    {
+        return $this->hasManyThrough(User::class, Jugador::class, 'equipo_id', 'id', 'id', 'user_id');
     }
 }

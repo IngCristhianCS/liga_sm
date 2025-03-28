@@ -3,63 +3,47 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jugador;
+use App\Services\JugadorService;
 use Illuminate\Http\Request;
 
 class JugadorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $jugadorService;
+
+    public function __construct(JugadorService $jugadorService)
+    {
+        $this->jugadorService = $jugadorService;
+    }
+
     public function index()
     {
-        //
+        $jugadores = $this->jugadorService->getAllJugadores();
+        return response()->json(['data' => $jugadores]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $this->authorize('create', Jugador::class);
+        $jugador = $this->jugadorService->createJugador($request->all());
+        return response()->json(['data' => $jugador], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Jugador $jugador)
     {
-        //
+        return response()->json(['data' => $jugador]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Jugador $jugador)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Jugador $jugador)
     {
-        //
+        $this->authorize('update', $jugador);
+        $jugador = $this->jugadorService->updateJugador($jugador, $request->all());
+        return response()->json(['data' => $jugador]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Jugador $jugador)
     {
-        //
+        $this->authorize('delete', $jugador);
+        $this->jugadorService->deleteJugador($jugador);
+        return response()->json(null, 204);
     }
 }

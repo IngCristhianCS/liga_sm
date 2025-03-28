@@ -155,7 +155,7 @@
 
 </template>
 <script setup>
-import { onMounted } from 'vue' // Importar hook
+import { onMounted } from 'vue'
 import { useClasificacionStore } from '@/stores/clasificacion'
 
 const store = useClasificacionStore()

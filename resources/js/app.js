@@ -15,16 +15,25 @@ const router = createRouter({
       path: '/clasificacion',
       name: 'Clasificacion',
       component: () => import(/* webpackChunkName: "clasificacion" */ './components/clasificacion/ClasificacionComponent.vue')
-    },
-    {
-      path: '/registro',
-      name: 'Registro',
-      component: () => import(/* webpackChunkName: "registro" */ './components/RegisterComponent.vue')
     },    
     {
       path: '/usuarios',
       name: 'Usuarios',
       component: () => import(/* webpackChunkName: "usuarios" */ './components/usuarios/UsuariosComponent.vue')
+    },{
+      path: '/calendario',
+      name: 'Calendario',
+      component: () => import(/* webpackChunkName: "calendario" */ './components/calendario/CalendarioComponent.vue')
+    },        
+    {
+      path: '/mi-equipo',
+      name: 'Mi equipo',
+      component: () => import(/* webpackChunkName: "mi-equipo" */ './components/usuarios/UsuariosComponent.vue')
+    },
+    {
+      path: '/mi-perfil',
+      name: 'Mi perfil',
+      component: () => import(/* webpackChunkName: "mi-perfil" */ './components/mi-perfil/InformacionComponent.vue')
     },
     {
       path: '/resultados',

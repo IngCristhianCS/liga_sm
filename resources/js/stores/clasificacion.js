@@ -13,8 +13,6 @@ export const useClasificacionStore = defineStore('clasificacion', {
       try {
         this.loading = true
         this.error = null
-        
-        await axios.get('/sanctum/csrf-cookie')
         const response = await axios.get('/api/clasificacion', {
           params: { nocache: new Date().getTime() }
         })
@@ -22,7 +20,6 @@ export const useClasificacionStore = defineStore('clasificacion', {
         this.clasificacion = response.data
       } catch (error) {
         this.error = 'Error al cargar datos'
-        console.error(error)
       } finally {
         this.loading = false
       }

@@ -40,6 +40,16 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function jugador()
+    {
+        return $this->hasOne(Jugador::class);
+    }
+
+    public function equipo()
+    {
+        return $this->hasOne(Equipo::class, 'entrenador_id');
+    }
+
     // Métodos helper para verificación de roles
     public function isAdmin(): bool
     {

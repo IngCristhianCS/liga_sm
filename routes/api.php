@@ -6,6 +6,8 @@ use App\Http\Controllers\ClasificacionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TorneoController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\EquipoController;
+use App\Http\Controllers\PartidoController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -35,14 +37,9 @@ Route::middleware(['can:admin-access'])->group(function () {
     Route::resource('ubicaciones', UbicacionController::class);*/
 });
 
-Route::prefix('roles')->group(function () {
-    Route::get('/', [RoleController::class, 'index']);
-    Route::post('/', [RoleController::class, 'store']);
-    Route::get('/{id}', [RoleController::class, 'show']);
-    Route::put('/{id}', [RoleController::class, 'update']);
-    Route::delete('/{id}', [RoleController::class, 'destroy']);
-});
-
 Route::middleware(['auth:sanctum'])->group(function () {    
     Route::apiResource('users', UsuarioController::class);
+    Route::apiResource('equipo', EquipoController::class);
+    Route::apiResource('roles', RoleController::class);
+    Route::get('/jornadas/partidos-equipo', [PartidoController::class, 'obtenerPartidosPorEquipo']);
 });

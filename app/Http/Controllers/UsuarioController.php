@@ -5,109 +5,68 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Requests\UpdateUsuarioRequest;
 use App\Http\Resources\UsuarioResource;
+use App\Services\UsuarioService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rules;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 
 class UsuarioController extends Controller
 {
     use AuthorizesRequests;
 
+    protected $usuarioService;
+
+    public function __construct(UsuarioService $usuarioService)
+    {
+        $this->usuarioService = $usuarioService;
+    }
+
     public function index(Request $request)
     {
-        \Log::info('Usuario en sesión:', [
-            'user' => auth()->user()->toArray(),
-            'session' => session()->all()
-        ]);
-    $this->authorize('viewAny', User::class);
-
-        return UsuarioResource::collection(
-            User::with('role')
-                ->latest()
-                ->get()
-        );
+        $this->authorize('viewAny', User::class);
+        $usuarios = $this->usuarioService->getAllUsuarios();
+        return UsuarioResource::collection($usuarios);
     }
 
     public function store(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role_id' => ['required', 'integer', 'exists:roles,id'],
-            'fecha_nacimiento' => ['required', 'date'],
-            'genero' => ['required', 'string', 'in:masculino,femenino,otro']
-        ]);
+        $user = new User($request->all());
+        $this->authorize('create', $user);
+        $result = $this->usuarioService->createUsuario($request);
 
-        if ($validator->fails()) {
+        if (isset($result['errors'])) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $result['errors']
             ], 422);
         }
 
-        try {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role_id' => $request->role_id,
-                'fecha_nacimiento' => $request->fecha_nacimiento,
-                'genero' => $request->genero
-            ]);
-
-            return (new UsuarioResource($user))
-                ->response()
-                ->setStatusCode(201);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'User creation failed',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return (new UsuarioResource($result))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(User $user)
     {
         $this->authorize('view', $user);
-        
-        return new UsuarioResource($user->load('role'));
+        $usuario = $this->usuarioService->getUsuarioById($user);
+        return new UsuarioResource($usuario);
     }
 
     public function update(UpdateUsuarioRequest $request, User $user): UsuarioResource
     {
         $this->authorize('update', $user);
-
-        $validated = $request->validated();
-
-        // Eliminar el role_id si no es admin
-        if (!$request->user()->isAdmin() && isset($validated['role_id'])) {
-            unset($validated['role_id']);
-        }
-
-        // Eliminar la contraseña siempre (no se actualiza)
-        if (isset($validated['password'])) {
-            unset($validated['password']);
-        }
-
-        $user->update($validated);
-
-        return new UsuarioResource($user->load('role')->refresh());
+        $usuario = $this->usuarioService->updateUsuario($request, $user);
+        return new UsuarioResource($usuario);
     }
 
     public function destroy(User $user): Response
     {
         $this->authorize('delete', $user);
-
-        $user->delete();
-
+        $this->usuarioService->deleteUsuario($user);
         return response()->noContent();
     }
 }

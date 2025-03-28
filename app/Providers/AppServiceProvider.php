@@ -17,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
     
     protected $policies = [
         User::class => UserPolicy::class,
+        Equipo::class => EquipoPolicy::class,
         // Agregar otras políticas aquí
     ];
 

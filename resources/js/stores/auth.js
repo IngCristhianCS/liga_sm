@@ -19,10 +19,6 @@ export const useAuthStore = defineStore('auth', {
             this.error = null;
             
             try {
-                // Obtener cookie CSRF
-                await axios.get('/sanctum/csrf-cookie');
-                
-                // Hacer login
                 const response = await axios.post('/login', credentials);
                 
                 // Actualizar usuario y recargar

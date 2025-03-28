@@ -16,7 +16,7 @@
                     <div class="col-lg-5 col-md-12 offset-lg-1">
                         <div class="card-plain">
                             <div class="header">
-                                <h4 class="logo"><img width="100" src="assets/images/logo.png" alt=""></h4>
+                                <h4 class="logo"><img width="100" src="assets/images/logo.webp" alt=""></h4>
                                 <!-- Session Status -->
                                 <x-auth-session-status class="alert alert-danger" :status="session('status')" />
                             </div>

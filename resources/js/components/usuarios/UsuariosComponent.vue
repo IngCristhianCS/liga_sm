@@ -22,7 +22,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="#largeModal" data-toggle="modal"
                                         data-target="#largeModal">
-                                        {{ mode === 'create' ? 'Nuevo Usuario' : 'Editar Usuario' }}
+                                        {{ mode === 'create' ? 'Nuevo' : 'Editar' }}
                                     </a>
                                 </li>
                             </ul>
@@ -118,6 +118,23 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-md-6" v-if="currentUser.role.id === 3">
+                                <div class="form-group">
+                                    <label>Equipo</label>
+                                    <select class="form-control" v-model="currentUser.equipo.id">
+                                        <option v-for="equipo in equipos" :value="equipo.id" :key="equipo.id">
+                                            {{ equipo.nombre }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" v-if="currentUser.role.id === 4">
+                                <div class="form-group">
+                                    <label>Licencia</label>
+                                    <input type="text" class="form-control" v-model="currentUser.licencia">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -135,11 +152,14 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
-import Swal from 'sweetalert2'; // Importar SweetAlert
+import Swal from 'sweetalert2';
+import { useAuthStore } from '../../stores/auth';
 
 const users = ref([]);
 const roles = ref([]);
+const equipos = ref([]);
 const mode = ref('create');
+const authStore = useAuthStore();
 
 const defaultUser = {
     name: '',
@@ -147,7 +167,9 @@ const defaultUser = {
     password: '',
     role: {},
     fecha_nacimiento: '',
-    genero: ''
+    genero: '',
+    equipo: {},
+
 };
 
 const currentUser = reactive({ ...defaultUser });
@@ -159,6 +181,7 @@ const loadUsers = async () => {
         users.value = response.data.data;
         inicializarDataTable();
     } catch (error) {
+        console.error(error);
         Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -178,6 +201,21 @@ const loadRoles = async () => {
             icon: 'error',
             title: 'Error',
             text: 'Error al cargar roles',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    }
+};
+
+const loadEquipos = async () => {
+    try {
+        const response = await axios.get('/api/equipo');
+        equipos.value = response.data.data;
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al cargar equipos',
             timer: 3000,
             showConfirmButton: false
         });
@@ -232,14 +270,15 @@ const handleSubmit = async () => {
             : `/api/users/${currentUser.id}`;
 
         const method = mode.value === 'create' ? 'post' : 'put';
-        await axios[method](url, { 
-            ...currentUser, 
-            role_id: currentUser.role.id, 
-            password_confirmation: currentUser.password 
+        await axios[method](url, {
+            ...currentUser,
+            role_id: currentUser.role.id,
+            equipo_id: currentUser.equipo.id,
+            password_confirmation: currentUser.password
         });
-        
+
         await loadUsers();
-        
+
         Swal.fire({
             icon: 'success',
             title: '¡Éxito!',
@@ -316,16 +355,23 @@ const inicializarDataTable = () => {
                 { data: 'genero', defaultContent: 'N/A' },
                 {
                     data: null,
-                    render: (data, type, row) => `<button class="btn btn-icon btn-neutral btn-icon-mini btnEditar" 
-                            data-id="${row.id}" 
-                            data-toggle="modal" 
-                            data-target="#largeModal">
-                        <i class="zmdi zmdi-edit"></i>
-                    </button>
-                    <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar" 
-                            data-id="${row.id}">
-                        <i class="zmdi zmdi-delete"></i>
-                    </button>`
+                    render: (data, type, row) =>{
+                        if(authStore.isAdmin){
+                            return `<button class="btn btn-icon btn-neutral btn-icon-mini btnEditar" 
+                                    data-id="${row.id}" 
+                                    data-toggle="modal" 
+                                    data-target="#largeModal">
+                                <i class="zmdi zmdi-edit"></i>
+                            </button>
+                            <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar" 
+                                    data-id="${row.id}">
+                                <i class="zmdi zmdi-delete"></i>
+                            </button>`
+                        }
+                        else{
+                            return '';
+                        }
+                    }
                 }
             ]
         });
@@ -336,20 +382,20 @@ const inicializarDataTable = () => {
 const attachDataTableEvents = () => {
     const tabla = "#usuarios";
     const tbody = $(tabla + ' tbody');
-    
+
     // Limpiar eventos previos para evitar duplicados
     tbody.off('click', '.btnEditar');
     tbody.off('click', '.btnEliminar');
 
     // Evento para editar
-    tbody.on('click', '.btnEditar', function() {
+    tbody.on('click', '.btnEditar', function () {
         const userId = $(this).data('id');
         const user = users.value.find(u => u.id === userId);
         if (user) editUser(user);
     });
 
     // Evento para eliminar
-    tbody.on('click', '.btnEliminar', function() {
+    tbody.on('click', '.btnEliminar', function () {
         const userId = $(this).data('id');
         deleteUser(userId);
     });
@@ -358,6 +404,7 @@ const attachDataTableEvents = () => {
 // Ciclo de vida
 onMounted(() => {
     loadRoles();
+    loadEquipos();
     loadUsers();
 });
 </script>

@@ -2,48 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Equipo;
+use App\Services\EquipoService;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class EquipoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $equipoService;
+    use AuthorizesRequests;
+    public function __construct(EquipoService $equipoService)
+    {
+        $this->equipoService = $equipoService;
+    }
+
     public function index()
     {
-        //
+        $this->authorize('viewAny', Equipo::class);
+        $equipos = $this->equipoService->getAllEquipos();
+        return response()->json(['data' => $equipos]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function show(int $id)
+    {
+        $equipo = $this->equipoService->getEquipoById($id);
+        $this->authorize('view', $equipo);
+        return response()->json(['data' => $equipo]);
+    }
+
     public function store(Request $request)
     {
-        //
+        $this->authorize('create', Equipo::class);
+        $data = $this->equipoService->createEquipo($request->all());
+
+        if (isset($data['errors'])) {
+            return response()->json(['errors' => $data['errors']], 422);
+        }
+
+        return response()->json(['data' => $data], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Equipo $equipo)
+    public function update(Request $request, int $id)
     {
-        //
+        $equipo = $this->equipoService->getEquipoById($id);
+        $this->authorize('update', $equipo);
+        $data = $this->equipoService->updateEquipo($id, $request->all());
+
+        if (isset($data['errors'])) {
+            return response()->json(['errors' => $data['errors']], 422);
+        }
+
+        return response()->json(['data' => $data]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Equipo $equipo)
+    public function destroy(int $id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Equipo $equipo)
-    {
-        //
+        $equipo = $this->equipoService->getEquipoById($id);
+        $this->authorize('delete', $equipo);
+        $this->equipoService->deleteEquipo($id);
+        return response()->json(null, 204);
     }
 }

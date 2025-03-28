@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Jugador extends Model
 {
     use HasFactory;
+    protected $table = 'jugador'; 
 
-    protected $fillable = ['persona_id', 'equipo_id'];
+    protected $fillable = ['user_id', 'equipo_id'];
 
-    public function persona()
+    public function user()
     {
-        return $this->belongsTo(Persona::class);
+        return $this->belongsTo(User::class);
     }
 
     public function equipo()

@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Partido;
 use Illuminate\Http\Request;
+use App\Services\JornadaService;
 
 class PartidoController extends Controller
 {
+
+    protected $jornadaService;
+
+    public function __construct(JornadaService $jornadaService)
+    {
+        $this->jornadaService = $jornadaService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -45,5 +53,16 @@ class PartidoController extends Controller
     public function destroy(Partido $partido)
     {
         //
+    }
+
+    public function obtenerPartidosPorEquipo(Request $request)
+    {
+        $partidos = $this->jornadaService->obtenerPartidosPorJornadaEquipoTorneo();
+
+        if (isset($partidos['error'])) {
+            return response()->json(['success' => false, 'error' => $partidos['error']], 422);
+        }
+
+        return response()->json(['success' => true, 'data' => $partidos], 200);
     }
 }

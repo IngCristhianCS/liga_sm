@@ -14,7 +14,7 @@ class UsuarioResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $data = [
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
@@ -26,5 +26,12 @@ class UsuarioResource extends JsonResource
             'is_jugador' => $this->isJugador(),
             'is_arbitro' => $this->isArbitro(),
         ];
+
+         // Incluir datos del equipo si el usuario es jugador
+         if ($this->isJugador()) {
+            $data['equipo'] = $this->equipo();
+        }
+
+        return $data;
     }
 }

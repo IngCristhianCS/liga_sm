@@ -8,15 +8,8 @@ use App\Models\Role;
 class UserPolicy
 {
     public function viewAny(User $user): bool
-    {
-
-        \Log::info('Verificando acceso para usuario:', [
-            'user_id' => $user->id,
-            'role_id' => $user->role_id,
-            'is_admin' => $user->isAdmin()
-        ]);
-        
-        return $user->isAdmin();
+    {        
+        return $user->isAdmin() || $user->isEntrenador();
     }
 
     public function view(User $user, User $model): bool
@@ -24,9 +17,19 @@ class UserPolicy
         return $user->role_id === Role::ADMIN || $user->id === $model->id;
     }
 
-    public function create(User $user): bool
+    public function create(User $user, User $model): bool
     {
-        return $user->role_id === Role::ADMIN;
+        // Verificar si el creador es un entrenador y el usuario a crear es un jugador
+        if ($user->role_id === Role::ENTRENADOR  && $model->role_id === Role::JUGADOR) {
+            return true; // El entrenador puede crear un jugador
+        }
+
+        // Verificar si el creador es un administrador (si es necesario)
+        if ($user->role_id === Role::ADMIN) {
+            return true; // El administrador puede crear cualquier usuario
+        }
+
+        return false;
     }
 
     public function update(User $user, User $model): bool

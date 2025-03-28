@@ -1,4 +1,48 @@
 <template>
+    <nav class="navbar">
+        <div class="container">
+            <ul class="nav navbar-nav">
+                <li>
+                    <div class="navbar-header">
+                        <a href="javascript:void(0);" class="h-bars"></a>
+                        <a class="navbar-brand" href="/"><img src="assets/images/logo.webp" width="50"
+                                alt="San Miguel"><span class="m-l-10">San Miguel</span></a>
+                    </div>
+                </li>
+
+                <template v-if="!authStore.user">
+                    <li class="float-right">
+                        <a href="/login" class="js-right-sidebar"><i class="zmdi zmdi-settings zmdi-hc-spin"></i>
+                            Ingresar</a>
+                    </li>
+                </template>
+
+                <template v-else>
+                    <li class="float-right dropdown"><a href="javascript:void(0);" class="dropdown-toggle"
+                            data-toggle="dropdown"><i class="zmdi zmdi-account"></i> {{ authStore.user.name }} <i
+                                class="zmdi zmdi-chevron-down"></i></a>
+                        <ul class="dropdown-menu pullDown">
+                            <li><router-link to="/mi-perfil" class="nav-link" @click="closeMobileMenu"
+                                active-class="open active"><i class="zmdi zmdi-email m-r-10"></i><span>Perfil</span></router-link></li>
+                            <li><a href="javascript:void(0);"><span>
+                                        <form method="POST" action="">
+                                            <button type="submit" style="background: none;
+                                                    color: inherit;
+                                                    border: none;
+                                                    padding: 0;
+                                                    font: inherit;
+                                                    cursor: pointer;
+                                                    outline: inherit;">
+                                                <i class="zmdi zmdi-power m-r-10"></i> Cerrar Sesión
+                                            </button>
+                                        </form>
+                            </span></a></li>
+                        </ul>
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </nav>
     <div class="menu-container">
         <div class="container">
             <div class="row">
@@ -6,12 +50,14 @@
                     <ul class="h-menu">
                         <template v-if="!authStore.user">
                             <li>
-                                <router-link to="/" class="nav-link" @click="closeMobileMenu" active-class="open active">
+                                <router-link to="/" class="nav-link" @click="closeMobileMenu"
+                                    active-class="open active">
                                     <i class="zmdi zmdi-view-list"></i> Clasificación
                                 </router-link>
                             </li>
                             <li>
-                                <router-link to="/resultados" class="nav-link" @click="closeMobileMenu" active-class="open active">
+                                <router-link to="/resultados" class="nav-link" @click="closeMobileMenu"
+                                    active-class="open active">
                                     <i class="zmdi zmdi-chart"></i> Resultados
                                 </router-link>
                             </li>
@@ -19,12 +65,14 @@
 
                         <template v-else>
                             <li>
-                                <router-link to="/" class="nav-link" @click="closeMobileMenu" active-class="open active">
+                                <router-link to="/" class="nav-link" @click="closeMobileMenu"
+                                    active-class="open active">
                                     <i class="zmdi zmdi-view-list"></i> Clasificación
                                 </router-link>
                             </li>
                             <li>
-                                <router-link to="/resultados" class="nav-link" @click="closeMobileMenu" active-class="open active">
+                                <router-link to="/resultados" class="nav-link" @click="closeMobileMenu"
+                                    active-class="open active">
                                     <i class="zmdi zmdi-chart"></i> Resultados
                                 </router-link>
                             </li>
@@ -34,7 +82,8 @@
                                     <i class="zmdi zmdi-chevron-down"></i>
                                 </a>
                                 <ul class="sub-menu">
-                                    <li><router-link to="/usuarios" class="nav-link" @click="closeMobileMenu"  active-class="open active">Usuarios</router-link></li>
+                                    <li><router-link to="/usuarios" class="nav-link" @click="closeMobileMenu"
+                                            active-class="open active">Usuarios</router-link></li>
                                 </ul>
                             </li>
 
@@ -74,11 +123,8 @@ export default {
     name: 'AppNavigation',
     setup() {
         const authStore = useAuthStore();
-        const mobileMenuOpen = ref(false);
-
         return {
             authStore,
-            mobileMenuOpen,
             isAdmin: computed(() => authStore.isAdmin),
             isEntrenador: computed(() => authStore.isEntrenador),
             isJugador: computed(() => authStore.isJugador),
