@@ -76,6 +76,8 @@
                                 <ul class="sub-menu">
                                     <li><router-link to="/usuarios" class="nav-link" @click="closeMobileMenu"
                                             active-class="open active">Usuarios</router-link></li>
+                                    <li><router-link to="/ingresos" class="nav-link" @click="closeMobileMenu"
+                                                active-class="open active">Ingresos</router-link></li>
                                 </ul>
                             </li>
 
@@ -90,6 +92,8 @@
                                         <i class="zmdi zmdi-calendar"></i> Calendario
                                     </router-link>
                                 </li>
+                                <li><router-link to="/ingresos" class="nav-link" @click="closeMobileMenu"
+                                    active-class="open active"><i class="zmdi zmdi-money"></i> Mis Pagos</router-link></li>
                             </template>
 
                             <template v-if="isJugador">

@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Ingreso extends Model
 {
     use HasFactory;
+    protected $table = 'ingreso';
 
     protected $fillable = [
         'fecha', 'monto', 'tipo', 'descripcion',
-        'equipo_id', 'torneo_id', 'patrocinador_id'
+        'equipo_id', 'torneo_id', 'patrocinador_id', 'estatus'
     ];
 
     public function equipo()

@@ -2,64 +2,76 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ingreso;
+use App\Services\IngresoService;
 use Illuminate\Http\Request;
+use App\Models\Ingreso;
+use Illuminate\Routing\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
 
 class IngresoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use AuthorizesRequests;
+    protected $ingresoService;
+
+    public function __construct(IngresoService $ingresoService)
+    {
+        $this->ingresoService = $ingresoService;
+        $this->middleware('auth:sanctum');
+    }
+
     public function index()
     {
-        //
+        $this->authorize('viewAny', Ingreso::class);
+
+        $ingresos = $this->ingresoService->getAll();
+        return response()->json(['success' => true, 'data' => $ingresos]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $this->authorize('create', Ingreso::class);
+
+        $result = $this->ingresoService->create($request->all());
+
+        if (isset($result['errors'])) {
+            return response()->json(['success' => false, 'errors' => $result['errors']], 422);
+        }
+
+        return response()->json(['success' => true, 'data' => $result, 'message' => 'Ingreso creado exitosamente'], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Ingreso $ingreso)
+    public function show($id)
     {
-        //
+        $ingreso = $this->ingresoService->findById($id);
+
+        $this->authorize('view', $ingreso);
+
+        return response()->json(['success' => true, 'data' => $ingreso]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Ingreso $ingreso)
+    public function update(Request $request, $id)
     {
-        //
+        $ingreso = $this->ingresoService->findById($id);
+
+        $this->authorize('update', $ingreso);
+
+        $result = $this->ingresoService->update($id, $request->all());
+
+        if (isset($result['errors'])) {
+            return response()->json(['success' => false, 'errors' => $result['errors']], 422);
+        }
+
+        return response()->json(['success' => true, 'data' => $result, 'message' => 'Ingreso actualizado exitosamente'], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Ingreso $ingreso)
+    public function destroy($id)
     {
-        //
-    }
+        $ingreso = $this->ingresoService->findById($id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Ingreso $ingreso)
-    {
-        //
+        $this->authorize('delete', $ingreso);
+
+        $this->ingresoService->delete($id);
+
+        return response()->json(['success' => true, 'message' => 'Ingreso eliminado exitosamente'], 200);
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\TorneoController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\PartidoController;
+use App\Http\Controllers\IngresoController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\ProfileController;
 
@@ -41,6 +42,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('users', UsuarioController::class);
     Route::apiResource('equipo', EquipoController::class);
     Route::apiResource('roles', RoleController::class);
+    Route::apiResource('ingresos', IngresoController::class);
 
     Route::get('/jornadas/partidos-equipo', [PartidoController::class, 'obtenerPartidosPorEquipo']);
 

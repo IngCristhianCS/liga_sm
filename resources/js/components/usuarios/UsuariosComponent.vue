@@ -376,7 +376,7 @@ const inicializarDataTable = () => {
             ]
         });
     }
-    attachDataTableEvents(); // Inicializar eventos después de crear la tabla
+    attachDataTableEvents();
 };
 
 const attachDataTableEvents = () => {

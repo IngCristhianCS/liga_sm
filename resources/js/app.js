@@ -20,7 +20,14 @@ const router = createRouter({
       path: '/usuarios',
       name: 'Usuarios',
       component: () => import(/* webpackChunkName: "usuarios" */ './components/usuarios/UsuariosComponent.vue')
-    },{
+    },
+        
+    {
+      path: '/ingresos',
+      name: 'Ingresos',
+      component: () => import(/* webpackChunkName: "ingresos" */ './components/ingresos/IngresosComponent.vue')
+    },
+    {
       path: '/calendario',
       name: 'Calendario',
       component: () => import(/* webpackChunkName: "calendario" */ './components/calendario/CalendarioComponent.vue')
