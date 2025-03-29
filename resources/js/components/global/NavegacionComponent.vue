@@ -23,20 +23,12 @@
                                 class="zmdi zmdi-chevron-down"></i></a>
                         <ul class="dropdown-menu pullDown">
                             <li><router-link to="/mi-perfil" class="nav-link" @click="closeMobileMenu"
-                                active-class="open active"><i class="zmdi zmdi-email m-r-10"></i><span>Perfil</span></router-link></li>
-                            <li><a href="javascript:void(0);"><span>
-                                        <form method="POST" action="">
-                                            <button type="submit" style="background: none;
-                                                    color: inherit;
-                                                    border: none;
-                                                    padding: 0;
-                                                    font: inherit;
-                                                    cursor: pointer;
-                                                    outline: inherit;">
-                                                <i class="zmdi zmdi-power m-r-10"></i> Cerrar Sesión
-                                            </button>
-                                        </form>
-                            </span></a></li>
+                                    active-class="open active"><i
+                                        class="zmdi zmdi-email m-r-10"></i><span>Perfil</span></router-link></li>
+                            <li><a href="javascript:void(0);" @click="logout">
+                                    <span>
+                                        <i class="zmdi zmdi-power m-r-10"></i> Cerrar Sesión
+                                    </span></a></li>
                         </ul>
                     </li>
                 </template>
@@ -116,25 +108,42 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useAuthStore } from '../../stores/auth';
-
+import axios from 'axios';
 export default {
     name: 'AppNavigation',
     setup() {
         const authStore = useAuthStore();
+
+        const logout = async () => {
+            try {
+                await axios.post('/logout'); // Envía la solicitud POST a /logout
+                authStore.user = null;
+                authStore.token = null;
+                window.location.href = '/';
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al cerrar sesión.',
+                });
+            }
+        };
+
         return {
             authStore,
             isAdmin: computed(() => authStore.isAdmin),
             isEntrenador: computed(() => authStore.isEntrenador),
             isJugador: computed(() => authStore.isJugador),
             userName: computed(() => authStore.userName),
+            logout,
         };
     },
     methods: {
         closeMobileMenu() {
             $(".h-menu").toggleClass("show-on-mobile");
-        }
+        },
     },
 };
 </script>
