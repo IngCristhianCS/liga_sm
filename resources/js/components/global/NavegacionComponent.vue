@@ -24,7 +24,7 @@
                         <ul class="dropdown-menu pullDown">
                             <li><router-link to="/mi-perfil" class="nav-link" @click="closeMobileMenu"
                                     active-class="open active"><i
-                                        class="zmdi zmdi-email m-r-10"></i><span>Perfil</span></router-link></li>
+                                        class="zmdi zmdi-email m-r-10"></i>Perfil</router-link></li>
                             <li><a href="javascript:void(0);" @click="logout">
                                     <span>
                                         <i class="zmdi zmdi-power m-r-10"></i> Cerrar Sesión
@@ -118,7 +118,7 @@ export default {
 
         const logout = async () => {
             try {
-                await axios.post('/logout'); // Envía la solicitud POST a /logout
+                await axios.post('/logout');
                 authStore.user = null;
                 authStore.token = null;
                 window.location.href = '/';

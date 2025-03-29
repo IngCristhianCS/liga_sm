@@ -8,10 +8,10 @@ use App\Http\Controllers\TorneoController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\PartidoController;
+use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\ProfileController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::get('/user', function (Request $request) {return $request->user();})->middleware('auth:sanctum');
 
 Route::get('/clasificacion', [ClasificacionController::class, 'index']);
 Route::get('/torneos/{torneoId}/jornadas', [TorneoController::class, 'jornadas']);
@@ -41,5 +41,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('users', UsuarioController::class);
     Route::apiResource('equipo', EquipoController::class);
     Route::apiResource('roles', RoleController::class);
+
     Route::get('/jornadas/partidos-equipo', [PartidoController::class, 'obtenerPartidosPorEquipo']);
+
+    Route::put('password', [PasswordController::class, 'update']);    
+    Route::patch('/profile', [ProfileController::class, 'update']);
 });
