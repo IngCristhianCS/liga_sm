@@ -2,64 +2,68 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categoria;
+use App\Services\CategoriaService;
 use Illuminate\Http\Request;
+use App\Models\Categoria;
+use Illuminate\Routing\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CategoriaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use AuthorizesRequests;
+
+    protected $categoriaService;
+
+    public function __construct(CategoriaService $categoriaService)
+    {
+        $this->categoriaService = $categoriaService;
+        $this->middleware('auth:sanctum');
+    }
+
     public function index()
     {
-        //
+        $this->authorize('viewAny', Categoria::class);
+        $categorias = $this->categoriaService->getAll();
+        return response()->json(['success' => true, 'data' => $categorias]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $this->authorize('create', Categoria::class);
+        $result = $this->categoriaService->create($request->all());
+
+        if (isset($result['errors'])) {
+            return response()->json(['success' => false, 'errors' => $result['errors']], 422);
+        }
+
+        return response()->json(['success' => true, 'data' => $result, 'message' => 'Categoria creada exitosamente'], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Categoria $categoria)
+    public function show($id)
     {
-        //
+        $categoria = $this->categoriaService->findById($id);
+        $this->authorize('view', $categoria);
+        return response()->json(['success' => true, 'data' => $categoria]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Categoria $categoria)
+    public function update(Request $request, $id)
     {
-        //
+        $categoria = $this->categoriaService->findById($id);
+        $this->authorize('update', $categoria);
+        $result = $this->categoriaService->update($id, $request->all());
+
+        if (isset($result['errors'])) {
+            return response()->json(['success' => false, 'errors' => $result['errors']], 422);
+        }
+
+        return response()->json(['success' => true, 'data' => $result, 'message' => 'Categoria actualizada exitosamente'], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Categoria $categoria)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Categoria $categoria)
-    {
-        //
+        $categoria = $this->categoriaService->findById($id);
+        $this->authorize('delete', $categoria);
+        $this->categoriaService->delete($id);
+        return response()->json(['success' => true, 'message' => 'Categoria eliminada exitosamente'], 200);
     }
 }

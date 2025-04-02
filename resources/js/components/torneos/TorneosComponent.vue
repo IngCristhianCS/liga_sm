@@ -4,12 +4,12 @@
             <div class="block-header">
                 <div class="row clearfix">
                     <div class="col-lg-5 col-md-5 col-sm-12">
-                        <h2>Gestión de Usuarios</h2>
+                        <h2>Gestión de Torneos</h2>
                     </div>
                     <div class="col-lg-7 col-md-7 col-sm-12">
                         <ul class="breadcrumb float-md-right padding-0">
                             <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i> Inicio</a></li>
-                            <li class="breadcrumb-item active">Administración de Usuarios</li>
+                            <li class="breadcrumb-item active">Administración de Torneos</li>
                         </ul>
                     </div>
                 </div>
@@ -17,28 +17,29 @@
             <div class="row clearfix">
                 <div class="col-lg-12">
                     <div class="tab-content">
-                        <!-- Listado de Usuarios -->
                         <div class="tab-pane active" id="List">
                             <div class="card">
                                 <div class="body">
                                     <ul class="nav nav-tabs padding-0">
-                                        <li class="nav-item">
+                                        <li class="nav-item" v-if="authStore.isAdmin">
                                             <a class="btn btn-primary btn-round" href="#largeModal" data-toggle="modal"
                                                 data-target="#largeModal">
-                                                {{ mode === 'create' ? 'Nuevo' : 'Editar' }}
+                                                {{ mode === 'create' ? 'Nuevo' : 'Editar' }} Torneo
                                             </a>
                                         </li>
                                     </ul>
                                     <div class="table-responsive">
-                                        <table id="usuarios"
+                                        <table id="torneos"
                                             class="table table-bordered table-striped table-hover js-basic-example dataTable">
                                             <thead>
                                                 <tr>
                                                     <th>Nombre</th>
-                                                    <th>Email</th>
-                                                    <th>Rol</th>
-                                                    <th>Fecha Nacimiento</th>
-                                                    <th>Género</th>
+                                                    <th>Categoría</th>
+                                                    <th>Temporada</th>
+                                                    <th>Fecha Inicio</th>
+                                                    <th>Fecha Fin</th>
+                                                    <th>Estado</th>
+                                                    <th>Campeón</th>
                                                     <th>Acciones</th>
                                                 </tr>
                                             </thead>
@@ -58,7 +59,8 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="title" id="largeModalLabel">{{ mode === 'create' ? 'Nuevo Usuario' : 'Editar Usuario' }}
+                    <h4 class="title" id="largeModalLabel">
+                        {{ mode === 'create' ? 'Nuevo Torneo' : 'Editar Torneo' }}
                     </h4>
                 </div>
                 <form @submit.prevent="handleSubmit">
@@ -66,32 +68,18 @@
                         <div class="row clearfix">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Nombre Completo</label>
-                                    <input type="text" class="form-control" v-model="currentUser.name" required>
+                                    <label>Nombre</label>
+                                    <input type="text" class="form-control" v-model="currentTorneo.nombre" required>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Email</label>
-                                    <input type="email" class="form-control" v-model="currentUser.email" required>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6" v-if="mode === 'create'">
-                                <div class="form-group">
-                                    <label>Contraseña</label>
-                                    <input type="password" class="form-control" v-model="currentUser.password"
-                                        :required="mode === 'create'">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Rol</label>
-                                    <select class="form-control" v-model="currentUser.role.id" required>
-                                        <option v-for="role in roles" :value="role.id" :key="role.id">
-                                            {{ role.name }}
+                                    <label>Categoría</label>
+                                    <select class="form-control" v-model="currentTorneo.categoria_id" required>
+                                        <option v-for="categoria in categorias" :value="categoria.id"
+                                            :key="categoria.id">
+                                            {{ categoria.nombre }}
                                         </option>
                                     </select>
                                 </div>
@@ -99,42 +87,58 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Fecha de Nacimiento</label>
-                                    <input type="date" class="form-control" v-model="currentUser.fecha_nacimiento">
+                                    <label>Temporada</label>
+                                    <select class="form-control" v-model="currentTorneo.temporada_id" required>
+                                        <option v-for="temporada in temporadas" :value="temporada.id"
+                                            :key="temporada.id">
+                                            {{ temporada.nombre }}
+                                        </option>
+                                    </select>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Género</label>
-                                    <select class="form-control" v-model="currentUser.genero">
-                                        <option value="masculino">Masculino</option>
-                                        <option value="femenino">Femenino</option>
+                                    <label>Fecha Inicio</label>
+                                    <input type="date" class="form-control" v-model="currentTorneo.fecha_inicio"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Fecha Fin</label>
+                                    <input type="date" class="form-control" v-model="currentTorneo.fecha_fin" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Estado</label>
+                                    <select class="form-control" v-model="currentTorneo.estado" required>
+                                        <option value="activo">Activo</option>
+                                        <option value="finalizado">Finalizado</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6" v-if="currentUser.role.id === 3">
+
+                            <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Equipo</label>
-                                    <select class="form-control" v-model="currentUser.equipo.id">
+                                    <label>Campeón</label>
+                                    <select class="form-control" v-model="currentTorneo.campeon_id">
+                                        <option value="null">Ninguno</option>
                                         <option v-for="equipo in equipos" :value="equipo.id" :key="equipo.id">
                                             {{ equipo.nombre }}
                                         </option>
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="col-md-6" v-if="currentUser.role.id === 4">
-                                <div class="form-group">
-                                    <label>Licencia</label>
-                                    <input type="text" class="form-control" v-model="currentUser.licencia">
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-default btn-round waves-effect">{{ mode === 'create' ?
-                            'Crear Usuario' : 'Actualizar Usuario' }}</button>
+                        <button type="submit" class="btn btn-default btn-round waves-effect">
+                            {{ mode === 'create' ? 'Crear Torneo' : 'Actualizar Torneo' }}
+                        </button>
                         <button type="button" class="btn btn-danger btn-simple btn-round waves-effect"
                             data-dismiss="modal" @click="resetForm">Cancelar</button>
                     </div>
@@ -150,80 +154,76 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useAuthStore } from '../../stores/auth';
 
-const users = ref([]);
-const roles = ref([]);
+const torneos = ref([]);
+const categorias = ref([]);
+const temporadas = ref([]);
 const equipos = ref([]);
 const mode = ref('create');
 const authStore = useAuthStore();
 
-const defaultUser = {
-    name: '',
-    email: '',
-    password: '',
-    role: {},
-    fecha_nacimiento: '',
-    genero: '',
-    equipo: {},
-
+const defaultTorneo = {
+    nombre: '',
+    categoria_id: null,
+    temporada_id: null,
+    fecha_inicio: '',
+    fecha_fin: '',
+    estado: 'activo',
+    campeon_id: null,
 };
 
-const currentUser = reactive({ ...defaultUser });
+const currentTorneo = reactive({ ...defaultTorneo });
 
-// Métodos
-const loadUsers = async () => {
+const loadTorneos = async () => {
     try {
-        const response = await axios.get('/api/users');
-        users.value = response.data.data;
+        const response = await axios.get('/api/torneos');
+        torneos.value = response.data.data;
         inicializarDataTable();
     } catch (error) {
         console.error(error);
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Error al cargar usuarios',
+            text: 'Error al cargar torneos',
             timer: 3000,
             showConfirmButton: false
         });
     }
 };
 
-const loadRoles = async () => {
+const loadCategorias = async () => {
     try {
-        const response = await axios.get('/api/roles');
-        roles.value = response.data.data;
+        const response = await axios.get('/api/categorias');
+        categorias.value = response.data.data;
     } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Error al cargar roles',
-            timer: 3000,
-            showConfirmButton: false
-        });
+        console.error(error);
+    }
+};
+
+const loadTemporadas = async () => {
+    try {
+        const response = await axios.get('/api/temporadas');
+        temporadas.value = response.data.data;
+    } catch (error) {
+        console.error(error);
     }
 };
 
 const loadEquipos = async () => {
     try {
-        const response = await axios.get('/api/equipo');
+        const response = await axios.get('/api/equipos');
         equipos.value = response.data.data;
     } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Error al cargar equipos',
-            timer: 3000,
-            showConfirmButton: false
-        });
+        console.error(error);
     }
 };
 
-const editUser = (user) => {
+const editTorneo = (torneo) => {
     mode.value = 'edit';
-    Object.assign(currentUser, user);
+    Object.assign(currentTorneo, torneo);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-const deleteUser = async (id) => {
+const deleteTorneo = async (id) => {
     const result = await Swal.fire({
         title: '¿Estás seguro?',
         text: "¡No podrás revertir esta acción!",
@@ -237,12 +237,12 @@ const deleteUser = async (id) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`/api/users/${id}`);
-            await loadUsers();
+            await axios.delete(`/api/torneos/${id}`);
+            await loadTorneos();
             Swal.fire({
                 icon: 'success',
                 title: '¡Eliminado!',
-                text: 'Usuario eliminado correctamente',
+                text: 'Torneo eliminado correctamente',
                 timer: 3000,
                 showConfirmButton: false
             });
@@ -250,7 +250,7 @@ const deleteUser = async (id) => {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Error al eliminar usuario',
+                text: 'Error al eliminar torneo',
                 timer: 3000,
                 showConfirmButton: false
             });
@@ -261,23 +261,18 @@ const deleteUser = async (id) => {
 const handleSubmit = async () => {
     try {
         const url = mode.value === 'create'
-            ? '/api/users'
-            : `/api/users/${currentUser.id}`;
+            ? '/api/torneos'
+            : `/api/torneos/${currentTorneo.id}`;
 
         const method = mode.value === 'create' ? 'post' : 'put';
-        await axios[method](url, {
-            ...currentUser,
-            role_id: currentUser.role.id,
-            equipo_id: currentUser.equipo.id,
-            password_confirmation: currentUser.password
-        });
+        await axios[method](url, currentTorneo);
 
-        await loadUsers();
+        await loadTorneos();
 
         Swal.fire({
             icon: 'success',
             title: '¡Éxito!',
-            text: `Usuario ${mode.value === 'create' ? 'creado' : 'actualizado'} correctamente`,
+            text: `Torneo ${mode.value === 'create' ? 'creado' : 'actualizado'} correctamente`,
             timer: 3000,
             showConfirmButton: false
         });
@@ -288,7 +283,7 @@ const handleSubmit = async () => {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Error al guardar usuario',
+            text: 'Error al guardar torneo',
             timer: 3000,
             showConfirmButton: false
         });
@@ -297,34 +292,15 @@ const handleSubmit = async () => {
 
 const resetForm = () => {
     mode.value = 'create';
-    Object.assign(currentUser, defaultUser);
-};
-
-const getRoleName = (roleId) => {
-    const role = roles.value.find(r => r.id === roleId);
-    return role ? role.name : 'Desconocido';
-};
-
-const getRoleBadge = (roleId) => {
-    const badges = {
-        1: 'primary',   // Admin
-        2: 'success',   // Entrenador
-        3: 'info',      // Jugador
-        4: 'warning'    // Arbitro
-    };
-    return badges[roleId] || 'secondary';
-};
-
-const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('es-ES');
+    Object.assign(currentTorneo, defaultTorneo);
 };
 
 const inicializarDataTable = () => {
-    const tabla = "#usuarios";
+    const tabla = "#torneos";
 
     if ($.fn.DataTable.isDataTable(tabla)) {
         const table = $(tabla).DataTable();
-        table.clear().rows.add(users.value).draw();
+        table.clear().rows.add(torneos.value).draw();
     } else {
         $(tabla).DataTable({
             paging: true,
@@ -332,39 +308,31 @@ const inicializarDataTable = () => {
             lengthChange: false,
             searching: true,
             ordering: true,
-            data: users.value,
+            data: torneos.value,
             columns: [
-                {
-                    data: null,
-                    render: (data, type, row) => `<img src="${row.avatar || '/assets/images/xs/avatar1.jpg'}" class="rounded-circle avatar" alt="Avatar"> ${row.name}`
-                },
-                { data: 'email' },
-                {
-                    data: null,
-                    render: (data, type, row) => `<span class="badge badge-${getRoleBadge(row.role.id)}">${getRoleName(row.role.id)}</span>`
-                },
-                {
-                    data: 'fecha_nacimiento',
-                    render: (data, type, row) => formatDate(data)
-                },
-                { data: 'genero', defaultContent: 'N/A' },
+                { data: 'nombre' },
+                { data: 'categoria.nombre' },
+                { data: 'temporada.nombre' },
+                { data: 'fecha_inicio' },
+                { data: 'fecha_fin' },
+                { data: 'estado' },
+                { data: null, render: (data, type, row) => row.campeon ? row.campeon.nombre : 'Ninguno' },
                 {
                     data: null,
                     render: (data, type, row) => {
                         if (authStore.isAdmin) {
-                            return `<button class="btn btn-icon btn-neutral btn-icon-mini btnEditar" 
-                                    data-id="${row.id}" 
-                                    data-toggle="modal" 
-                                    data-target="#largeModal">
-                                <i class="zmdi zmdi-edit"></i>
-                            </button>
-                            <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar" 
-                                    data-id="${row.id}">
-                                <i class="zmdi zmdi-delete"></i>
-                            </button>`
-                        }
-                        else {
-                            return '';
+                            return `<button class="btn btn-icon btn-neutral btn-icon-mini btnEditar"
+                                      data-id="${row.id}"
+                                        data-toggle="modal"
+                                        data-target="#largeModal">
+                                        <i class="zmdi zmdi-edit"></i>
+                                        </button>
+                                        <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar"
+                                        data-id="${row.id}">
+                                  <i class="zmdi zmdi-delete"></i>
+                              </button>`
+                        } else {
+                            return ``
                         }
                     }
                 }
@@ -375,31 +343,25 @@ const inicializarDataTable = () => {
 };
 
 const attachDataTableEvents = () => {
-    const tabla = "#usuarios";
+    const tabla = "#torneos";
     const tbody = $(tabla + ' tbody');
 
-    // Limpiar eventos previos para evitar duplicados
     tbody.off('click', '.btnEditar');
     tbody.off('click', '.btnEliminar');
 
-    // Evento para editar
     tbody.on('click', '.btnEditar', function () {
-        const userId = $(this).data('id');
-        const user = users.value.find(u => u.id === userId);
-        if (user) editUser(user);
+        const torneoId = $(this).data('id');
+        const torneo = torneos.value.find(t => t.id === torneoId);
+        if (torneo) editTorneo(torneo);
     });
 
-    // Evento para eliminar
     tbody.on('click', '.btnEliminar', function () {
-        const userId = $(this).data('id');
-        deleteUser(userId);
+        const torneoId = $(this).data('id');
+        deleteTorneo(torneoId);
     });
 }
 
-// Ciclo de vida
 onMounted(() => {
-    loadRoles();
-    loadEquipos();
-    loadUsers();
+    Promise.all([loadTorneos(), loadCategorias(), loadTemporadas(), loadEquipos()]);
 });
 </script>

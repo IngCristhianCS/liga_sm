@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Temporada extends Model
 {
     use HasFactory;
+    
+    protected $table = 'Temporada'; 
 
     protected $fillable = [
         'nombre', 'fecha_inicio', 'fecha_fin', 'estado'

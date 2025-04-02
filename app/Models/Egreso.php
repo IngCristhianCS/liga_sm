@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Egreso extends Model
 {
     use HasFactory;
+    protected $table = 'egreso';
 
     protected $fillable = [
         'fecha', 'monto', 'tipo', 'descripcion', 'partido_id', 'torneo_id'

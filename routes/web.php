@@ -16,6 +16,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/calendario', function () {return view('dashboard');})->name('calendario');    
     Route::get('/usuarios', function () {return view('dashboard');})->name('usuarios');       
     Route::get('/ingresos', function () {return view('dashboard');})->name('ingresos');
+    Route::get('/egresos', function () {return view('dashboard');})->name('egresos');             
+    Route::get('/torneos', function () {return view('dashboard');})->name('torneos');
+    Route::get('/temporadas', function () {return view('dashboard');})->name('temporadas');
+    Route::get('/categorias', function () {return view('dashboard');})->name('categorias');
 });
 
 require __DIR__.'/auth.php';

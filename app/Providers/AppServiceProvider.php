@@ -10,6 +10,14 @@ use App\Models\Jugador;
 use App\Policies\JugadorPolicy;
 use App\Models\Ingreso;
 use App\Policies\IngresoPolicy;
+use App\Models\Egreso;
+use App\Policies\EgresoPolicy;
+use App\Models\Torneo;
+use App\Policies\TorneoPolicy;
+use App\Models\Temporada;
+use App\Policies\TemporadaPolicy;
+use App\Models\Categoria;
+use App\Policies\CategoriaPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -26,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
         Equipo::class => EquipoPolicy::class,
         Jugador::class => JugadorPolicy::class,
         Ingreso::class => IngresoPolicy::class,
+        Egreso::class => EgresoPolicy::class,
+        Torneo::class => TorneoPolicy::class,
+        Temporada::class => TemporadaPolicy::class,
+        Categoria::class => CategoriaPolicy::class,
         // Agregar otras políticas aquí
     ];
 

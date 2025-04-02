@@ -2,64 +2,68 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Temporada;
+use App\Services\TemporadaService;
 use Illuminate\Http\Request;
+use App\Models\Temporada;
+use Illuminate\Routing\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TemporadaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use AuthorizesRequests;
+
+    protected $temporadaService;
+
+    public function __construct(TemporadaService $temporadaService)
+    {
+        $this->temporadaService = $temporadaService;
+        $this->middleware('auth:sanctum');
+    }
+
     public function index()
     {
-        //
+        $this->authorize('viewAny', Temporada::class);
+        $temporadas = $this->temporadaService->getAll();
+        return response()->json(['success' => true, 'data' => $temporadas]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $this->authorize('create', Temporada::class);
+        $result = $this->temporadaService->create($request->all());
+
+        if (isset($result['errors'])) {
+            return response()->json(['success' => false, 'errors' => $result['errors']], 422);
+        }
+
+        return response()->json(['success' => true, 'data' => $result, 'message' => 'Temporada creada exitosamente'], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Temporada $temporada)
+    public function show($id)
     {
-        //
+        $temporada = $this->temporadaService->findById($id);
+        $this->authorize('view', $temporada);
+        return response()->json(['success' => true, 'data' => $temporada]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Temporada $temporada)
+    public function update(Request $request, $id)
     {
-        //
+        $temporada = $this->temporadaService->findById($id);
+        $this->authorize('update', $temporada);
+        $result = $this->temporadaService->update($id, $request->all());
+
+        if (isset($result['errors'])) {
+            return response()->json(['success' => false, 'errors' => $result['errors']], 422);
+        }
+
+        return response()->json(['success' => true, 'data' => $result, 'message' => 'Temporada actualizada exitosamente'], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Temporada $temporada)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Temporada $temporada)
-    {
-        //
+        $temporada = $this->temporadaService->findById($id);
+        $this->authorize('delete', $temporada);
+        $this->temporadaService->delete($id);
+        return response()->json(['success' => true, 'message' => 'Temporada eliminada exitosamente'], 200);
     }
 }

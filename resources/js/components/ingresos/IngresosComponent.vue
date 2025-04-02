@@ -72,7 +72,7 @@
                 <div class="body">
                   <ul class="nav nav-tabs padding-0">
                     <li class="nav-item">
-                      <a class="nav-lin btn btn-primary btn-round" href="#largeModal" data-toggle="modal" data-target="#largeModal">
+                      <a class="btn btn-primary btn-round" href="#largeModal" data-toggle="modal" data-target="#largeModal">
                         {{ mode === 'create' ? 'Nuevo' : 'Editar' }} Ingreso
                       </a>
                     </li>

@@ -14,9 +14,9 @@ class ClasificacionController extends Controller
         $this->service = $service;
     }
 
-    public function index(): JsonResponse
+    public function index($torneoId): JsonResponse
     {
-        $tablaPosiciones = $this->service->obtenerClasificacion();
+        $tablaPosiciones = $this->service->obtenerClasificacion($torneoId);
         return response()->json($tablaPosiciones);
     }
 }

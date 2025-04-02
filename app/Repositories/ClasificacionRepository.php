@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 class ClasificacionRepository
 {
-    public function obtenerClasificacion(): Collection
+    public function obtenerClasificacion($torneoId): Collection
     {
         return DB::table('equipo AS e')
         ->leftJoin('partido AS p', function ($join) {
@@ -15,7 +15,7 @@ class ClasificacionRepository
                 ->orOn('e.id', '=', 'p.equipo_visitante_id');
         })
         ->join('torneo AS t', 'p.torneo_id', '=', 't.id')
-        ->where('t.nombre', 'Varonil libre')
+        ->where('t.id', $torneoId)
         ->where(function ($query) {
             $query->whereRaw('p.goles_equipo_local != p.goles_equipo_visitante')
                   ->orWhereNull('p.goles_equipo_local')

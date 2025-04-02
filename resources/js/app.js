@@ -20,12 +20,31 @@ const router = createRouter({
       path: '/usuarios',
       name: 'Usuarios',
       component: () => import(/* webpackChunkName: "usuarios" */ './components/usuarios/UsuariosComponent.vue')
-    },
-        
+    },        
     {
       path: '/ingresos',
       name: 'Ingresos',
       component: () => import(/* webpackChunkName: "ingresos" */ './components/ingresos/IngresosComponent.vue')
+    },
+    {
+      path: '/egresos',
+      name: 'egresos',
+      component: () => import(/* webpackChunkName: "egresos" */ './components/egresos/EgresosComponent.vue')
+    },
+    {
+      path: '/torneos',
+      name: 'torneos',
+      component: () => import(/* webpackChunkName: "torneos" */ './components/torneos/TorneosComponent.vue')
+    },
+    {
+      path: '/temporadas',
+      name: 'temporadas',
+      component: () => import(/* webpackChunkName: "temporadas" */ './components/temporadas/TemporadasComponent.vue')
+    },    
+    {
+      path: '/categorias',
+      name: 'categorias',
+      component: () => import(/* webpackChunkName: "categorias" */ './components/categorias/CategoriasComponent.vue')
     },
     {
       path: '/calendario',

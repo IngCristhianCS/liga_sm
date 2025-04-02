@@ -78,6 +78,14 @@
                                             active-class="open active">Usuarios</router-link></li>
                                     <li><router-link to="/ingresos" class="nav-link" @click="closeMobileMenu"
                                                 active-class="open active">Ingresos</router-link></li>
+                                    <li><router-link to="/egresos" class="nav-link" @click="closeMobileMenu"
+                                                active-class="open active">Egresos</router-link></li>
+                                    <li><router-link to="/torneos" class="nav-link" @click="closeMobileMenu"
+                                                    active-class="open active">Torneos</router-link></li>
+                                    <li><router-link to="/temporadas" class="nav-link" @click="closeMobileMenu"
+                                                        active-class="open active">Temporadas</router-link></li>
+                                    <li><router-link to="/categorias" class="nav-link" @click="closeMobileMenu"
+                                                            active-class="open active">Categorías</router-link></li>
                                 </ul>
                             </li>
 

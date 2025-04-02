@@ -14,8 +14,8 @@ class ClasificacionService
         $this->repository = $repository;
     }
 
-    public function obtenerClasificacion(): Collection
+    public function obtenerClasificacion($torneoId): Collection
     {
-        return $this->repository->obtenerClasificacion();
+        return $this->repository->obtenerClasificacion($torneoId);
     }
 }
