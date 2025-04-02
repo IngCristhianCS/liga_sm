@@ -9,7 +9,7 @@ class Temporada extends Model
 {
     use HasFactory;
     
-    protected $table = 'Temporada'; 
+    protected $table = 'temporada'; 
 
     protected $fillable = [
         'nombre', 'fecha_inicio', 'fecha_fin', 'estado'
