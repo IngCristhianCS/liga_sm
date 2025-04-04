@@ -16,8 +16,10 @@ class JornadaRepository
             ->where('p.jornada_id', $jornadaId)
             ->select(
                 'el.nombre AS equipo_local',
+                'el.imagen AS imagen_local',
                 'p.goles_equipo_local',
                 'ev.nombre AS equipo_visitante',
+                'ev.imagen AS imagen_visitante',
                 'p.goles_equipo_visitante'
             )
             ->orderBy('p.fecha')
