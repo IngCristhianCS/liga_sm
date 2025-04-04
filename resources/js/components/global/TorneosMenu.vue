@@ -1,15 +1,15 @@
 <template>
-  <div v-if="cargando">
+  <div v-if="store.loading">
     <p>Cargando torneos...</p>
   </div>
   
-  <div v-else-if="error">
-    <p>Error al cargar torneos: {{ error }}</p>
+  <div v-else-if="store.error">
+    <p>Error al cargar torneos: {{ store.error }}</p>
   </div>
   
-  <div v-else-if="torneos && torneos.length > 0">
+  <div v-else-if="store.torneos.length > 0">
     <ul class="nav nav-tabs padding-0">
-      <li class="nav-item inlineblock" v-for="torneo in torneos" :key="torneo.id">
+      <li class="nav-item inlineblock" v-for="torneo in store.torneos" :key="torneo.id">
         <a class="nav-link" href="#" 
            @click.prevent="seleccionarTorneo(torneo.id)"
            :class="{ 'active': torneoSeleccionado === torneo.id }">
@@ -25,33 +25,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import { useTorneoStore } from '@/stores/torneos';
 
 const emit = defineEmits(['torneoSeleccionado']);
-const torneos = ref(null);
-const error = ref(null);
-const cargando = ref(true);
+const store = useTorneoStore();
 const torneoSeleccionado = ref(null);
 const hasEmitted = ref(false);
 
-const obtenerTorneos = async () => {
-  try {
-    const response = await axios.get('/api/torneos');
-    torneos.value = response.data.data;
-    
-    if (torneos.value.length > 0 && !hasEmitted.value) {
+onMounted(async () => {  
+  if (store.torneos.length > 0 && !hasEmitted.value) {
+    hasEmitted.value = true;
+    torneoSeleccionado.value = store.torneos[0].id;
+    emit('torneoSeleccionado', store.torneos[0].id);
+  }else{
+    await store.fetchTorneos();
+    if (store.torneos.length > 0 && !hasEmitted.value) {
       hasEmitted.value = true;
-      torneoSeleccionado.value = torneos.value[0].id;
-      emit('torneoSeleccionado', torneos.value[0].id);
+      torneoSeleccionado.value = store.torneos[0].id;
+      emit('torneoSeleccionado', store.torneos[0].id);
     }
-    
-  } catch (err) {
-    error.value = err.message || 'Error al obtener torneos';
-  } finally {
-    cargando.value = false;
   }
-};
+});
 
 const seleccionarTorneo = (id) => {
   if (torneoSeleccionado.value !== id) {
@@ -59,6 +54,4 @@ const seleccionarTorneo = (id) => {
     emit('torneoSeleccionado', id);
   }
 };
-
-obtenerTorneos();
 </script>

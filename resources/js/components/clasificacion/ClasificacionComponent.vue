@@ -1,14 +1,14 @@
 <template>
   <section class="content">
-    <div v-show="store.loading">
+    <div v-show="useClasificacionStore.loading">
       <AppLoader />
     </div>
     
-    <div v-show="store.error" class="text-red-500">
-      Error: {{ store.error }}
+    <div v-show="useClasificacionStore.error" class="text-red-500">
+      Error: {{ useClasificacionStore.error }}
     </div>
     
-    <div v-show="!store.loading && !store.error" class="container">
+    <div v-show="!useClasificacionStore.loading && !useClasificacionStore.error" class="container">
       <div class="block-header">
         <div class="row clearfix">
           <div class="col-lg-5 col-md-5 col-sm-12"></div>
@@ -55,7 +55,7 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr v-for="(equipo, index) in store.clasificacion" :key="equipo.equipo" class="border-b">
+                            <tr v-for="(equipo, index) in clasificacionStore.clasificacion" :key="equipo.equipo" class="border-b">
                               <td>{{ index + 1 }}</td>
                               <td>
                                 <img v-if="equipo.imagen" :src="`data:image/png;base64,${equipo.imagen}`" 
@@ -88,18 +88,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useClasificacionStore } from '@/stores/clasificacion';
+import { useTorneoStore } from '@/stores/torneos';
 import TorneosMenu from '../global/TorneosMenu.vue';
 
-const store = useClasificacionStore();
+const clasificacionStore = useClasificacionStore();
+const torneoStore = useTorneoStore();
 const fetching = ref(false);
 
 const actualizarClasificacion = async (idTorneo) => {
   if (!fetching.value) {
     fetching.value = true;
     try {
-      await store.fetchClasificacion(idTorneo);
+      await clasificacionStore.fetchClasificacion(idTorneo);
     } catch (error) {
       console.error('Error actualizando clasificación:', error);
     } finally {
@@ -107,4 +109,15 @@ const actualizarClasificacion = async (idTorneo) => {
     }
   }
 };
+
+onMounted(async () => {
+  if (torneoStore.torneos.length > 0) {
+    await actualizarClasificacion(torneoStore.torneos[0].id);
+  }else{
+    await torneoStore.fetchTorneos();
+    if (torneoStore.torneos.length > 0) {
+      await actualizarClasificacion(torneoStore.torneos[0].id);
+    }
+  }
+});
 </script>
