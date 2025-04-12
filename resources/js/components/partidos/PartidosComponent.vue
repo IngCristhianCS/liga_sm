@@ -71,7 +71,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
-import Notification from '@/utils/Notification';
+import Notification from '@/utils/notification';
 import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
 import PartidoForm from './PartidoForm.vue';
 import TorneosMenu from '../global/TorneosMenu.vue';
