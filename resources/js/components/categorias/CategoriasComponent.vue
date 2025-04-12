@@ -52,7 +52,7 @@
   import { ref, reactive, onMounted } from 'vue';
   import axios from 'axios';
   import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
-  import Notification from '@/utils/Notification';
+  import Notification from '@/utils/notification';
   import { useAuthStore } from '../../stores/auth';
   import CategoriaForm from './CategoriaForm.vue';
   
