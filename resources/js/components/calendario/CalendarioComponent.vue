@@ -74,20 +74,20 @@ const inicializarDataTable = () => {
         {
           data: null,
           render: (data, type, row) => {
-            if (row.imagen_local == null) {
+            if (!row.imagen_local) {
               return `<img src="/assets/images/xs/avatar1.jpg" width="30" height="30" class="rounded-circle avatar" alt="Avatar"> ${row.equipo_local}`;
             }
-            return `<img src="data:image/png;base64,${row.imagen_local}" width="30" height="30" class="rounded-circle avatar" alt="Avatar"> ${row.equipo_local}`;
+            return `<img src="/storage/${row.imagen_local}" width="30" height="30" class="rounded-circle avatar" alt="Avatar"> ${row.equipo_local}`;
           }
         },
         { data: 'goles_equipo_local' },
         {
           data: null,
           render: (data, type, row) => {
-            if (row.imagen_visitante == null) {
+            if (!row.imagen_visitante) {
               return `<img src="/assets/images/xs/avatar1.jpg" width="30" height="30" class="rounded-circle avatar" alt="Avatar"> ${row.equipo_visitante}`;
             }
-            return `<img src="data:image/png;base64,${row.imagen_visitante}" width="30" height="30" class="rounded-circle avatar" alt="Avatar"> ${row.equipo_visitante}`;
+            return `<img src="/storage/${row.imagen_visitante}" width="30" height="30" class="rounded-circle avatar" alt="Avatar"> ${row.equipo_visitante}`;
           }
         },
         { data: 'goles_equipo_visitante' },

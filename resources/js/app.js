@@ -43,12 +43,12 @@ const router = createRouter({
     },    
     {
       path: '/categorias',
-      name: 'categorias',
+      name: 'Categorias',
       component: () => import(/* webpackChunkName: "categorias" */ './components/categorias/CategoriasComponent.vue')
     },
     {
       path: '/equipos',
-      name: 'equipos',
+      name: 'Equipos',
       component: () => import(/* webpackChunkName: "equipos" */ './components/equipos/EquiposComponent.vue')
     },
     {
@@ -77,12 +77,12 @@ const router = createRouter({
     },
     {
       path: '/partidos',
-      name: 'partidos',
+      name: 'Partidos',
       component: () => import(/* webpackChunkName: "partidos" */ './components/partidos/PartidosComponent.vue')
     },
     {
       path: '/jornadas',
-      name: 'jornadas',
+      name: 'Jornadas',
       component: () => import(/* webpackChunkName: "jornadas" */ './components/jornadas/JornadasComponent.vue')
     },
   ]

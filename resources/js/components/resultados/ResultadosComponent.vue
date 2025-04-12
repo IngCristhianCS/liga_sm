@@ -36,15 +36,21 @@
                     <tbody>
                       <tr v-for="resultado in jornada.resultados"
                         :key="resultado.equipo_local + resultado.equipo_visitante">
-                        <td><img v-if="resultado.imagen_local" :src="`data:image/png;base64,${resultado.imagen_local}`" 
-                                     alt="Escudo del equipo" width="30" height="30" class="rounded-circle" />
-                                <img v-else src="/assets/images/xs/avatar1.jpg" 
-                                     alt="Escudo predeterminado" width="30" height="30" class="rounded-circle bg-light" /> {{ resultado.equipo_local }}</td>
+                        <td>
+                          <img v-if="resultado.imagen_local" :src="`/storage/${resultado.imagen_local}`" 
+                               alt="Escudo del equipo" width="30" height="30" class="rounded-circle" />
+                          <img v-else src="/assets/images/xs/avatar1.jpg" 
+                               alt="Escudo predeterminado" width="30" height="30" class="rounded-circle bg-light" /> 
+                          {{ resultado.equipo_local }}
+                        </td>
                         <td>{{ resultado.goles_equipo_local }}</td>
-                        <td><img v-if="resultado.imagen_visitante" :src="`data:image/png;base64,${resultado.imagen_visitante}`" 
-                                     alt="Escudo del equipo" width="30" height="30" class="rounded-circle" />
-                                <img v-else src="/assets/images/xs/avatar1.jpg" 
-                                     alt="Escudo predeterminado" width="30" height="30" class="rounded-circle bg-light" />{{ resultado.equipo_visitante }}</td>
+                        <td>
+                          <img v-if="resultado.imagen_visitante" :src="`/storage/${resultado.imagen_visitante}`" 
+                               alt="Escudo del equipo" width="30" height="30" class="rounded-circle" />
+                          <img v-else src="/assets/images/xs/avatar1.jpg" 
+                               alt="Escudo predeterminado" width="30" height="30" class="rounded-circle bg-light" />
+                          {{ resultado.equipo_visitante }}
+                        </td>
                         <td>{{ resultado.goles_equipo_visitante }}</td>
                       </tr>
                     </tbody>

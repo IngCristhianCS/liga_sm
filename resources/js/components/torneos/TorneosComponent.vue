@@ -1,69 +1,57 @@
 <template>
-    <section class="content contact">
-        <div class="container-fluid">
-            <div class="block-header">
-                <div class="row clearfix">
-                    <div class="col-lg-5 col-md-5 col-sm-12">
-                        <h2>Gestión de Torneos</h2>
-                    </div>
-                    <div class="col-lg-7 col-md-7 col-sm-12">
-                        <ul class="breadcrumb float-md-right padding-0">
-                            <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i> Inicio</a></li>
-                            <li class="breadcrumb-item active">Administración de Torneos</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="row clearfix">
-                <div class="col-lg-12">
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="List">
-                            <div class="card">
-                                <div class="body">
-                                    <ul class="nav nav-tabs padding-0">
-                                        <li class="nav-item" v-if="authStore.isAdmin">
-                                            <a class="btn btn-primary btn-round" href="#largeModal" data-toggle="modal"
-                                                data-target="#largeModal">
-                                                {{ mode === 'create' ? 'Nuevo' : 'Editar' }} Torneo
-                                            </a>
-                                        </li>
-                                    </ul>
-                                    <div class="table-responsive">
-                                        <table id="torneos"
-                                            class="table table-bordered table-striped table-hover js-basic-example dataTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Nombre</th>
-                                                    <th>Categoría</th>
-                                                    <th>Temporada</th>
-                                                    <th>Fecha Inicio</th>
-                                                    <th>Fecha Fin</th>
-                                                    <th>Estado</th>
-                                                    <th>Campeón</th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <section class="content contact">
+    <div class="container-fluid">
+      <div class="block-header">
+        <div class="row clearfix">
+          <div class="col-lg-5 col-md-5 col-sm-12">
+            <h2>Administración de Torneos</h2>
+          </div>
+          <div class="col-lg-7 col-md-7 col-sm-12">
+            <ul class="breadcrumb float-md-right padding-0">
+              <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i> Inicio</a></li>
+              <li class="breadcrumb-item active">Administración</li>
+              <li class="breadcrumb-item">Torneos</li>
+            </ul>
+          </div>
         </div>
-    </section>    
-    <TorneoForm 
-      :mode="mode"
-      :current-torneo="currentTorneo"
-      :categorias="categorias"
-      :temporadas="temporadas"
-      :equipos="equipos"
-      @submit="handleSubmit"
-      @cancel="resetForm"
-    />
+      </div>
+      <div class="row clearfix">
+        <div class="col-lg-12">
+          <div class="card">
+
+            <div class="header">
+              <ul class="header-dropdown">
+                <li class="nav-item" v-if="authStore.isAdmin"><a href="#largeModal" data-toggle="modal"
+                    data-target="#largeModal"><i class="zmdi zmdi-plus-circle zmdi-hc-3x"></i></a></li>
+              </ul>
+            </div>
+            <div class="body">
+              <div class="table-responsive">
+                <table id="torneos" class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Categoría</th>
+                      <th>Temporada</th>
+                      <th>Fecha Inicio</th>
+                      <th>Fecha Fin</th>
+                      <th>Estado</th>
+                      <th>Campeón</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <TorneoForm :mode="mode" :current-torneo="currentTorneo" :categorias="categorias" :temporadas="temporadas"
+    :equipos="equipos" @submit="handleSubmit" @cancel="resetForm" />
 </template>
 
 <script setup>
@@ -100,22 +88,22 @@ const columns = [
   { data: 'nombre', title: 'Nombre' },
   { data: 'categoria.nombre', title: 'Categoría' },
   { data: 'temporada.nombre', title: 'Temporada' },
-  { 
-    data: 'fecha_inicio', 
+  {
+    data: 'fecha_inicio',
     title: 'Fecha Inicio',
     render: (data) => new Date(data).toLocaleDateString()
   },
-  { 
-    data: 'fecha_fin', 
+  {
+    data: 'fecha_fin',
     title: 'Fecha Fin',
     render: (data) => new Date(data).toLocaleDateString()
   },
-  { 
-    data: 'estado', 
+  {
+    data: 'estado',
     title: 'Estado',
     render: (data) => data.charAt(0).toUpperCase() + data.slice(1)
   },
-  { 
+  {
     data: null,
     title: 'Campeón',
     render: (data, type, row) => row.campeon ? row.campeon.nombre : 'Ninguno'
@@ -214,16 +202,16 @@ const handleSubmit = async (formData) => {
   try {
     const method = mode.value === 'create' ? 'post' : 'put';
     const url = method === 'post' ? '/api/torneos' : `/api/torneos/${formData.id}`;
-    
+
     await axios[method](url, formData);
     await loadInitialData();
-    
+
     Notification.success(
       `Torneo ${mode.value === 'create' ? 'creado' : 'actualizado'} correctamente`
     );
     $('#largeModal').modal('hide');
     resetForm();
-    
+
   } catch (error) {
     Notification.error('Error al guardar torneo');
   }

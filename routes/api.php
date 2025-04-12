@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\UbicacionController;
+use App\Http\Controllers\UbicacionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClasificacionController;

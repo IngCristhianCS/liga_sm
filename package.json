@@ -14,8 +14,10 @@
         "vue": "^3.5.13"
     },
     "dependencies": {
+        "cropperjs": "^2.0.0",
         "pinia": "^3.0.1",
         "sweetalert2": "^11.17.2",
+        "vue-cropperjs": "^5.0.0",
         "vue-router": "^4.5.0"
     },
     "optionalDependencies": {

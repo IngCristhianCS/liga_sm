@@ -4,12 +4,13 @@
             <div class="block-header">
                 <div class="row clearfix">
                     <div class="col-lg-5 col-md-5 col-sm-12">
-                        <h2>Gestión de Usuarios</h2>
+                        <h2>Administración de Usuarios</h2>
                     </div>
                     <div class="col-lg-7 col-md-7 col-sm-12">
                         <ul class="breadcrumb float-md-right padding-0">
-                            <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i> Inicio</a></li>
-                            <li class="breadcrumb-item active">Administración de Usuarios</li>
+                            <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0);">Administración</a></li>
+                            <li class="breadcrumb-item active">Usuarios</li>
                         </ul>
                     </div>
                 </div>
@@ -20,15 +21,14 @@
                         <!-- Listado de Usuarios -->
                         <div class="tab-pane active" id="List">
                             <div class="card">
-                                <div class="body">
-                                    <ul class="nav nav-tabs padding-0">
-                                        <li class="nav-item">
-                                            <a class="btn btn-primary btn-round" href="#largeModal" data-toggle="modal"
-                                                data-target="#largeModal">
-                                                {{ mode === 'create' ? 'Nuevo' : 'Editar' }}
-                                            </a>
-                                        </li>
+                                <div class="header">
+                                    <ul class="header-dropdown">
+                                        <li class="nav-item" v-if="authStore.isAdmin"><a href="#largeModal"
+                                                data-toggle="modal" data-target="#largeModal"><i
+                                                    class="zmdi zmdi-plus-circle zmdi-hc-3x"></i></a></li>
                                     </ul>
+                                </div>
+                                <div class="body">
                                     <div class="table-responsive">
                                         <table id="usuarios"
                                             class="table table-bordered table-striped table-hover js-basic-example dataTable">
@@ -54,7 +54,7 @@
             </div>
         </div>
     </section>
-    <div class="modal fade" id="largeModal" tabindex="-1" role="dialog">
+    <div class="modal fade" id="largeModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">

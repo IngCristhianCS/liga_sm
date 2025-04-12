@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class EquipoService
 {
@@ -31,7 +32,7 @@ class EquipoService
     {
         $validator = Validator::make($data, [
             'nombre' => 'required|string|max:100',
-            'imagen' => 'nullable|string',
+            'imagen' => 'nullable',
             'categoria_id' => 'required|exists:categoria,id',
             'entrenador_id' => 'nullable|exists:users,id',
         ]);
@@ -41,22 +42,41 @@ class EquipoService
         }
 
         if (isset($data['imagen'])) {
-            $imagenBase64 = $data['imagen'];
-            $imagenData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imagenBase64));
-
-            if ($imagenData !== false) {
-                $nombreArchivo = Str::random(40) . '.png';
-                Storage::disk('public')->put('equipos/' . $nombreArchivo, $imagenData);
-                $data['imagen'] = 'equipos/' . $nombreArchivo;
+            // Check if it's a base64 string
+            if (is_string($data['imagen']) && strpos($data['imagen'], 'data:image/') === 0) {
+                // It's a base64 image
+                $imagenBase64 = $data['imagen'];
+                $imagenData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imagenBase64));
+                
+                if ($imagenData !== false) {
+                    $nombreArchivo = Str::random(40) . '.png';
+                    $path = 'equipos/' . $nombreArchivo;
+                    
+                    // Save the image and log the result
+                    $success = Storage::disk('public')->put($path, $imagenData);
+                    Log::info('Image saved: ' . ($success ? 'Yes' : 'No') . ' to path: ' . $path);
+                    
+                    if ($success) {
+                        $data['imagen'] = $path;
+                    } else {
+                        Log::error('Failed to save image to storage');
+                        unset($data['imagen']); // Remove imagen if we couldn't save it
+                    }
+                } else {
+                    Log::error('Failed to decode base64 image data');
+                    unset($data['imagen']);
+                }
+            } else if (is_file($data['imagen'])) {
+                // It's a file upload
+                $file = $data['imagen'];
+                $nombreArchivo = Str::random(40) . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('equipos', $nombreArchivo, 'public');
+                Log::info('File uploaded to: ' . $path);
+                $data['imagen'] = $path;
             }
         }
 
         return $this->equipoRepository->create($data);
-    }
-
-    public function getEquipoById(int $id)
-    {
-        return $this->equipoRepository->findById($id);
     }
 
     public function updateEquipo(int $id, array $data)
@@ -65,7 +85,7 @@ class EquipoService
 
         $validator = Validator::make($data, [
             'nombre' => 'required|string|max:100',
-            'imagen' => 'nullable|string',
+            'imagen' => 'nullable',
             'categoria_id' => 'required|exists:categoria,id',
             'entrenador_id' => 'nullable|exists:users,id',
         ]);
@@ -75,20 +95,56 @@ class EquipoService
         }
 
         if (isset($data['imagen'])) {
-            $imagenBase64 = $data['imagen'];
-            $imagenData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imagenBase64));
-
-            if ($imagenData !== false) {
+            // Check if it's a base64 string
+            if (is_string($data['imagen']) && strpos($data['imagen'], 'data:image/') === 0) {
+                // It's a base64 image
+                $imagenBase64 = $data['imagen'];
+                $imagenData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imagenBase64));
+                
+                if ($imagenData !== false) {
+                    // Delete old image if exists
+                    if ($equipo->imagen) {
+                        Storage::disk('public')->delete($equipo->imagen);
+                    }
+                    
+                    $nombreArchivo = Str::random(40) . '.png';
+                    $path = 'equipos/' . $nombreArchivo;
+                    
+                    // Save the image and log the result
+                    $success = Storage::disk('public')->put($path, $imagenData);
+                    Log::info('Image updated: ' . ($success ? 'Yes' : 'No') . ' to path: ' . $path);
+                    
+                    if ($success) {
+                        $data['imagen'] = $path;
+                    } else {
+                        Log::error('Failed to save updated image to storage');
+                        unset($data['imagen']); // Keep old image if we couldn't save the new one
+                    }
+                } else {
+                    Log::error('Failed to decode base64 image data for update');
+                    unset($data['imagen']);
+                }
+            } else if (is_file($data['imagen'])) {
+                // It's a file upload
+                // Delete old image if exists
                 if ($equipo->imagen) {
                     Storage::disk('public')->delete($equipo->imagen);
                 }
-                $nombreArchivo = Str::random(40) . '.png';
-                Storage::disk('public')->put('equipos/' . $nombreArchivo, $imagenData);
-                $data['imagen'] = 'equipos/' . $nombreArchivo;
+                
+                $file = $data['imagen'];
+                $nombreArchivo = Str::random(40) . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('equipos', $nombreArchivo, 'public');
+                Log::info('File updated to: ' . $path);
+                $data['imagen'] = $path;
             }
         }
 
         return $this->equipoRepository->update($equipo, $data);
+    }
+
+    public function getEquipoById(int $id)
+    {
+        return $this->equipoRepository->findById($id);
     }
 
     public function deleteEquipo(int $id)

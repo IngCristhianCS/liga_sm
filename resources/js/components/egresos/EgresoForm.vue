@@ -1,5 +1,5 @@
 <template>
-  <div class="modal fade" id="largeModal" tabindex="-1" role="dialog">
+  <div class="modal fade" id="largeModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -13,14 +13,8 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Fecha</label>
-                  <input 
-                    type="date" 
-                    id="fecha"
-                    class="form-control" 
-                    v-model="formData.fecha"
-                    @input="validateSingleField('fecha')"
-                    required
-                  >
+                  <input type="date" id="fecha" class="form-control" v-model="formData.fecha"
+                    @input="validateSingleField('fecha')" required>
                   <div class="invalid-feedback">
                     {{ apiErrors?.fecha ? apiErrors.fecha[0] : 'La fecha es requerida' }}
                   </div>
@@ -30,14 +24,8 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Monto</label>
-                  <input 
-                    type="number" 
-                    id="monto"
-                    class="form-control" 
-                    v-model="formData.monto"
-                    @input="validateSingleField('monto')"
-                    required
-                  >
+                  <input type="number" id="monto" class="form-control" v-model="formData.monto"
+                    @input="validateSingleField('monto')" required>
                   <div class="invalid-feedback">
                     {{ apiErrors?.monto ? apiErrors.monto[0] : 'El monto debe ser un número positivo' }}
                   </div>
@@ -47,13 +35,8 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Tipo</label>
-                  <select 
-                    id="tipo"
-                    class="form-control" 
-                    v-model="formData.tipo"
-                    @change="validateSingleField('tipo')"
-                    required
-                  >
+                  <select id="tipo" class="form-control" v-model="formData.tipo" @change="validateSingleField('tipo')"
+                    required>
                     <option value="">Seleccione un tipo</option>
                     <option value="arbitraje">Arbitraje</option>
                     <option value="mantenimiento">Mantenimiento</option>
@@ -68,13 +51,8 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Descripción</label>
-                  <input 
-                    type="text" 
-                    id="descripcion"
-                    class="form-control" 
-                    v-model="formData.descripcion"
-                    @input="validateSingleField('descripcion')"
-                  >
+                  <input type="text" id="descripcion" class="form-control" v-model="formData.descripcion"
+                    @input="validateSingleField('descripcion')">
                   <div class="invalid-feedback">
                     {{ apiErrors?.descripcion ? apiErrors.descripcion[0] : 'La descripción no es válida' }}
                   </div>
@@ -84,15 +62,11 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Partido ID</label>
-                  <input 
-                    type="number" 
-                    id="partido_id"
-                    class="form-control" 
-                    v-model="formData.partido_id"
-                    @input="validateSingleField('partido_id')"
-                  >
+                  <input type="number" id="partido_id" class="form-control" v-model="formData.partido_id"
+                    @input="validateSingleField('partido_id')">
                   <div class="invalid-feedback">
-                    {{ apiErrors?.partido_id ? apiErrors.partido_id[0] : 'El ID del partido debe ser un número válido' }}
+                    {{ apiErrors?.partido_id ? apiErrors.partido_id[0] : 'El ID del partido debe ser un número válido'
+                    }}
                   </div>
                 </div>
               </div>
@@ -100,13 +74,8 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Torneo ID</label>
-                  <input 
-                    type="number" 
-                    id="torneo_id"
-                    class="form-control" 
-                    v-model="formData.torneo_id"
-                    @input="validateSingleField('torneo_id')"
-                  >
+                  <input type="number" id="torneo_id" class="form-control" v-model="formData.torneo_id"
+                    @input="validateSingleField('torneo_id')">
                   <div class="invalid-feedback">
                     {{ apiErrors?.torneo_id ? apiErrors.torneo_id[0] : 'El ID del torneo debe ser un número válido' }}
                   </div>
@@ -118,8 +87,8 @@
             <button type="submit" class="btn btn-default btn-round waves-effect">
               {{ mode === 'create' ? 'Crear Egreso' : 'Actualizar Egreso' }}
             </button>
-            <button type="button" class="btn btn-danger btn-simple btn-round waves-effect"
-              data-dismiss="modal" @click="resetForm">Cancelar</button>
+            <button type="button" class="btn btn-danger btn-simple btn-round waves-effect" data-dismiss="modal"
+              @click="resetForm">Cancelar</button>
           </div>
         </form>
       </div>
@@ -145,32 +114,32 @@ const props = defineProps({
 const emit = defineEmits(['submit', 'cancel']);
 
 const validation = {
-  fecha: { 
-    valid: null, 
-    regex: RegexUtils.date 
+  fecha: {
+    valid: null,
+    regex: RegexUtils.date
   },
-  monto: { 
-    valid: null, 
-    regex: RegexUtils.numberPositivo 
+  monto: {
+    valid: null,
+    regex: RegexUtils.numberPositivo
   },
-  tipo: { 
-    valid: null, 
-    regex: /^(arbitraje|mantenimiento|organizacion)$/ 
+  tipo: {
+    valid: null,
+    regex: /^(arbitraje|mantenimiento|organizacion)$/
   },
-  descripcion: { 
-    valid: null, 
+  descripcion: {
+    valid: null,
     regex: RegexUtils.textExtendido,
-    optional: true 
+    optional: true
   },
-  partido_id: { 
-    valid: null, 
+  partido_id: {
+    valid: null,
     regex: RegexUtils.numberPositivo,
-    optional: true 
+    optional: true
   },
-  torneo_id: { 
-    valid: null, 
+  torneo_id: {
+    valid: null,
     regex: RegexUtils.numberPositivo,
-    optional: true 
+    optional: true
   }
 };
 

@@ -2,64 +2,100 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ubicacion;
+use App\Http\Controllers\Controller;
+use App\Services\UbicacionService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Exception;
 
 class UbicacionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $ubicacionService;
+
+    public function __construct(UbicacionService $ubicacionService)
     {
-        //
+        $this->ubicacionService = $ubicacionService;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function index(): JsonResponse
     {
-        //
+        try {
+            $ubicaciones = $this->ubicacionService->getAll();
+            return response()->json([
+                'status' => true,
+                'data' => $ubicaciones
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show($id): JsonResponse
     {
-        //
+        try {
+            $ubicacion = $this->ubicacionService->getById($id);
+            return response()->json([
+                'status' => true,
+                'data' => $ubicacion
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 404);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Ubicacion $ubicacion)
+    public function store(Request $request): JsonResponse
     {
-        //
+        try {
+            $ubicacion = $this->ubicacionService->create($request->all());
+            return response()->json([
+                'status' => true,
+                'message' => 'Ubicación creada exitosamente',
+                'data' => $ubicacion
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Ubicacion $ubicacion)
+    public function update(Request $request, $id): JsonResponse
     {
-        //
+        try {
+            $ubicacion = $this->ubicacionService->update($id, $request->all());
+            return response()->json([
+                'status' => true,
+                'message' => 'Ubicación actualizada exitosamente',
+                'data' => $ubicacion
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Ubicacion $ubicacion)
+    public function destroy($id): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Ubicacion $ubicacion)
-    {
-        //
+        try {
+            $this->ubicacionService->delete($id);
+            return response()->json([
+                'status' => true,
+                'message' => 'Ubicación eliminada exitosamente'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 404);
+        }
     }
 }

@@ -54,25 +54,25 @@
                               <th>PTS</th>
                             </tr>
                           </thead>
-                          <tbody>
-                            <tr v-for="(equipo, index) in clasificacionStore.clasificacion" :key="equipo.equipo" class="border-b">
-                              <td>{{ index + 1 }}</td>
-                              <td>
-                                <img v-if="equipo.imagen" :src="`data:image/png;base64,${equipo.imagen}`" 
-                                     alt="Escudo del equipo" width="30" height="30" class="rounded-circle" />
-                                <img v-else src="/assets/images/xs/avatar1.jpg" 
-                                     alt="Escudo predeterminado" width="30" height="30" class="rounded-circle bg-light" />
-                                {{ equipo.equipo }}
-                              </td>
-                              <td>{{ equipo.PJ }}</td>
-                              <td>{{ equipo.PG }}</td>
-                              <td>{{ equipo.PP }}</td>
-                              <td>{{ equipo.GF }}</td>
-                              <td>{{ equipo.GC }}</td>
-                              <td>{{ equipo.DIF }}</td>
-                              <td>{{ equipo.PTS }}</td>
-                            </tr>
-                          </tbody>
+                            <tbody>
+                              <tr v-for="(equipo, index) in clasificacionStore.clasificacion" :key="equipo.equipo" class="border-b">
+                                <td>{{ index + 1 }}</td>
+                                <td>
+                                  <img v-if="equipo.imagen" :src="`/storage/${equipo.imagen}`" 
+                                       alt="Escudo del equipo" width="30" height="30" class="rounded-circle" />
+                                  <img v-else src="/assets/images/xs/avatar1.jpg" 
+                                       alt="Escudo predeterminado" width="30" height="30" class="rounded-circle bg-light" />
+                                  {{ equipo.equipo }}
+                                </td>
+                                <td>{{ equipo.PJ }}</td>
+                                <td>{{ equipo.PG }}</td>
+                                <td>{{ equipo.PP }}</td>
+                                <td>{{ equipo.GF }}</td>
+                                <td>{{ equipo.GC }}</td>
+                                <td>{{ equipo.DIF }}</td>
+                                <td>{{ equipo.PTS }}</td>
+                              </tr>
+                            </tbody>
                         </table>
                       </div>
                     </div>
