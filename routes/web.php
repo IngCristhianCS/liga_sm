@@ -19,7 +19,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/egresos', function () {return view('dashboard');})->name('egresos');             
     Route::get('/torneos', function () {return view('dashboard');})->name('torneos');
     Route::get('/temporadas', function () {return view('dashboard');})->name('temporadas');
-    Route::get('/categorias', function () {return view('dashboard');})->name('categorias');
+    Route::get('/categorias', function () {return view('dashboard');})->name('categorias');    
+    Route::get('/equipos', function () {return view('dashboard');})->name('equipos');
+    Route::get('/partidos', function () {return view('dashboard');})->name('partidos');
+    Route::get('/jornadas', function () {return view('dashboard');})->name('jornadas');
 });
 
 require __DIR__.'/auth.php';

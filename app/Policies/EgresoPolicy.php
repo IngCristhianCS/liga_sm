@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\Egreso;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Role;
+use App\Models\Egreso;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class EgresoPolicy
@@ -13,26 +13,26 @@ class EgresoPolicy
 
     public function viewAny(User $user): bool
     {
-        return true; // Todos los usuarios autenticados pueden ver la lista de ingresos
+        return true; // Todos los usuarios autenticados pueden ver la lista de Egresos
     }
 
-    public function view(User $user, Ingreso $ingreso): bool
+    public function view(User $user, Egreso $Egreso): bool
     {
-        return true; // Todos los usuarios autenticados pueden ver un ingreso específico
+        return true; // Todos los usuarios autenticados pueden ver un Egreso específico
     }
 
     public function create(User $user): bool
     {
-        return $user->role_id === Role::ADMIN; // Solo los administradores pueden crear ingresos
+        return $user->role_id === Role::ADMIN; // Solo los administradores pueden crear Egresos
     }
 
-    public function update(User $user, Ingreso $ingreso): bool
+    public function update(User $user, Egreso $Egreso): bool
     {
-        return $user->role_id === Role::ADMIN; // Solo los administradores pueden actualizar ingresos
+        return $user->role_id === Role::ADMIN; // Solo los administradores pueden actualizar Egresos
     }
 
-    public function delete(User $user, Ingreso $ingreso): bool
+    public function delete(User $user, Egreso $Egreso): bool
     {
-        return $user->role_id === Role::ADMIN; // Solo los administradores pueden eliminar ingresos
+        return $user->role_id === Role::ADMIN; // Solo los administradores pueden eliminar Egresos
     }
 }

@@ -3,66 +3,75 @@
 namespace App\Http\Controllers;
 
 use App\Models\Partido;
+use App\Services\PartidoService;
 use Illuminate\Http\Request;
-use App\Services\JornadaService;
+use Illuminate\Routing\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PartidoController extends Controller
 {
+    protected $partidoService;
+    use AuthorizesRequests;
 
-    protected $jornadaService;
-
-    public function __construct(JornadaService $jornadaService)
+    public function __construct(PartidoService $partidoService)
     {
-        $this->jornadaService = $jornadaService;
-    }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+        $this->partidoService = $partidoService;
+        $this->middleware('auth:sanctum');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function index(Request $request)
+    {
+        $this->authorize('viewAny', Partido::class);
+        $torneoId = $request->query('torneo_id');
+        $partidos = $this->partidoService->getAll($torneoId);
+        return response()->json(['data' => $partidos]);
+    }
+
     public function store(Request $request)
     {
-        //
-    }
+        $this->authorize('create', Partido::class);
+        $result = $this->partidoService->create($request->all());
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Partido $partido)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Partido $partido)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Partido $partido)
-    {
-        //
-    }
-
-    public function obtenerPartidosPorEquipo(Request $request)
-    {
-        $partidos = $this->jornadaService->obtenerPartidosPorJornadaEquipoTorneo();
-
-        if (isset($partidos['error'])) {
-            return response()->json(['success' => false, 'error' => $partidos['error']], 422);
+        if (!$result['success']) {
+            return response()->json(['errors' => $result['errors']], 422);
         }
 
-        return response()->json(['success' => true, 'data' => $partidos], 200);
+        return response()->json([
+            'message' => 'Partido creado exitosamente',
+            'data' => $result['data']
+        ], 201);
+    }
+
+    public function show($id)
+    {
+        $partido = $this->partidoService->findById($id);
+        $this->authorize('view', $partido);
+        return response()->json(['data' => $partido]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $partido = $this->partidoService->findById($id);
+        $this->authorize('update', $partido);
+
+        $result = $this->partidoService->update($id, $request->all());
+
+        if (!$result['success']) {
+            return response()->json(['errors' => $result['errors']], 422);
+        }
+
+        return response()->json([
+            'message' => 'Partido actualizado exitosamente',
+            'data' => $result['data']
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $partido = $this->partidoService->findById($id);
+        $this->authorize('delete', $partido);
+        
+        $this->partidoService->delete($id);
+        return response()->json(['message' => 'Partido eliminado exitosamente']);
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Partido extends Model
 {
     use HasFactory;
+    protected $table = 'partido';
 
     protected $fillable = [
         'fecha', 'ubicacion_id', 'equipo_local_id', 'equipo_visitante_id',

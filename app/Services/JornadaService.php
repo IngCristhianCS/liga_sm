@@ -55,4 +55,51 @@ class JornadaService
 
         return $partidos;
     }
+    
+    public function getAll($torneoId = null)
+    {
+        return $this->jornadaRepository->getAll($torneoId);
+    }
+
+    public function findById($id)
+    {
+        return $this->jornadaRepository->findById($id);
+    }
+
+    public function create(array $data)
+    {
+        $validator = Validator::make($data, [
+            'numero' => 'required|integer|min:1',
+            'torneo_id' => 'required|exists:torneo,id',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'required|date|after:fecha_inicio'
+        ]);
+
+        if ($validator->fails()) {
+            return ['success' => false, 'errors' => $validator->errors()];
+        }
+
+        return ['success' => true, 'data' => $this->jornadaRepository->create($data)];
+    }
+
+    public function update($id, array $data)
+    {
+        $validator = Validator::make($data, [
+            'numero' => 'required|integer|min:1',
+            'torneo_id' => 'required|exists:torneo,id',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'required|date|after:fecha_inicio'
+        ]);
+
+        if ($validator->fails()) {
+            return ['success' => false, 'errors' => $validator->errors()];
+        }
+
+        return ['success' => true, 'data' => $this->jornadaRepository->update($id, $data)];
+    }
+
+    public function delete($id)
+    {
+        return $this->jornadaRepository->delete($id);
+    }
 }

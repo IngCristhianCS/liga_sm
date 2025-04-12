@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Equipo;
 use App\Services\EquipoService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;

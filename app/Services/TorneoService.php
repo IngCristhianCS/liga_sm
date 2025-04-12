@@ -52,8 +52,8 @@ class TorneoService
 
         $validator = Validator::make($data, [
             'nombre' => 'required|string',
-            'categoria_id' => 'required|exists:categorias,id',
-            'temporada_id' => 'required|exists:temporadas,id',
+            'categoria_id' => 'required|exists:categoria,id',
+            'temporada_id' => 'required|exists:temporada,id',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date',
             'estado' => 'required|string',

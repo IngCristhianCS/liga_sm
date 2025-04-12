@@ -1,6 +1,6 @@
 <template>
   <div v-if="store.loading">
-    <p>Cargando torneos...</p>
+    <AppLoader/>
   </div>
   
   <div v-else-if="store.error">

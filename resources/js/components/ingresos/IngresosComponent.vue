@@ -72,7 +72,8 @@
                 <div class="body">
                   <ul class="nav nav-tabs padding-0">
                     <li class="nav-item">
-                      <a class="btn btn-primary btn-round" href="#largeModal" data-toggle="modal" data-target="#largeModal">
+                      <a class="btn btn-primary btn-round" href="#largeModal" data-toggle="modal"
+                        data-target="#largeModal">
                         {{ mode === 'create' ? 'Nuevo' : 'Editar' }} Ingreso
                       </a>
                     </li>
@@ -85,6 +86,7 @@
                           <th>Concepto</th>
                           <th>Tipo</th>
                           <th>Monto</th>
+                          <th>Torneo</th>
                           <th>Equipo</th>
                           <th>Estatus</th>
                           <th>Acciones</th>
@@ -102,301 +104,239 @@
       </div>
     </div>
   </section>
-  <div class="modal fade" id="largeModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="title" id="largeModalLabel">
-            {{ mode === 'create' ? 'Nuevo Ingreso' : 'Editar Ingreso' }}
-          </h4>
-        </div>
-        <form @submit.prevent="handleSubmit">
-          <div class="modal-body">
-            <div class="row clearfix">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Descripción</label>
-                  <input type="text" class="form-control" v-model="currentIngreso.descripcion" required>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Tipo</label>
-                  <input type="text" class="form-control" v-model="currentIngreso.tipo" required>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Monto</label>
-                  <input type="number" class="form-control" v-model="currentIngreso.monto" required>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Fecha</label>
-                  <input type="date" class="form-control" v-model="currentIngreso.fecha" required>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Equipo ID</label>
-                  <input type="number" class="form-control" v-model="currentIngreso.equipo_id">
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Torneo ID</label>
-                  <input type="number" class="form-control" v-model="currentIngreso.torneo_id">
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Patrocinador ID</label>
-                  <input type="number" class="form-control" v-model="currentIngreso.patrocinador_id">
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Estatus</label>
-                  <select class="form-control" v-model="currentIngreso.estatus">
-                    <option value="ok">ok</option>
-                    <option value="pe">pe</option>
-                  </select>
-                </div>
-              </div>
-
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-default btn-round waves-effect">
-              {{ mode === 'create' ? 'Crear Ingreso' : 'Actualizar Ingreso' }}
-            </button>
-            <button type="button" class="btn btn-danger btn-simple btn-round waves-effect" data-dismiss="modal"
-              @click="resetForm">Cancelar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+  <IngresoForm :mode="mode" :current-ingreso="currentIngreso" @submit="handleSubmit" @cancel="resetForm" />
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue';
 import axios from 'axios';
-import Swal from 'sweetalert2';
+import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
+import Notification from '@/utils/Notification';
 import { useAuthStore } from '../../stores/auth';
+import { useTorneoStore } from '../../stores/torneos';
+import IngresoForm from './IngresoForm.vue';
 
-const ingresos = ref([]);
-const mode = ref('create');
+/** @typedef {Object} Ingreso
+ *  @property {number} id
+ *  @property {string} descripcion
+ *  @property {string} concepto
+ *  @property {number} monto
+ *  @property {string} fecha
+ *  @property {number|null} torneo_id
+ *  @property {number|null} equipo_id
+ *  @property {number|null} patrocinador_id
+ *  @property {'ok'|'pe'} estatus
+ *  @property {'arbitraje'|'patrocinio'} tipo
+ */
+
 const authStore = useAuthStore();
+const torneoStore = useTorneoStore();
 
+/** @type {import('vue').Ref<Ingreso[]>} */
+const ingresos = ref([]);
+
+/** @type {import('vue').Ref<Ingreso[]>} */
+const filteredIngresos = ref([]);
+
+/** @type {import('vue').Ref<'create'|'edit'>} */
+const mode = ref('create');
+
+/** @type {Ingreso} */
 const defaultIngreso = {
+  descripcion: '',
   concepto: '',
-  monto: null,
+  monto: 0,
   fecha: '',
+  torneo_id: null,
+  equipo_id: null,
+  patrocinador_id: null,
+  estatus: 'ok',
+  tipo: 'arbitraje',
 };
 
+/** @type {Ingreso} */
 const currentIngreso = reactive({ ...defaultIngreso });
 
-// Métodos
+/**
+ * Columnas configuradas para DataTable
+ * @type {import('datatables.net').ColumnSettings[]}
+ */
+const columns = [
+  {
+    data: 'descripcion',
+    title: 'Concepto',
+  },
+  {
+    data: 'tipo',
+    title: 'Tipo',
+  },
+  {
+    data: 'monto',
+    title: 'Monto',
+    render: (data) => `$${parseFloat(data).toFixed(2)}`,
+  },
+  {
+    data: 'torneo.nombre',
+    title: 'Torneo',
+  },
+  {
+    data: 'equipo.nombre',
+    title: 'Equipo',
+  },
+  {
+    data: 'estatus',
+    title: 'Estatus',
+    render: (data) => (data === 'ok'
+      ? '<i class="zmdi zmdi-check text-success"></i>'
+      : '<i class="zmdi zmdi-close text-danger"></i>'),
+  },
+  {
+    data: null,
+    title: 'Acciones',
+    render: (data, type, row) => {
+      if (!authStore.isAdmin) return '';
+      return `
+        <button class="btn btn-icon btn-neutral btn-icon-mini btnEditar" 
+                data-id="${row.id}"
+                data-toggle="modal"
+                data-target="#largeModal">
+          <i class="zmdi zmdi-edit"></i>
+        </button>
+        <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar" 
+                data-id="${row.id}">
+          <i class="zmdi zmdi-delete"></i>
+        </button>`;
+    },
+  },
+];
+
+/**
+ * Carga los ingresos desde la API y actualiza la tabla
+ * @returns {Promise<void>}
+ */
 const loadIngresos = async () => {
   try {
-    const response = await axios.get('/api/ingresos');
-    ingresos.value = response.data.data;
-    inicializarDataTable();
+    const { data } = await axios.get('/api/ingresos');
+    ingresos.value = data.data;
+
+    initializeDataTable('ingresos', ingresos.value, columns);
+    attachTableEvents('ingresos', editIngreso, deleteIngreso);
+
+    // Actualizar datos filtrados
+    const table = $('#ingresos').DataTable();
+    const updateFilteredData = () => {
+      const filteredData = table.rows({ search: 'applied' }).data().toArray();
+      filteredIngresos.value = filteredData.map((item) => ({
+        ...item,
+        monto: parseFloat(item.monto),
+      }));
+    };
+
+    table.on('search.dt draw.dt', updateFilteredData);
+    updateFilteredData();
+
   } catch (error) {
-    console.error(error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Error al cargar ingresos',
-      timer: 3000,
-      showConfirmButton: false
-    });
+    console.error('Error cargando ingresos:', error);
+    Notification.error('No se pudieron cargar los ingresos');
   }
 };
 
-const editIngreso = (ingreso) => {
-  mode.value = 'edit';
-  Object.assign(currentIngreso, ingreso);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+/**
+ * Maneja la edición de un ingreso
+ * @param {number} id - ID del ingreso a editar
+ */
+const editIngreso = (id) => {
+  const ingreso = ingresos.value.find((i) => i.id === id);
+  if (ingreso) {
+    mode.value = 'edit';
+    Object.assign(currentIngreso, ingreso);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 };
 
+/**
+ * Maneja la eliminación de un ingreso
+ * @param {number} id - ID del ingreso a eliminar
+ * @returns {Promise<void>}
+ */
 const deleteIngreso = async (id) => {
-  const result = await Swal.fire({
-    title: '¿Estás seguro?',
-    text: "¡No podrás revertir esta acción!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  });
+  const result = await Notification.confirm(
+    '¡No podrás revertir esta acción!',
+    '¿Estás seguro?',
+    'Sí, eliminar',
+    'Cancelar',
+  );
 
   if (result.isConfirmed) {
     try {
       await axios.delete(`/api/ingresos/${id}`);
       await loadIngresos();
-      Swal.fire({
-        icon: 'success',
-        title: '¡Eliminado!',
-        text: 'Ingreso eliminado correctamente',
-        timer: 3000,
-        showConfirmButton: false
-      });
+      Notification.success('Ingreso eliminado correctamente');
     } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Error al eliminar ingreso',
-        timer: 3000,
-        showConfirmButton: false
-      });
+      Notification.error('Error al eliminar ingreso');
     }
   }
 };
 
-const handleSubmit = async () => {
+/**
+ * Maneja el envío del formulario
+ * @param {Ingreso} formData - Datos del formulario
+ * @returns {Promise<void>}
+ */
+const handleSubmit = async (formData) => {
   try {
-    const url = mode.value === 'create'
-      ? '/api/ingresos'
-      : `/api/ingresos/${currentIngreso.id}`;
-
     const method = mode.value === 'create' ? 'post' : 'put';
-    await axios[method](url, currentIngreso);
+    const url = method === 'post' ? '/api/ingresos' : `/api/ingresos/${formData.id}`;
 
+    await axios[method](url, formData);
     await loadIngresos();
 
-    Swal.fire({
-      icon: 'success',
-      title: '¡Éxito!',
-      text: `Ingreso ${mode.value === 'create' ? 'creado' : 'actualizado'} correctamente`,
-      timer: 3000,
-      showConfirmButton: false
-    });
-
-    $("#largeModal").modal('hide');
+    Notification.success(
+      `Ingreso ${mode.value === 'create' ? 'creado' : 'actualizado'} correctamente`,
+    );
+    $('#largeModal').modal('hide');
     resetForm();
+
   } catch (error) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Error al guardar ingreso',
-      timer: 3000,
-      showConfirmButton: false
-    });
+    Notification.error('Error al guardar ingreso');
   }
 };
 
+/**
+ * Reinicia el formulario a los valores por defecto
+ */
 const resetForm = () => {
   mode.value = 'create';
   Object.assign(currentIngreso, defaultIngreso);
 };
 
-const montoCobrado = computed(() => {
-  return ingresos.value
-    .filter(ingreso => ingreso.estatus === 'ok')
-    .reduce((sum, ingreso) => sum + parseFloat(ingreso.monto), 0);
-});
+/**
+ * Calcula el monto total cobrado
+ * @type {import('vue').ComputedRef<number>}
+ */
+const montoCobrado = computed(() => filteredIngresos.value
+  .filter((i) => i.estatus === 'ok')
+  .reduce((acc, curr) => acc + curr.monto, 0));
 
-const montoPendiente = computed(() => {
-  return ingresos.value
-    .filter(ingreso => ingreso.estatus === 'pe')
-    .reduce((sum, ingreso) => sum + parseFloat(ingreso.monto), 0);
-});
+/**
+ * Calcula el monto pendiente de cobro
+ * @type {import('vue').ComputedRef<number>}
+ */
+const montoPendiente = computed(() => filteredIngresos.value
+  .filter((i) => i.estatus === 'pe')
+  .reduce((acc, curr) => acc + curr.monto, 0));
 
-const montoTotal = computed(() => {
-  return ingresos.value.reduce((sum, ingreso) => sum + parseFloat(ingreso.monto), 0);
-});
+/**
+ * Calcula el monto total de ingresos
+ * @type {import('vue').ComputedRef<number>}
+ */
+const montoTotal = computed(() => filteredIngresos.value
+  .reduce((acc, curr) => acc + curr.monto, 0));
 
-const inicializarDataTable = () => {
-  const tabla = "#ingresos";
-
-  if ($.fn.DataTable.isDataTable(tabla)) {
-    const table = $(tabla).DataTable();
-    table.clear().rows.add(ingresos.value).draw();
-  } else {
-    $(tabla).DataTable({
-      paging: true,
-      pageLength: 10,
-      lengthChange: false,
-      searching: true,
-      ordering: true,
-      data: ingresos.value,
-      columns: [
-        { data: 'descripcion' },
-        { data: 'tipo' },
-        { data: 'monto' },
-        { data: 'equipo.nombre' },
-        {
-          data: 'estatus',
-          render: function (data, type, row) {
-            if (data === 'ok') {
-              return '<i class="zmdi zmdi-check text-success"></i>'; // Icono de "ok" (check)
-            } else if (data === 'pe') {
-              return '<i class="zmdi zmdi-close text-danger"></i>'; // Icono de "x" (close)
-            } else {
-              return data;
-            }
-          }
-        },
-        {
-          data: null,
-          render: (data, type, row) => {
-            if (authStore.isAdmin) {
-              return `<button class="btn btn-icon btn-neutral btn-icon-mini btnEditar"
-                                      data-id="${row.id}"
-                                      data-toggle="modal"
-                                      data-target="#largeModal">
-                                  <i class="zmdi zmdi-edit"></i>
-                              </button>
-                              <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar"
-                                      data-id="${row.id}">
-                                  <i class="zmdi zmdi-delete"></i>
-                              </button>`
-            } else {
-              return ``
-            }
-          }
-        }
-      ]
-    });
+onMounted(async () => {
+  await loadIngresos();
+  if (torneoStore.torneos.length === 0) {
+    await torneoStore.fetchTorneos();
   }
-  attachDataTableEvents();
-};
-
-const attachDataTableEvents = () => {
-  const tabla = "#ingresos";
-  const tbody = $(tabla + ' tbody');
-
-  // Limpiar eventos previos para evitar duplicados
-  tbody.off('click', '.btnEditar');
-  tbody.off('click', '.btnEliminar');
-
-  // Evento para editar
-  tbody.on('click', '.btnEditar', function () {
-    const ingresoId = $(this).data('id');
-    const ingreso = ingresos.value.find(i => i.id === ingresoId);
-    if (ingreso) editIngreso(ingreso);
-  });
-
-  // Evento para eliminar
-  tbody.on('click', '.btnEliminar', function () {
-    const ingresoId = $(this).data('id');
-    deleteIngreso(ingresoId);
-  });
-}
-
-// Ciclo de vida
-onMounted(() => {
-  loadIngresos();
 });
 </script>

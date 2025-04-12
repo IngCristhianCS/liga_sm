@@ -2,11 +2,53 @@
 
 namespace App\Repositories;
 
+use App\Models\Jornada;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 
 class JornadaRepository
 {
+    protected $model;
+
+    public function __construct(Jornada $jornada)
+    {
+        $this->model = $jornada;
+    }
+
+    public function getAll($torneoId = null)
+    {
+        $query = $this->model->query();
+        
+        if ($torneoId) {
+            $query->where('torneo_id', $torneoId);
+        }
+
+        return $query->with('torneo')->get();
+    }
+
+    public function findById($id)
+    {
+        return $this->model->findOrFail($id);
+    }
+
+    public function create(array $data)
+    {
+        return $this->model->create($data);
+    }
+
+    public function update($id, array $data)
+    {
+        $jornada = $this->findById($id);
+        $jornada->update($data);
+        return $jornada->fresh();
+    }
+
+    public function delete($id)
+    {
+        $jornada = $this->findById($id);
+        return $jornada->delete();
+    }
+
     public function obtenerResultadosPorJornada(int $torneoId, int $jornadaId): Collection
     {
         return DB::table('partido AS p')

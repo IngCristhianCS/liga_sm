@@ -31,13 +31,26 @@ class EgresoController extends Controller
     {
         $this->authorize('create', Egreso::class);
 
-        $result = $this->egresoService->create($request->all());
-
+        $validated = $request->validate([
+            'fecha' => 'required|date',
+            'monto' => 'required|numeric|min:0',
+            'tipo' => 'required|in:arbitraje,mantenimiento,organizacion',
+            'descripcion' => 'nullable|string|max:255',
+            'partido_id' => 'nullable|exists:partidos,id',
+            'torneo_id' => 'nullable|exists:torneos,id'
+        ]);
+    
+        $result = $this->egresoService->create($validated);
+    
         if (isset($result['errors'])) {
             return response()->json(['success' => false, 'errors' => $result['errors']], 422);
         }
-
-        return response()->json(['success' => true, 'data' => $result, 'message' => 'Egreso creado exitosamente'], 201);
+    
+        return response()->json([
+            'success' => true, 
+            'data' => $result, 
+            'message' => 'Egreso creado exitosamente'
+        ], 201);
     }
 
     public function show($id)
@@ -55,13 +68,26 @@ class EgresoController extends Controller
 
         $this->authorize('update', $egreso);
 
-        $result = $this->egresoService->update($id, $request->all());
-
+        $validated = $request->validate([
+            'fecha' => 'required|date',
+            'monto' => 'required|numeric|min:0',
+            'tipo' => 'required|in:arbitraje,mantenimiento,organizacion',
+            'descripcion' => 'nullable|string|max:255',
+            'partido_id' => 'nullable|exists:partidos,id',
+            'torneo_id' => 'nullable|exists:torneos,id'
+        ]);
+    
+        $result = $this->egresoService->update($id, $validated);
+    
         if (isset($result['errors'])) {
             return response()->json(['success' => false, 'errors' => $result['errors']], 422);
         }
-
-        return response()->json(['success' => true, 'data' => $result, 'message' => 'Egreso actualizado exitosamente'], 200);
+    
+        return response()->json([
+            'success' => true, 
+            'data' => $result, 
+            'message' => 'Egreso actualizado exitosamente'
+        ], 200);
     }
 
     public function destroy($id)

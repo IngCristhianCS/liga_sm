@@ -47,6 +47,11 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "categorias" */ './components/categorias/CategoriasComponent.vue')
     },
     {
+      path: '/equipos',
+      name: 'equipos',
+      component: () => import(/* webpackChunkName: "equipos" */ './components/equipos/EquiposComponent.vue')
+    },
+    {
       path: '/calendario',
       name: 'Calendario',
       component: () => import(/* webpackChunkName: "calendario" */ './components/calendario/CalendarioComponent.vue')
@@ -70,7 +75,16 @@ const router = createRouter({
       path: '/', 
       redirect: '/clasificacion' 
     },
-
+    {
+      path: '/partidos',
+      name: 'partidos',
+      component: () => import(/* webpackChunkName: "partidos" */ './components/partidos/PartidosComponent.vue')
+    },
+    {
+      path: '/jornadas',
+      name: 'jornadas',
+      component: () => import(/* webpackChunkName: "jornadas" */ './components/jornadas/JornadasComponent.vue')
+    },
   ]
 })
 

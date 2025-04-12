@@ -17,7 +17,11 @@ use App\Policies\TorneoPolicy;
 use App\Models\Temporada;
 use App\Policies\TemporadaPolicy;
 use App\Models\Categoria;
+use App\Models\Jornada;
+use App\Models\Partido;
 use App\Policies\CategoriaPolicy;
+use App\Policies\JornadaPolicy;
+use App\Policies\PartidoPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -38,6 +42,8 @@ class AppServiceProvider extends ServiceProvider
         Torneo::class => TorneoPolicy::class,
         Temporada::class => TemporadaPolicy::class,
         Categoria::class => CategoriaPolicy::class,
+        Partido::class => PartidoPolicy::class,
+        Jornada::class => JornadaPolicy::class,
         // Agregar otras políticas aquí
     ];
 

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Jornada extends Model
 {
     use HasFactory;
+    protected $table = 'jornada';
 
     protected $fillable = ['torneo_id', 'numero', 'fecha_inicio', 'fecha_fin'];
 
