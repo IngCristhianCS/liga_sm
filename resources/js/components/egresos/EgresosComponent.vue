@@ -23,8 +23,8 @@
                   <ul class="nav nav-tabs padding-0">
                     <li class="nav-item">
                       <a class="btn btn-primary btn-round" href="#largeModal" data-toggle="modal"
-                        data-target="#largeModal">
-                        {{ mode === 'create' ? 'Nuevo' : 'Editar' }} Egreso
+                        data-target="#largeModal" @click="openCreateModal">
+                        Nuevo Egreso
                       </a>
                     </li>
                   </ul>
@@ -54,75 +54,7 @@
       </div>
     </div>
   </section>
-  <div class="modal fade" id="largeModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="title" id="largeModalLabel">
-            {{ mode === 'create' ? 'Nuevo Egreso' : 'Editar Egreso' }}
-          </h4>
-        </div>
-        <form @submit.prevent="handleSubmit">
-          <div class="modal-body">
-            <div class="row clearfix">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Fecha</label>
-                  <input type="date" class="form-control" v-model="currentEgreso.fecha" required>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Monto</label>
-                  <input type="number" class="form-control" v-model="currentEgreso.monto" required>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Tipo</label>
-                  <select class="form-control" v-model="currentEgreso.tipo" required>
-                    <option value="arbitraje">Arbitraje</option>
-                    <option value="mantenimiento">Mantenimiento</option>
-                    <option value="organizacion">Organización</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Descripción</label>
-                  <input type="text" class="form-control" v-model="currentEgreso.descripcion">
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Partido ID</label>
-                  <input type="number" class="form-control" v-model="currentEgreso.partido_id">
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Torneo ID</label>
-                  <input type="number" class="form-control" v-model="currentEgreso.torneo_id">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-default btn-round waves-effect">
-              {{ mode === 'create' ? 'Crear Egreso' : 'Actualizar Egreso' }}
-            </button>
-            <button type="button" class="btn btn-danger btn-simple btn-round waves-effect" data-dismiss="modal"
-              @click="resetForm">Cancelar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+  
   <EgresoForm 
     ref="egresoFormRef"
     :mode="mode" 
@@ -156,6 +88,14 @@ const defaultEgreso = {
 
 const currentEgreso = reactive({ ...defaultEgreso });
 
+/**
+ * Opens the modal for creating a new egreso
+ */
+const openCreateModal = () => {
+  mode.value = 'create';
+  resetForm();
+};
+
 const handleSubmit = async (formData) => {
   try {
     const method = mode.value === 'create' ? 'post' : 'put';
@@ -167,7 +107,9 @@ const handleSubmit = async (formData) => {
     Notification.success(
       `Egreso ${mode.value === 'create' ? 'creado' : 'actualizado'} correctamente`
     );
-    $('#largeModal').modal('hide');
+    
+    // Explicitly close the modal
+    document.querySelector('[data-dismiss="modal"]').click();
     resetForm();
     
   } catch (error) {
@@ -190,10 +132,12 @@ const loadEgresos = async () => {
   }
 };
 
-const editEgreso = (egreso) => {
-  mode.value = 'edit';
-  Object.assign(currentEgreso, egreso);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+const editEgreso = (id) => {
+  const egreso = egresos.value.find(e => e.id === id);
+  if (egreso) {
+    mode.value = 'edit';
+    Object.assign(currentEgreso, egreso);
+  }
 };
 
 const deleteEgreso = async (id) => {

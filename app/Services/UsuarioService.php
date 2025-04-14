@@ -22,18 +22,15 @@ class UsuarioService
     public function getAllUsuarios()
     {
         $user = Auth::user();
-
         if ($user && $user->isEntrenador()) {
             // Obtener el equipo del entrenador
             $equipo = $user->equipo;
 
             if ($equipo) {
                 // Obtener los jugadores que pertenecen al equipo del entrenador
-                $jugadores = User::whereHas('jugador', function ($query) use ($equipo) {
+                return User::whereHas('jugador', function ($query) use ($equipo) {
                     $query->where('equipo_id', $equipo->id);
                 })->with(['role', 'jugador.equipo'])->latest()->get();
-
-                return $jugadores;
             } else {
                 // El entrenador no tiene equipo asignado, devuelve un array vacío
                 return [];
@@ -119,5 +116,13 @@ class UsuarioService
     public function deleteUsuario(User $user)
     {
         $user->delete();
+    }
+    
+    public function getEntrenadores()
+    {
+        // Get all users with the entrenador role
+        return User::where('role_id', Role::ENTRENADOR)
+            ->select('id', 'name', 'email')
+            ->get();
     }
 }

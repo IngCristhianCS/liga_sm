@@ -1,6 +1,6 @@
 <!-- components/IngresoForm.vue -->
 <template>
-    <div class="modal fade" id="largeModal" tabindex="-1" role="dialog">
+    <div class="modal fade" id="largeModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">

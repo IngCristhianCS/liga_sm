@@ -21,7 +21,7 @@
             <div class="header">
               <ul class="header-dropdown">
                 <li class="nav-item" v-if="authStore.isAdmin"><a href="#largeModal" data-toggle="modal"
-                    data-target="#largeModal"><i class="zmdi zmdi-plus-circle zmdi-hc-3x"></i></a></li>
+                    data-target="#largeModal" @click="openCreateModal"><i class="zmdi zmdi-plus-circle zmdi-hc-3x"></i></a></li>
               </ul>
             </div>
             <div class="body">
@@ -53,16 +53,16 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import axios from 'axios';
 import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
 import Notification from '@/utils/notification';
-import { useAuthStore } from '../../stores/auth';
+import { useAuthStore } from '@/stores/auth';
+import { useCategoriasStore } from '@/stores/categorias';
 import CategoriaForm from './CategoriaForm.vue';
 
 const authStore = useAuthStore();
+const categoriasStore = useCategoriasStore();
 const categoriaFormRef = ref(null);
 const mode = ref('create');
-const categorias = ref([]);
 
 /** @type {import('vue').Ref<Categoria>} */
 const currentCategoria = reactive({
@@ -100,15 +100,14 @@ const columns = [
 ];
 
 /**
- * Carga las categorías desde la API
+ * Carga las categorías desde el store
  * @returns {Promise<void>}
  */
 const loadCategorias = async () => {
   try {
-    const { data } = await axios.get('/api/categorias');
-    categorias.value = data.data;
+    await categoriasStore.loadCategorias();
 
-    initializeDataTable('categorias', categorias.value, columns);
+    initializeDataTable('categorias', categoriasStore.categorias, columns);
     attachTableEvents('categorias', editCategoria, deleteCategoria);
 
   } catch (error) {
@@ -117,11 +116,19 @@ const loadCategorias = async () => {
 };
 
 /**
+ * Abre el modal para crear una nueva categoría
+ */
+const openCreateModal = () => {
+  mode.value = 'create';
+  resetForm();
+};
+
+/**
  * Edita una categoría
  * @param {number} id - ID de la categoría
  */
 const editCategoria = (id) => {
-  const categoria = categorias.value.find(c => c.id === id);
+  const categoria = categoriasStore.getCategoriaById(id);
   if (categoria) {
     mode.value = 'edit';
     Object.assign(currentCategoria, {
@@ -148,7 +155,7 @@ const deleteCategoria = async (id) => {
 
   if (result.isConfirmed) {
     try {
-      await axios.delete(`/api/categorias/${id}`);
+      await categoriasStore.deleteCategoria(id);
       await loadCategorias();
       Notification.success('Categoría eliminada correctamente');
     } catch (error) {
@@ -172,25 +179,24 @@ const resetForm = () => {
 
 const handleSubmit = async (formData) => {
   try {
-    const method = mode.value === 'create' ? 'post' : 'put';
-    const url = method === 'post' ? '/api/categorias' : `/api/categorias/${currentCategoria.id}`;
-
     const submitData = {
       nombre: formData.nombre,
       tipo: formData.tipo,
       edad_maxima: formData.edad_maxima ? Number(formData.edad_maxima) : null
     };
 
-    if (mode.value === 'edit') {
-      submitData.id = currentCategoria.id;
+    if (mode.value === 'create') {
+      await categoriasStore.createCategoria(submitData);
+    } else {
+      await categoriasStore.updateCategoria(currentCategoria.id, submitData);
     }
-
-    await axios[method](url, submitData);
+    
     await loadCategorias();
     Notification.success(
       `Categoría ${mode.value === 'create' ? 'creada' : 'actualizada'} correctamente`
     );
-    $('#largeModal').modal('hide');
+    // Cerrar el modal explícitamente
+    document.querySelector('[data-dismiss="modal"]').click();
     resetForm();
 
   } catch (error) {

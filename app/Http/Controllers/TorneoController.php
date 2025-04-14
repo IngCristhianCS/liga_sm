@@ -40,11 +40,12 @@ class TorneoController extends Controller
         return response()->json($resultadosPorJornada);
     }
 
-    public function index()
+    public function index(Request $request)
     {
         //$this->authorize('viewAny', Torneo::class);
 
-        $torneos = $this->torneoService->getAll();
+        $catalog = $request->has('catalog') && $request->catalog === 'true';
+        $torneos = $this->torneoService->getAll($catalog);
         return response()->json(['success' => true, 'data' => $torneos]);
     }
 
@@ -61,9 +62,10 @@ class TorneoController extends Controller
         return response()->json(['success' => true, 'data' => $result, 'message' => 'Torneo creado exitosamente'], 201);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $torneo = $this->torneoService->findById($id);
+        $catalog = $request->has('catalog') && $request->catalog === 'true';
+        $torneo = $this->torneoService->findById($id, $catalog);
 
         $this->authorize('view', $torneo);
 
@@ -94,5 +96,11 @@ class TorneoController extends Controller
         $this->torneoService->delete($id);
 
         return response()->json(['success' => true, 'message' => 'Torneo eliminado exitosamente'], 200);
+    }
+    
+    public function catalog()
+    {
+        $torneos = $this->torneoService->getAll(true);
+        return response()->json(['success' => true, 'data' => $torneos]);
     }
 }

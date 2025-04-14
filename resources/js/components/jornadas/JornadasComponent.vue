@@ -1,24 +1,31 @@
 <template>
   <section class="content">
     <div class="container-fluid">
+      <div class="block-header">
+        <div class="row clearfix">
+          <div class="col-lg-5 col-md-5 col-sm-12">
+            <h2>Administración de Jornadas</h2>
+          </div>
+          <div class="col-lg-7 col-md-7 col-sm-12">
+            <ul class="breadcrumb float-md-right padding-0">
+              <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i></a></li>
+              <li class="breadcrumb-item active">Administración</li>
+              <li class="breadcrumb-item">Jornadas</li>
+            </ul>
+          </div>
+        </div>
+      </div>
       <div class="row clearfix">
         <div class="col-lg-12">
           <div class="card">
             <div class="header">
-              <h2>Jornadas</h2>
               <ul class="header-dropdown">
-                <li>
-                  <button v-if="authStore.isAdmin" 
-                          class="btn btn-primary btn-round" 
-                          @click="openCreateModal">
-                    Nueva Jornada
-                  </button>
-                </li>
+                <li class="nav-item" v-if="authStore.isAdmin"><a href="#largeModal" data-toggle="modal"
+                    data-target="#largeModal" @click="openCreateModal"><i class="zmdi zmdi-plus-circle zmdi-hc-3x"></i></a></li>
               </ul>
             </div>
             <div class="body">
-              <TorneosMenu @torneoSeleccionado="handleTorneoSeleccionado" />
-              
+              <TorneosMenu @torneoSeleccionado="handleTorneoSeleccionado" />              
               <div class="table-responsive">
                 <table id="tablajornadas" class="table table-bordered table-striped table-hover js-basic-example dataTable">
                   <thead>
@@ -27,6 +34,7 @@
                       <th>Torneo</th>
                       <th>Fecha Inicio</th>
                       <th>Fecha Fin</th>
+                      <th>Partidos</th>
                       <th>Acciones</th>
                     </tr>
                   </thead>
@@ -39,31 +47,35 @@
         </div>
       </div>
     </div>
-
-    <JornadaForm 
+  </section>
+  
+  <JornadaForm 
       ref="jornadaFormRef"
       :mode="mode" 
       :jornada="currentJornada"
+      :torneos="torneos"
       @submit="handleSubmit"
       @cancel="closeModal"
     />
-  </section>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import axios from 'axios';
 import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
 import Notification from '@/utils/notification';
 import { useAuthStore } from '@/stores/auth';
-import JornadaForm from './JornadaForm.vue';
-import TorneosMenu from '../global/TorneosMenu.vue';
+import { useJornadasStore } from '@/stores/jornadas';
+import { useTorneoStore } from '@/stores/torneos';
+import JornadaForm from '@/components/jornadas/jornadaform.vue';
+import TorneosMenu from '@/components/global/TorneosMenu.vue';
 
 const authStore = useAuthStore();
+const torneoStore = useTorneoStore();
+const jornadasStore = useJornadasStore();
 const jornadaFormRef = ref(null);
 const mode = ref('create');
-const jornadas = ref([]);
 const selectedTorneoId = ref(null);
+const torneos = ref([]);
 
 const currentJornada = reactive({
   id: null,
@@ -75,24 +87,34 @@ const currentJornada = reactive({
 
 const columns = [
   { data: 'numero' },
-  { data: 'torneo.nombre', defaultContent: '' },
+  { 
+    data: 'torneo.nombre', 
+    defaultContent: 'Sin torneo',
+    render: (data, type, row) => row.torneo ? row.torneo.nombre : 'Sin torneo'
+  },
   { 
     data: 'fecha_inicio',
-    render: (data) => new Date(data).toLocaleDateString()
+    render: (data) => data ? new Date(data).toLocaleDateString() : 'No definida'
   },
   { 
     data: 'fecha_fin',
-    render: (data) => new Date(data).toLocaleDateString()
+    render: (data) => data ? new Date(data).toLocaleDateString() : 'No definida'
+  },
+  {
+    data: null,
+    render: (data, type, row) => {
+      return `<span class="badge badge-info">${row.partidos_count || 0} partidos</span>`;
+    }
   },
   {
     data: null,
     render: (data, type, row) => {
       if (!authStore.isAdmin) return '';
       return `
-        <button class="btn btn-icon btn-neutral btn-icon-mini btnEditar" data-id="${row.id}">
+        <button class="btn btn-icon btn-neutral btn-icon-mini btnEditar" data-id="${row.id}" title="Editar">
           <i class="zmdi zmdi-edit"></i>
         </button>
-        <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar" data-id="${row.id}">
+        <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar" data-id="${row.id}" title="Eliminar">
           <i class="zmdi zmdi-delete"></i>
         </button>`;
     }
@@ -101,16 +123,42 @@ const columns = [
 
 const loadJornadas = async () => {
   try {
-    const url = selectedTorneoId.value
-      ? `/api/jornadas?torneo_id=${selectedTorneoId.value}`
-      : '/api/jornadas';
-    const { data } = await axios.get(url);
-    jornadas.value = data.data;
-    initializeDataTable('tablajornadas', jornadas.value, columns);
-    attachTableEvents('tablajornadas', handleEdit, handleDelete);
+    if (selectedTorneoId.value) {
+      await jornadasStore.loadJornadasByTorneo(selectedTorneoId.value);
+      
+      if ($.fn.DataTable.isDataTable('#tablajornadas')) {
+        const table = $('#tablajornadas').DataTable();
+        table.clear().rows.add(jornadasStore.jornadasByTorneo[selectedTorneoId.value]).draw();
+      } else {
+        initializeDataTable('tablajornadas', jornadasStore.jornadasByTorneo[selectedTorneoId.value], columns);
+        attachTableEvents('tablajornadas', handleEdit, handleDelete);
+      }
+    } else {
+      await jornadasStore.loadJornadas();
+      
+      if ($.fn.DataTable.isDataTable('#tablajornadas')) {
+        const table = $('#tablajornadas').DataTable();
+        table.clear().rows.add(jornadasStore.jornadas).draw();
+      } else {
+        initializeDataTable('tablajornadas', jornadasStore.jornadas, columns);
+        attachTableEvents('tablajornadas', handleEdit, handleDelete);
+      }
+    }
   } catch (error) {
-    console.error(error);
+    console.error('Error al cargar jornadas:', error);
     Notification.error('Error al cargar jornadas');
+  }
+};
+
+const loadTorneos = async () => {
+  try {
+    if (torneoStore.torneos.length === 0) {
+      await torneoStore.fetchTorneos();
+    }
+    torneos.value = torneoStore.torneos;
+  } catch (error) {
+    console.error('Error al cargar torneos:', error);
+    Notification.error('Error al cargar torneos');
   }
 };
 
@@ -128,15 +176,24 @@ const openCreateModal = () => {
     fecha_inicio: '',
     fecha_fin: ''
   });
-  $('#largeModal').modal('show');
 };
 
-const handleEdit = (id) => {
-  const jornada = jornadas.value.find(j => j.id === id);
-  if (jornada) {
-    mode.value = 'edit';
-    Object.assign(currentJornada, jornada);
-    $('#largeModal').modal('show');
+const handleEdit = async (id) => {
+  try {
+    const jornada = await jornadasStore.fetchJornadaById(id);
+    if (jornada) {
+      mode.value = 'edit';
+      Object.assign(currentJornada, {
+        id: jornada.id,
+        numero: jornada.numero,
+        torneo_id: jornada.torneo_id,
+        fecha_inicio: jornada.fecha_inicio,
+        fecha_fin: jornada.fecha_fin
+      });
+    }
+  } catch (error) {
+    console.error('Error al cargar detalles de la jornada:', error);
+    Notification.error('Error al cargar detalles de la jornada');
   }
 };
 
@@ -146,17 +203,19 @@ const closeModal = () => {
 
 const handleSubmit = async (formData) => {
   try {
-    const method = mode.value === 'create' ? 'post' : 'put';
-    const url = method === 'post' ? '/api/jornadas' : `/api/jornadas/${currentJornada.id}`;
-    
-    await axios[method](url, formData);
-    await loadJornadas();
+    if (mode.value === 'create') {
+      await jornadasStore.createJornada(formData);
+      Notification.success('Jornada creada correctamente');
+    } else {
+      await jornadasStore.updateJornada(currentJornada.id, formData);
+      Notification.success('Jornada actualizada correctamente');
+    }
     
     closeModal();
-    Notification.success(
-      `Jornada ${mode.value === 'create' ? 'creada' : 'actualizada'} correctamente`
-    );
+    await loadJornadas();
   } catch (error) {
+    console.error('Error al guardar jornada:', error);
+    
     if (error.response?.status === 422 && jornadaFormRef.value) {
       jornadaFormRef.value.handleApiErrors(error.response.data.errors);
     } else {
@@ -167,25 +226,28 @@ const handleSubmit = async (formData) => {
 
 const handleDelete = async (id) => {
   const result = await Notification.confirm(
-    '¿Estás seguro?',
-    'Esta acción no se puede deshacer',
+    '¿Estás seguro de eliminar esta jornada?',
+    'Esta acción no se puede deshacer y eliminará todos los partidos asociados.',
     'Sí, eliminar',
     'Cancelar'
   );
 
   if (result.isConfirmed) {
     try {
-      await axios.delete(`/api/jornadas/${id}`);
+      await jornadasStore.deleteJornada(id);
       await loadJornadas();
       Notification.success('Jornada eliminada correctamente');
     } catch (error) {
-      console.error(error);
+      console.error('Error al eliminar jornada:', error);
       Notification.error('Error al eliminar jornada');
     }
   }
 };
 
-onMounted(() => {
-  loadJornadas();
+onMounted(async () => {
+  await Promise.all([
+    loadJornadas(),
+    loadTorneos()
+  ]);
 });
 </script>

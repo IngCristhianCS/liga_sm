@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\Equipo;
-use Illuminate\Support\Facades\Storage;
 
 class EquipoRepository
 {
@@ -36,5 +35,14 @@ class EquipoRepository
     public function delete(Equipo $equipo)
     {
         $equipo->delete();
+    }
+
+    public function getEquiposByTorneo($torneoId)
+    {
+        return Equipo::with(['categoria', 'entrenador'])
+            ->whereHas('torneos', function($query) use ($torneoId) {
+                $query->where('torneo_id', $torneoId);
+            })
+            ->get();
     }
 }

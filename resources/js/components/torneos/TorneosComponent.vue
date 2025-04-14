@@ -8,7 +8,7 @@
           </div>
           <div class="col-lg-7 col-md-7 col-sm-12">
             <ul class="breadcrumb float-md-right padding-0">
-              <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i> Inicio</a></li>
+              <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i></a></li>
               <li class="breadcrumb-item active">Administración</li>
               <li class="breadcrumb-item">Torneos</li>
             </ul>
@@ -18,7 +18,6 @@
       <div class="row clearfix">
         <div class="col-lg-12">
           <div class="card">
-
             <div class="header">
               <ul class="header-dropdown">
                 <li class="nav-item" v-if="authStore.isAdmin"><a href="#largeModal" data-toggle="modal"
@@ -50,8 +49,15 @@
       </div>
     </div>
   </section>
-  <TorneoForm :mode="mode" :current-torneo="currentTorneo" :categorias="categorias" :temporadas="temporadas"
-    :equipos="equipos" @submit="handleSubmit" @cancel="resetForm" />
+  <TorneoForm 
+    :mode="mode" 
+    :current-torneo="currentTorneo" 
+    :categorias="categoriasStore.categorias" 
+    :temporadas="temporadasStore.temporadas"
+    :equipos="equipos" 
+    @submit="handleSubmit" 
+    @cancel="resetForm" 
+  />
 </template>
 
 <script setup>
@@ -59,13 +65,16 @@ import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
 import Notification from '@/utils/notification';
-import { useAuthStore } from '../../stores/auth';
+import { useAuthStore } from '@/stores/auth';
+import { useTorneoStore } from '@/stores/torneos';
+import { useCategoriasStore } from '@/stores/categorias';
+import { useTemporadasStore } from '@/stores/temporadas';
 import TorneoForm from './TorneoForm.vue';
 
 const authStore = useAuthStore();
-const torneos = ref([]);
-const categorias = ref([]);
-const temporadas = ref([]);
+const torneoStore = useTorneoStore();
+const categoriasStore = useCategoriasStore();
+const temporadasStore = useTemporadasStore();
 const equipos = ref([]);
 const mode = ref('create');
 
@@ -134,19 +143,16 @@ const columns = [
  */
 const loadInitialData = async () => {
   try {
-    const [torneosRes, categoriasRes, temporadasRes, equiposRes] = await Promise.all([
-      axios.get('/api/torneos'),
-      axios.get('/api/categorias'),
-      axios.get('/api/temporadas'),
-      //axios.get('/api/equipos')
+    // Load data from stores
+    await Promise.all([
+      torneoStore.fetchTorneos(),
+      categoriasStore.loadCategorias(),
+      temporadasStore.loadTemporadas(),
+      loadEquipos()
     ]);
 
-    torneos.value = torneosRes.data.data;
-    categorias.value = categoriasRes.data.data;
-    temporadas.value = temporadasRes.data.data;
-    //equipos.value = equiposRes.data.data;
 
-    initializeDataTable('torneos', torneos.value, columns);
+    initializeDataTable('torneos', torneoStore.torneos, columns);
     attachTableEvents('torneos', editTorneo, deleteTorneo);
 
   } catch (error) {
@@ -156,16 +162,34 @@ const loadInitialData = async () => {
 };
 
 /**
+ * Carga los equipos
+ * @returns {Promise<void>}
+ */
+const loadEquipos = async () => {
+  try {
+    const response = await axios.get('/api/equipos');
+    equipos.value = response.data.data;
+  } catch (error) {
+    console.error('Error cargando equipos:', error);
+  }
+};
+
+/**
  * Edita un torneo
  * @param {number} id - ID del torneo
  * @returns {void}
  */
-const editTorneo = (id) => {
-  const torneo = torneos.value.find(t => t.id === id);
-  if (torneo) {
-    mode.value = 'edit';
-    Object.assign(currentTorneo, torneo);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+const editTorneo = async (id) => {
+  try {
+    const torneo = await torneoStore.fetchTorneoById(id);
+    if (torneo) {
+      mode.value = 'edit';
+      Object.assign(currentTorneo, torneo);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  } catch (error) {
+    console.error('Error al cargar torneo:', error);
+    Notification.error('Error al cargar detalles del torneo');
   }
 };
 
@@ -184,7 +208,7 @@ const deleteTorneo = async (id) => {
 
   if (result.isConfirmed) {
     try {
-      await axios.delete(`/api/torneos/${id}`);
+      await torneoStore.deleteTorneo(id);
       await loadInitialData();
       Notification.success('Torneo eliminado correctamente');
     } catch (error) {
@@ -200,10 +224,12 @@ const deleteTorneo = async (id) => {
  */
 const handleSubmit = async (formData) => {
   try {
-    const method = mode.value === 'create' ? 'post' : 'put';
-    const url = method === 'post' ? '/api/torneos' : `/api/torneos/${formData.id}`;
-
-    await axios[method](url, formData);
+    if (mode.value === 'create') {
+      await torneoStore.createTorneo(formData);
+    } else {
+      await torneoStore.updateTorneo(formData.id, formData);
+    }
+    
     await loadInitialData();
 
     Notification.success(

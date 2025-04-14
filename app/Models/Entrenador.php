@@ -9,7 +9,7 @@ class Entrenador extends Model
 {
     use HasFactory;
 
-    protected $table = 'entrenadores';
+    protected $table = 'entrenador';
 
     protected $fillable = [
         'user_id',
@@ -38,5 +38,15 @@ class Entrenador extends Model
             'id',           // Local key on entrenadores table
             'id'           // Local key on equipos table
         );
+    }
+    
+    /**
+     * Get all entrenadores with their user information
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function getAllWithUserInfo()
+    {
+        return self::with('user')->get();
     }
 }

@@ -16,10 +16,19 @@ class EquipoController extends Controller
         $this->equipoService = $equipoService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Equipo::class);
-        $equipos = $this->equipoService->getAllEquipos();
+        
+        // Check if torneo_id is provided in the request
+        $torneoId = $request->input('torneo_id');
+        
+        if ($torneoId) {
+            $equipos = $this->equipoService->getEquiposByTorneo($torneoId);
+        } else {
+            $equipos = $this->equipoService->getAllEquipos();
+        }
+        
         return response()->json(['data' => $equipos]);
     }
 

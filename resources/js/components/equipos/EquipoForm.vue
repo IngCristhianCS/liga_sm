@@ -1,5 +1,5 @@
 <template>
-  <div class="modal fade" id="largeModal" tabindex="-1" role="dialog">
+  <div class="modal fade" id="largeModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <form @submit.prevent="handleSubmit">
@@ -79,7 +79,7 @@
                     {{ apiErrors.imagen?.[0] || 'Seleccione una imagen válida' }}
                   </div>
                   <div v-if="formData.imagen && typeof formData.imagen === 'string'" class="mt-2">
-                    <img :src="'/storage/' + formData.imagen" alt="Imagen del equipo" class="img-thumbnail" style="max-height: 100px;">
+                    <img :src="'/storage/' + formData.imagen" alt="equipo" class="img-thumbnail" style="max-height: 100px;">
                   </div>
                 </div>
               </div>
@@ -122,11 +122,11 @@
               <div class="col-md-4">
                 <div v-if="cropImg" class="text-center">
                   <h6>Vista previa</h6>
-                  <img :src="cropImg" class="img-fluid img-thumbnail" alt="Imagen recortada" />
+                  <img :src="cropImg" class="img-fluid img-thumbnail" alt="recortada" />
                 </div>
                 <div v-else-if="formData.imagen && typeof formData.imagen === 'string' && !imgSrc.includes(formData.imagen)" class="text-center">
                   <h6>Imagen actual</h6>
-                  <img :src="'/storage/' + formData.imagen" class="img-fluid img-thumbnail" alt="Imagen actual" />
+                  <img :src="'/storage/' + formData.imagen" class="img-fluid img-thumbnail" alt="actual" />
                 </div>
               </div>
             </div>
@@ -147,6 +147,7 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue';
 import { RegexUtils, validateField as validateFieldUtil } from '@/utils/regex-util';
+import Notification from '@/utils/notification';
 import { useCategoriasStore } from '@/stores/categorias';
 import VueCropper from 'vue-cropperjs';
 import 'vue-cropperjs/node_modules/cropperjs/dist/cropper.min.css';
@@ -209,7 +210,7 @@ const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
     if (!file.type.includes('image/')) {
-      alert('Por favor seleccione un archivo de imagen');
+      Notification.error('Por favor seleccione un archivo de imagen');
       return;
     }
     
@@ -222,7 +223,7 @@ const handleImageUpload = (event) => {
       };
       reader.readAsDataURL(file);
     } else {
-      alert('Lo sentimos, FileReader API no es soportada en este navegador');
+      Notification.error('Lo sentimos, FileReader API no es soportada en este navegador');
     }
   }
 };

@@ -25,6 +25,9 @@
               </ul>
             </div>
             <div class="body">
+              <!-- Tournament selector -->
+              <TorneosMenu @torneoSeleccionado="handleTorneoSeleccionado" />
+              
               <div class="table-responsive">
                 <table id="equipos" class="table table-bordered table-striped table-hover js-basic-example dataTable">
                   <thead>
@@ -53,24 +56,29 @@
     :entrenadores="entrenadores"
     @submit="handleFormSubmit" 
     @cancel="resetForm"
+    @torneoSelected="handleFormTorneoSelected"
     ref="equipoFormRef"
   />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
 import Notification from '@/utils/notification';
 import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
 import EquipoForm from './EquipoForm.vue';
 import { useAuthStore } from '@/stores/auth';
+import { useTorneoStore } from '@/stores/torneos';
+import { useEquiposStore } from '@/stores/equipos';
+import TorneosMenu from '../global/TorneosMenu.vue';
 
 const authStore = useAuthStore();
-const equipos = ref([]);
+const torneoStore = useTorneoStore();
+const equiposStore = useEquiposStore();
 const entrenadores = ref([]);
 const formMode = ref('create');
 const currentEquipo = ref({});
 const equipoFormRef = ref(null);
+const selectedTorneoId = ref(null);
 
 /**
  * Columnas para DataTable
@@ -120,112 +128,123 @@ const columns = [
   }
 ];
 
-const loadEquipos = async () => {
+const loadEquipos = async (torneoId = null) => {
   try {
-    const { data } = await axios.get('/api/equipos');
-    equipos.value = data.data;
-    
-    // Inicializar DataTable
-    initializeDataTable('equipos', equipos.value, columns);
-    attachTableEvents('equipos', openEditModal, deleteEquipo);
-    
+    if (torneoId) {
+      await equiposStore.loadEquiposByTorneo(torneoId);
+      
+      // If DataTable already exists, clear and reload
+      if ($.fn.DataTable.isDataTable('#equipos')) {
+        const table = $('#equipos').DataTable();
+        table.clear().rows.add(equiposStore.equiposByTorneo[torneoId]).draw();
+      } else {
+        // Initialize DataTable
+        initializeDataTable('equipos', equiposStore.equiposByTorneo[torneoId], columns);
+        attachTableEvents('equipos', openEditModal, deleteEquipo);
+      }
+    } else {
+      // Handle case when no torneo is selected
+      if ($.fn.DataTable.isDataTable('#equipos')) {
+        const table = $('#equipos').DataTable();
+        table.clear().draw();
+      } else {
+        initializeDataTable('equipos', [], columns);
+        attachTableEvents('equipos', openEditModal, deleteEquipo);
+      }
+    }
   } catch (error) {
-    console.error('Error cargando equipos:', error);
     Notification.error('No se pudieron cargar los equipos');
+  }
+};
+
+const handleTorneoSeleccionado = (torneoId) => {
+  selectedTorneoId.value = torneoId;
+  loadEquipos(torneoId);
+};
+
+const handleFormTorneoSelected = (torneoId) => {
+  if (currentEquipo.value) {
+    currentEquipo.value.torneo_id = torneoId;
   }
 };
 
 const loadEntrenadores = async () => {
   try {
-    const { data } = await axios.get('/api/users/entrenadores');
+    const { data } = await axios.get('/api/entrenadores');
     entrenadores.value = data.data;
   } catch (error) {
-    console.error('Error cargando entrenadores:', error);
     Notification.error('No se pudieron cargar los entrenadores');
   }
 };
 
 const openCreateModal = () => {
   formMode.value = 'create';
-  currentEquipo.value = {};
-  
-  // Configure modal to prevent closing when clicking outside
-  setTimeout(() => {
-    const modal = $('#largeModal');
-    modal.modal({
-      backdrop: 'static',
-      keyboard: false
-    });
-  }, 100);
+  currentEquipo.value = {
+    torneo_id: selectedTorneoId.value
+  };
 };
 
-const openEditModal = (id) => {
-  const equipo = equipos.value.find(e => e.id === id);
-  if (equipo) {
-    formMode.value = 'edit';
-    currentEquipo.value = { ...equipo };
-    
-    // Configure modal to prevent closing when clicking outside
-    setTimeout(() => {
-      const modal = $('#largeModal');
-      modal.modal({
-        backdrop: 'static',
-        keyboard: false
-      });
-    }, 100);
+const openEditModal = async (id) => {
+  try {
+    const equipo = await equiposStore.fetchEquipoById(id, selectedTorneoId.value);
+    if (equipo) {
+      formMode.value = 'edit';
+      currentEquipo.value = { ...equipo };
+    }
+  } catch (error) {
+    Notification.error('No se pudo cargar el equipo');
   }
 };
 
 const handleFormSubmit = async (formData) => {
   try {
-    // Check if we have a base64 image from cropper
-    if (formData.get('imagen_base64')) {
-      const base64Data = formData.get('imagen_base64');
+    // Make sure formData is a FormData object
+    let processedFormData = formData;
+    
+    // If it's not already a FormData object, create one
+    if (!(formData instanceof FormData)) {
+      processedFormData = new FormData();
+      for (const key in formData) {
+        processedFormData.append(key, formData[key]);
+      }
+    }
+    
+    // Handle base64 image if present
+    if (processedFormData.get('imagen_base64')) {
+      const base64Data = processedFormData.get('imagen_base64');
       
-      // Create a new FormData object with the base64 data properly formatted
-      const processedFormData = new FormData();
-      
-      // Copy all other form fields
-      for (const [key, value] of formData.entries()) {
+      // Create a new FormData to avoid mutation issues
+      const newFormData = new FormData();
+      for (const [key, value] of processedFormData.entries()) {
         if (key !== 'imagen_base64') {
-          processedFormData.append(key, value);
+          newFormData.append(key, value);
         }
       }
       
-      // Add the base64 image as a string field instead of a file
-      processedFormData.append('imagen', base64Data);
-      
-      // Replace the original formData with our processed one
-      formData = processedFormData;
+      newFormData.append('imagen', base64Data);
+      processedFormData = newFormData;
+    }
+    
+    // Add torneo_id if needed
+    if (selectedTorneoId.value && !processedFormData.get('torneo_id')) {
+      processedFormData.append('torneo_id', selectedTorneoId.value);
     }
     
     if (formMode.value === 'create') {
-      await axios.post('/api/equipos', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      await equiposStore.createEquipo(processedFormData);
       Notification.success('Equipo creado correctamente');
     } else {
-      await axios.post(`/api/equipos/${currentEquipo.value.id}?_method=PUT`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      await equiposStore.updateEquipo(currentEquipo.value.id, processedFormData);
       Notification.success('Equipo actualizado correctamente');
     }
     
     // Cerrar el modal
     document.querySelector('[data-dismiss="modal"]').click();
-    
-    // Recargar la lista de equipos
-    await loadEquipos();
+    await loadEquipos(selectedTorneoId.value);
     
     // Resetear el formulario
     resetForm();
   } catch (error) {
-    console.error('Error al guardar equipo:', error);
-    
     if (error.response && error.response.data && error.response.data.errors) {
       // Manejar errores de validación
       equipoFormRef.value.handleApiErrors(error.response.data.errors);
@@ -246,12 +265,11 @@ const deleteEquipo = async (id) => {
     );
     
     if (result.isConfirmed) {
-      await axios.delete(`/api/equipos/${id}`);
-      await loadEquipos();
+      await equiposStore.deleteEquipo(id);
+      await loadEquipos(selectedTorneoId.value);
       Notification.success('El equipo ha sido eliminado');
     }
   } catch (error) {
-    console.error('Error eliminando equipo:', error);
     Notification.error('No se pudo eliminar el equipo');
   }
 };
@@ -261,8 +279,11 @@ const resetForm = () => {
 };
 
 onMounted(async () => {
+  if (torneoStore.torneosCatalog.length === 0) {
+    await torneoStore.fetchTorneosCatalog();
+  }
+  
   await Promise.all([
-    loadEquipos(),
     loadEntrenadores()
   ]);
 });

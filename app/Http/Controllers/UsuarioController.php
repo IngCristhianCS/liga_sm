@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -10,7 +9,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Auth;
 
 class UsuarioController extends Controller
 {
@@ -68,5 +66,11 @@ class UsuarioController extends Controller
         $this->authorize('delete', $user);
         $this->usuarioService->deleteUsuario($user);
         return response()->noContent();
+    }
+
+    public function entrenadores()
+    {
+        $entrenadores = $this->usuarioService->getEntrenadores();
+        return response()->json(['data' => $entrenadores]);
     }
 }

@@ -14,27 +14,19 @@ class TorneoService
         $this->torneoRepository = $torneoRepository;
     }
 
-    public function getAll()
+    public function getAll($catalog = false)
     {
-        return $this->torneoRepository->getAll();
+        return $this->torneoRepository->getAll($catalog);
     }
 
-    public function findById($id)
+    public function findById($id, $catalog = false)
     {
-        return $this->torneoRepository->findById($id);
+        return $this->torneoRepository->findById($id, $catalog);
     }
 
     public function create(array $data)
     {
-        $validator = Validator::make($data, [
-            'nombre' => 'required|string',
-            'categoria_id' => 'required|exists:categoria,id',
-            'temporada_id' => 'required|exists:temporada,id',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date',
-            'estado' => 'required|string',
-            'campeon_id' => 'nullable|exists:equipo,id',
-        ]);
+        $validator = $this->validateTorneo($data);
 
         if ($validator->fails()) {
             return ['errors' => $validator->errors()];
@@ -50,15 +42,7 @@ class TorneoService
             return null;
         }
 
-        $validator = Validator::make($data, [
-            'nombre' => 'required|string',
-            'categoria_id' => 'required|exists:categoria,id',
-            'temporada_id' => 'required|exists:temporada,id',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date',
-            'estado' => 'required|string',
-            'campeon_id' => 'nullable|exists:equipos,id',
-        ]);
+        $validator = $this->validateTorneo($data, $id);
 
         if ($validator->fails()) {
             return ['errors' => $validator->errors()];
@@ -74,5 +58,25 @@ class TorneoService
             return null;
         }
         $this->torneoRepository->delete($torneo);
+    }
+
+    /**
+     * Validate torneo data
+     * 
+     * @param array $data
+     * @param int|null $id
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validateTorneo(array $data, $id = null)
+    {
+        return Validator::make($data, [
+            'nombre' => 'required|string',
+            'categoria_id' => 'required|exists:categoria,id',
+            'temporada_id' => 'required|exists:temporada,id',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'required|date',
+            'estado' => 'required|string',
+            'campeon_id' => 'nullable|exists:equipo,id',
+        ]);
     }
 }

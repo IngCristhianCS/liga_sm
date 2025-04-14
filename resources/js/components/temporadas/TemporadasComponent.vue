@@ -1,22 +1,32 @@
 <template>
   <section class="content contact">
     <div class="container-fluid">
-      <!-- Encabezado se mantiene igual -->
-      
+      <div class="block-header">
+        <div class="row clearfix">
+          <div class="col-lg-5 col-md-5 col-sm-12">
+            <h2>Administración de Temporadas</h2>
+          </div>
+          <div class="col-lg-7 col-md-7 col-sm-12">
+            <ul class="breadcrumb float-md-right padding-0">
+              <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i></a></li>
+              <li class="breadcrumb-item"><a href="javascript:void(0);">Administración</a></li>
+              <li class="breadcrumb-item active">Temporadas</li>
+            </ul>
+          </div>
+        </div>
+      </div>
       <div class="row clearfix">
         <div class="col-lg-12">
           <div class="tab-content">
             <div class="tab-pane active" id="List">
               <div class="card">
-                <div class="body">
-                  <ul class="nav nav-tabs padding-0">
-                    <li class="nav-item" v-if="authStore.isAdmin">
-                      <a class="btn btn-primary btn-round" href="#largeModal" data-toggle="modal"
-                        data-target="#largeModal">
-                        {{ mode === 'create' ? 'Nueva' : 'Editar' }} Temporada
-                      </a>
-                    </li>
+                <div class="header">
+                  <ul class="header-dropdown">
+                    <li class="nav-item" v-if="authStore.isAdmin"><a href="#largeModal" data-toggle="modal"
+                        data-target="#largeModal"><i class="zmdi zmdi-plus-circle zmdi-hc-3x"></i></a></li>
                   </ul>
+                </div>
+                <div class="body">
                   <div class="table-responsive">
                     <table id="temporadas"
                       class="table table-bordered table-striped table-hover js-basic-example dataTable">
@@ -42,24 +52,19 @@
     </div>
   </section>
 
-  <TemporadaForm 
-    :mode="mode"
-    :current-temporada="currentTemporada"
-    @submit="handleSubmit"
-    @cancel="resetForm"
-  />
+  <TemporadaForm :mode="mode" :current-temporada="currentTemporada" @submit="handleSubmit" @cancel="resetForm" />
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import axios from 'axios';
 import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
 import Notification from '@/utils/notification';
-import { useAuthStore } from '../../stores/auth';
+import { useAuthStore } from '@/stores/auth';
+import { useTemporadasStore } from '@/stores/temporadas';
 import TemporadaForm from './TemporadaForm.vue';
 
 const authStore = useAuthStore();
-const temporadas = ref([]);
+const temporadasStore = useTemporadasStore();
 const mode = ref('create');
 
 /** @type {import('vue').Ref<Temporada>} */
@@ -76,18 +81,18 @@ const currentTemporada = reactive({
  */
 const columns = [
   { data: 'nombre', title: 'Nombre' },
-  { 
-    data: 'fecha_inicio', 
+  {
+    data: 'fecha_inicio',
     title: 'Fecha Inicio',
     render: (data) => new Date(data).toLocaleDateString()
   },
-  { 
-    data: 'fecha_fin', 
+  {
+    data: 'fecha_fin',
     title: 'Fecha Fin',
     render: (data) => new Date(data).toLocaleDateString()
   },
-  { 
-    data: 'estado', 
+  {
+    data: 'estado',
     title: 'Estado',
     render: (data) => data.charAt(0).toUpperCase() + data.slice(1)
   },
@@ -112,15 +117,14 @@ const columns = [
 ];
 
 /**
- * Carga las temporadas desde la API
+ * Carga las temporadas desde el store
  * @returns {Promise<void>}
  */
 const loadTemporadas = async () => {
   try {
-    const { data } = await axios.get('/api/temporadas');
-    temporadas.value = data.data;
-    
-    initializeDataTable('temporadas', temporadas.value, columns);
+    await temporadasStore.loadTemporadas();
+
+    initializeDataTable('temporadas', temporadasStore.temporadas, columns);
     attachTableEvents('temporadas', editTemporada, deleteTemporada);
 
   } catch (error) {
@@ -135,7 +139,7 @@ const loadTemporadas = async () => {
  * @returns {void}
  */
 const editTemporada = (id) => {
-  const temporada = temporadas.value.find(t => t.id === id);
+  const temporada = temporadasStore.getTemporadaById(id);
   if (temporada) {
     mode.value = 'edit';
     Object.assign(currentTemporada, temporada);
@@ -158,7 +162,7 @@ const deleteTemporada = async (id) => {
 
   if (result.isConfirmed) {
     try {
-      await axios.delete(`/api/temporadas/${id}`);
+      await temporadasStore.deleteTemporada(id);
       await loadTemporadas();
       Notification.success('Temporada eliminada correctamente');
     } catch (error) {
@@ -174,18 +178,20 @@ const deleteTemporada = async (id) => {
  */
 const handleSubmit = async (formData) => {
   try {
-    const method = mode.value === 'create' ? 'post' : 'put';
-    const url = method === 'post' ? '/api/temporadas' : `/api/temporadas/${formData.id}`;
-    
-    await axios[method](url, formData);
+    if (mode.value === 'create') {
+      await temporadasStore.createTemporada(formData);
+    } else {
+      await temporadasStore.updateTemporada(formData.id, formData);
+    }
+
     await loadTemporadas();
-    
+
     Notification.success(
       `Temporada ${mode.value === 'create' ? 'creada' : 'actualizada'} correctamente`
     );
     $('#largeModal').modal('hide');
     resetForm();
-    
+
   } catch (error) {
     Notification.error('Error al guardar temporada');
   }

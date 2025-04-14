@@ -22,20 +22,21 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 // Rutas públicas de Torneos
-Route::get('/torneos', [TorneoController::class, 'index']); // Listar todos
-Route::get('/torneos/{torneo}', [TorneoController::class, 'show']); // Ver detalle
-Route::get('/torneos/{torneoId}/jornadas', [TorneoController::class, 'jornadas']); // Jornadas
+Route::get('/torneos', [TorneoController::class, 'index']);
+Route::get('/torneos/catalog', [TorneoController::class, 'catalog']);
+Route::get('/torneos/{torneo}', [TorneoController::class, 'show']);
+Route::get('/torneos/{torneoId}/jornadas', [TorneoController::class, 'jornadas']);
 
 Route::get('/clasificacion/{torneoId}', [ClasificacionController::class, 'index']);
 
-Route::middleware(['auth:sanctum'])->group(function () {    
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('users', UsuarioController::class);
     Route::apiResource('equipo', EquipoController::class);
     Route::apiResource('roles', RoleController::class);
-    Route::apiResource('ingresos', IngresoController::class);    
+    Route::apiResource('ingresos', IngresoController::class);
     Route::apiResource('egresos', EgresoController::class);
     Route::apiResource('temporadas', TemporadaController::class);
-    Route::apiResource('categorias', CategoriaController::class);    
+    Route::apiResource('categorias', CategoriaController::class);
     Route::apiResource('equipos', EquipoController::class);
 
     // Rutas protegidas de Torneos (POST, PUT, DELETE)
@@ -44,9 +45,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/torneos/{torneo}', [TorneoController::class, 'destroy']);
 
     Route::get('/jornadas/partidos-equipo', [PartidoController::class, 'obtenerPartidosPorEquipo']);
-    Route::put('password', [PasswordController::class, 'update']);    
+    Route::put('password', [PasswordController::class, 'update']);
     Route::patch('/profile', [ProfileController::class, 'update']);
     Route::apiResource('partidos', PartidoController::class);
     Route::apiResource('jornadas', JornadaController::class);
     Route::apiResource('ubicaciones', UbicacionController::class);
 });
+
+// Add this route to your api.php file
+Route::get('/entrenadores', [UsuarioController::class, 'entrenadores']);

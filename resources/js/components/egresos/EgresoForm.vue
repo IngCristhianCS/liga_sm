@@ -59,25 +59,36 @@
                 </div>
               </div>
 
+              <!-- Torneo Selector -->
               <div class="col-md-6">
                 <div class="form-group">
-                  <label>Partido ID</label>
-                  <input type="number" id="partido_id" class="form-control" v-model="formData.partido_id"
-                    @input="validateSingleField('partido_id')">
+                  <label>Torneo</label>
+                  <select id="torneo_id" class="form-control" v-model="formData.torneo_id"
+                    @change="handleTorneoChange">
+                    <option value="">Seleccione un torneo</option>
+                    <option v-for="torneo in torneoStore.torneosCatalog" :key="torneo.id" :value="torneo.id">
+                      {{ torneo.nombre }}
+                    </option>
+                  </select>
                   <div class="invalid-feedback">
-                    {{ apiErrors?.partido_id ? apiErrors.partido_id[0] : 'El ID del partido debe ser un número válido'
-                    }}
+                    {{ apiErrors?.torneo_id ? apiErrors.torneo_id[0] : 'Debe seleccionar un torneo válido' }}
                   </div>
                 </div>
               </div>
 
+              <!-- Partido Selector -->
               <div class="col-md-6">
                 <div class="form-group">
-                  <label>Torneo ID</label>
-                  <input type="number" id="torneo_id" class="form-control" v-model="formData.torneo_id"
-                    @input="validateSingleField('torneo_id')">
+                  <label>Partido</label>
+                  <select id="partido_id" class="form-control" v-model="formData.partido_id"
+                    @change="validateSingleField('partido_id')" :disabled="!formData.torneo_id">
+                    <option value="">Seleccione un partido</option>
+                    <option v-for="partido in filteredPartidos" :key="partido.id" :value="partido.id">
+                      {{ formatPartidoLabel(partido) }}
+                    </option>
+                  </select>
                   <div class="invalid-feedback">
-                    {{ apiErrors?.torneo_id ? apiErrors.torneo_id[0] : 'El ID del torneo debe ser un número válido' }}
+                    {{ apiErrors?.partido_id ? apiErrors.partido_id[0] : 'Debe seleccionar un partido válido' }}
                   </div>
                 </div>
               </div>
@@ -97,8 +108,10 @@
 </template>
 
 <script setup>
-import { reactive, watch, ref } from 'vue';
+import { reactive, watch, ref, computed, onMounted } from 'vue';
 import { RegexUtils, validateForm, validateField } from '@/utils/regex-util';
+import { useTorneoStore } from '@/stores/torneos';
+import { usePartidoStore } from '@/stores/partidos';
 
 const props = defineProps({
   mode: {
@@ -112,6 +125,11 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['submit', 'cancel']);
+const apiErrors = ref({});
+
+// Use stores
+const torneoStore = useTorneoStore();
+const partidoStore = usePartidoStore();
 
 const validation = {
   fecha: {
@@ -153,6 +171,33 @@ const formData = reactive({
   ...props.currentEgreso
 });
 
+// Filter partidos based on selected torneo
+const filteredPartidos = computed(() => {
+  if (!formData.torneo_id) return [];
+  return partidoStore.partidos.filter(partido => 
+    partido.torneo_id === formData.torneo_id
+  );
+});
+
+// Format partido label for dropdown
+const formatPartidoLabel = (partido) => {
+  // Check if we have the equipo_local and equipo_visitante objects
+  const localName = partido.equipo_local?.nombre || 'Equipo Local';
+  const visitanteName = partido.equipo_visitante?.nombre || 'Equipo Visitante';
+ 
+  return `${localName} vs ${visitanteName}`;
+};
+
+// Handle torneo change
+const handleTorneoChange = async () => {
+  validateSingleField('torneo_id');
+  formData.partido_id = '';
+  
+  if (formData.torneo_id) {
+    await partidoStore.fetchPartidosByTorneo(formData.torneo_id);
+  }
+};
+
 const handleSubmit = () => {
   apiErrors.value = {};
   if (validateForm(validation, formData)) {
@@ -164,6 +209,11 @@ const handleSubmit = () => {
       partido_id: formData.partido_id ? Number(formData.partido_id) : null,
       torneo_id: formData.torneo_id ? Number(formData.torneo_id) : null
     };
+    
+    if (props.mode === 'edit' && props.currentEgreso.id) {
+      submitData.id = props.currentEgreso.id;
+    }
+    
     emit('submit', submitData);
   }
 };
@@ -180,7 +230,24 @@ const handleApiErrors = (errors) => {
 
 watch(() => props.currentEgreso, (newVal) => {
   Object.assign(formData, newVal);
+  
+  // If we have a torneo_id, load the partidos for that torneo
+  if (newVal.torneo_id) {
+    partidoStore.fetchPartidosByTorneo(newVal.torneo_id);
+  }
 }, { deep: true });
+
+onMounted(async () => {
+  // Load torneos catalog if not already loaded
+  if (torneoStore.torneosCatalog.length === 0) {
+    await torneoStore.fetchTorneosCatalog();
+  }
+  
+  // If we have a torneo_id in the form data, load partidos for that torneo
+  if (formData.torneo_id) {
+    await partidoStore.fetchPartidosByTorneo(formData.torneo_id);
+  }
+});
 
 defineExpose({
   handleApiErrors
