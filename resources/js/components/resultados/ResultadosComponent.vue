@@ -1,8 +1,6 @@
 <template>
   <section class="content blog-page">
-    <div v-if="store.loading" class="loading"><AppLoader/></div>
-    <div v-else-if="store.error" class="error">{{ store.error }}</div>
-    <div v-else class="container">
+    <div class="container">
       <div class="block-header">
         <div class="row clearfix">
           <div class="col-lg-5 col-md-5 col-sm-12">
@@ -17,6 +15,7 @@
           </div>
         </div>
       </div>
+      <TorneosMenu @torneoSeleccionado="handleTorneoSeleccionado"/>      
       <div class="row clearfix">
         <div class="col-lg-6 col-md-12" v-for="jornada in store.jornadas" :key="jornada.jornada_id">
           <div class="card single_post">
@@ -66,15 +65,36 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue' // Importar hook
+import { onMounted, ref } from 'vue'
 import { useResultadosStore } from '@/stores/resultados'
+import { useTorneoStore } from '@/stores/torneos'
+import TorneosMenu from '@/components/global/TorneosMenu.vue';
 
 const store = useResultadosStore()
-const torneoId = 2
+const torneoStore = useTorneoStore()
+const selectedTorneoId = ref(null)
 
-onMounted(() => {
-  if (store.jornadas.length === 0) {
-    store.fetchJornadas(torneoId)
+const loadResultados = async (torneoId) => {
+  if (torneoId) {
+    await store.fetchJornadas(torneoId)
+  }
+}
+
+const handleTorneoSeleccionado = (torneoId) => {
+  selectedTorneoId.value = torneoId
+  loadResultados(torneoId)
+}
+
+onMounted(async () => {
+  // Load torneos catalog if not already loaded
+  if (torneoStore.torneosCatalog.length === 0) {
+    await torneoStore.fetchTorneosCatalog()
+  }
+  
+  // If torneos are available, select the first one by default
+  if (torneoStore.torneosCatalog.length > 0) {
+    selectedTorneoId.value = torneoStore.torneosCatalog[0].id
+    await loadResultados(selectedTorneoId.value)
   }
 })
 </script>
