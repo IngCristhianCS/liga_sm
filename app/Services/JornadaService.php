@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\JornadaRepository;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -50,10 +51,7 @@ class JornadaService
         // Si tiene más de uno, habría que ajustar la lógica.
         $torneoId = $torneosEquipo->first();
 
-        // Obtener los partidos del equipo en el torneo
-        $partidos = $this->jornadaRepository->obtenerPartidosPorJornadaEquipoTorneo($torneoId, $equipoId);
-
-        return $partidos;
+        return $this->jornadaRepository->obtenerPartidosPorJornadaEquipoTorneo($torneoId, $equipoId);
     }
     
     public function getAll($torneoId = null)

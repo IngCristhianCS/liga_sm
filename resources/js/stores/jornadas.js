@@ -3,7 +3,6 @@ import axios from 'axios';
 
 export const useJornadasStore = defineStore('jornadas', {
     state: () => ({
-        jornadas: [],
         jornadasByTorneo: {},
         currentJornada: null,
         loading: false,
@@ -12,24 +11,16 @@ export const useJornadasStore = defineStore('jornadas', {
     
     getters: {
         getJornadaById: (state) => (id) => {
-            return state.jornadas.find(jornada => jornada.id === id);
+            // Search for the jornada in all tournament collections
+            for (const torneoId in state.jornadasByTorneo) {
+                const found = state.jornadasByTorneo[torneoId].find(jornada => jornada.id === id);
+                if (found) return found;
+            }
+            return null;
         }
     },
     
     actions: {
-        async loadJornadas() {
-            try {
-                this.loading = true;
-                this.error = null;
-                const response = await axios.get('/api/jornadas/partidos-equipo');
-                this.jornadas = response.data.data;
-            } catch (error) {
-                this.error = 'Error al cargar datos';
-            } finally {
-                this.loading = false;
-            }
-        },
-        
         async loadJornadasByTorneo(torneoId) {
             // If we already have the jornadas for this tournament, don't fetch again
             if (this.jornadasByTorneo[torneoId]) {
@@ -66,17 +57,15 @@ export const useJornadasStore = defineStore('jornadas', {
                 const response = await axios.get(`/api/jornadas/${id}`);
                 this.currentJornada = response.data.data;
                 
-                // Update the jornada in the list if it exists
-                const index = this.jornadas.findIndex(j => j.id === id);
-                if (index !== -1) {
-                    this.jornadas[index] = this.currentJornada;
-                } else {
-                    this.jornadas.push(this.currentJornada);
-                }
-                
                 // Update in the torneo-specific list if it exists
-                if (this.currentJornada.torneo_id && this.jornadasByTorneo[this.currentJornada.torneo_id]) {
-                    const torneoIndex = this.jornadasByTorneo[this.currentJornada.torneo_id].findIndex(j => j.id === id);
+                if (this.currentJornada.torneo_id) {
+                    if (!this.jornadasByTorneo[this.currentJornada.torneo_id]) {
+                        this.jornadasByTorneo[this.currentJornada.torneo_id] = [];
+                    }
+                    
+                    const torneoIndex = this.jornadasByTorneo[this.currentJornada.torneo_id]
+                        .findIndex(j => j.id === id);
+                    
                     if (torneoIndex !== -1) {
                         this.jornadasByTorneo[this.currentJornada.torneo_id][torneoIndex] = this.currentJornada;
                     } else {
@@ -100,11 +89,12 @@ export const useJornadasStore = defineStore('jornadas', {
                 const response = await axios.post('/api/jornadas', jornadaData);
                 const newJornada = response.data.data;
                 
-                // Add to the main list
-                this.jornadas.push(newJornada);
-                
-                // Add to the torneo-specific list if it exists
-                if (newJornada.torneo_id && this.jornadasByTorneo[newJornada.torneo_id]) {
+                // Add to the torneo-specific list
+                if (newJornada.torneo_id) {
+                    // Initialize the array for this torneo if it doesn't exist
+                    if (!this.jornadasByTorneo[newJornada.torneo_id]) {
+                        this.jornadasByTorneo[newJornada.torneo_id] = [];
+                    }
                     this.jornadasByTorneo[newJornada.torneo_id].push(newJornada);
                 }
                 
@@ -126,17 +116,29 @@ export const useJornadasStore = defineStore('jornadas', {
                 const response = await axios.put(`/api/jornadas/${id}`, jornadaData);
                 const updatedJornada = response.data.data;
                 
-                // Update in the main list
-                const index = this.jornadas.findIndex(j => j.id === id);
-                if (index !== -1) {
-                    this.jornadas[index] = updatedJornada;
+                // Get the jornada before update to check if torneo_id changed
+                const oldJornada = this.getJornadaById(id);
+                const oldTorneoId = oldJornada?.torneo_id;
+                
+                // If torneo_id changed, remove from old torneo list
+                if (oldTorneoId && oldTorneoId !== updatedJornada.torneo_id && this.jornadasByTorneo[oldTorneoId]) {
+                    this.jornadasByTorneo[oldTorneoId] = this.jornadasByTorneo[oldTorneoId]
+                        .filter(j => j.id !== id);
                 }
                 
-                // Update in the torneo-specific list if it exists
-                if (updatedJornada.torneo_id && this.jornadasByTorneo[updatedJornada.torneo_id]) {
-                    const torneoIndex = this.jornadasByTorneo[updatedJornada.torneo_id].findIndex(j => j.id === id);
+                // Update in the torneo-specific list
+                if (updatedJornada.torneo_id) {
+                    if (!this.jornadasByTorneo[updatedJornada.torneo_id]) {
+                        this.jornadasByTorneo[updatedJornada.torneo_id] = [];
+                    }
+                    
+                    const torneoIndex = this.jornadasByTorneo[updatedJornada.torneo_id]
+                        .findIndex(j => j.id === id);
+                    
                     if (torneoIndex !== -1) {
                         this.jornadasByTorneo[updatedJornada.torneo_id][torneoIndex] = updatedJornada;
+                    } else {
+                        this.jornadasByTorneo[updatedJornada.torneo_id].push(updatedJornada);
                     }
                 }
                 
@@ -162,16 +164,14 @@ export const useJornadasStore = defineStore('jornadas', {
                 this.error = null;
                 await axios.delete(`/api/jornadas/${id}`);
                 
-                // Get the torneo_id before removing from lists
+                // Get the jornada to find its torneo_id
                 const jornada = this.getJornadaById(id);
                 const torneoId = jornada?.torneo_id;
                 
-                // Remove from the main list
-                this.jornadas = this.jornadas.filter(j => j.id !== id);
-                
                 // Remove from the torneo-specific list if it exists
                 if (torneoId && this.jornadasByTorneo[torneoId]) {
-                    this.jornadasByTorneo[torneoId] = this.jornadasByTorneo[torneoId].filter(j => j.id !== id);
+                    this.jornadasByTorneo[torneoId] = this.jornadasByTorneo[torneoId]
+                        .filter(j => j.id !== id);
                 }
                 
                 // Clear current jornada if it's the one being deleted
@@ -189,7 +189,6 @@ export const useJornadasStore = defineStore('jornadas', {
         },
         
         clearJornadas() {
-            this.jornadas = [];
             this.jornadasByTorneo = {};
             this.currentJornada = null;
             this.error = null;

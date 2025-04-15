@@ -197,10 +197,8 @@ export const usePartidoStore = defineStore('partidos', {
       this.error = null;
       
       try {
-        // Check if partidoData is FormData
         const isFormData = partidoData instanceof FormData;
         
-        // Get the torneo_id from the form data or object before sending
         let torneoId;
         if (isFormData) {
           torneoId = partidoData.get('torneo_id');
@@ -208,13 +206,11 @@ export const usePartidoStore = defineStore('partidos', {
           torneoId = partidoData.torneo_id;
         }
         
-        // Find the partido to get its old torneo_id BEFORE the update
         const oldPartido = this.getPartidoById(id);
         const oldTorneoId = oldPartido?.torneo_id;
         
         let response;
         if (isFormData) {
-          // If it's FormData, we need to use POST with _method=PUT for Laravel
           partidoData.append('_method', 'PUT');
           response = await axios.post(`/api/partidos/${id}`, partidoData, {
             headers: {
@@ -222,7 +218,6 @@ export const usePartidoStore = defineStore('partidos', {
             }
           });
         } else {
-          // Regular JSON update
           response = await axios.put(`/api/partidos/${id}`, partidoData);
         }
         
@@ -246,21 +241,13 @@ export const usePartidoStore = defineStore('partidos', {
             .filter(p => p.id !== id);
         }
         
-        // Make sure we have a torneo_id to work with
         const effectiveTorneoId = updatedPartido.torneo_id || oldTorneoId || torneoId;
         
         if (effectiveTorneoId) {
-          // Make sure the array exists
           if (!this.partidosByTorneo[effectiveTorneoId]) {
             this.partidosByTorneo[effectiveTorneoId] = [];
           }
-          
-          // Add the updated partido to the array
           this.partidosByTorneo[effectiveTorneoId].push(updatedPartido);
-          
-          // For debugging
-          console.log(`Added partido ${id} to torneo ${effectiveTorneoId}`, 
-            this.partidosByTorneo[effectiveTorneoId].length);
         } else {
           console.warn(`No torneo_id found for partido ${id}, cannot add to any array`);
         }
@@ -301,7 +288,6 @@ export const usePartidoStore = defineStore('partidos', {
         
         return true;
       } catch (error) {
-        console.error(`Error deleting partido ${id}:`, error);
         this.error = error.message || 'Error al eliminar el partido';
         return false;
       } finally {

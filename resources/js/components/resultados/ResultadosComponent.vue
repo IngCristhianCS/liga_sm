@@ -86,12 +86,10 @@ const handleTorneoSeleccionado = (torneoId) => {
 }
 
 onMounted(async () => {
-  // Load torneos catalog if not already loaded
   if (torneoStore.torneosCatalog.length === 0) {
     await torneoStore.fetchTorneosCatalog()
   }
   
-  // If torneos are available, select the first one by default
   if (torneoStore.torneosCatalog.length > 0) {
     selectedTorneoId.value = torneoStore.torneosCatalog[0].id
     await loadResultados(selectedTorneoId.value)

@@ -94,11 +94,20 @@ const columns = [
   },
   { 
     data: 'fecha_inicio',
-    render: (data) => data ? new Date(data).toLocaleDateString() : 'No definida'
+    render: (data) => {
+      if (!data) return 'No definida';
+      // Fix timezone issue by parsing the date correctly
+      const date = new Date(data);
+      return date.toLocaleDateString('es-ES', { timeZone: 'UTC' });
+    }
   },
   { 
     data: 'fecha_fin',
-    render: (data) => data ? new Date(data).toLocaleDateString() : 'No definida'
+    render: (data) => {
+      if (!data) return 'No definida';
+      const date = new Date(data);
+      return date.toLocaleDateString('es-ES', { timeZone: 'UTC' });
+    }
   },
   {
     data: null,
@@ -111,10 +120,14 @@ const columns = [
     render: (data, type, row) => {
       if (!authStore.isAdmin) return '';
       return `
-        <button class="btn btn-icon btn-neutral btn-icon-mini btnEditar" data-id="${row.id}" title="Editar">
+         <button class="btn btn-icon btn-neutral btn-icon-mini btnEditar"
+                data-id="${row.id}"
+                data-toggle="modal"
+                data-target="#largeModal">
           <i class="zmdi zmdi-edit"></i>
         </button>
-        <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar" data-id="${row.id}" title="Eliminar">
+        <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar"
+                data-id="${row.id}">
           <i class="zmdi zmdi-delete"></i>
         </button>`;
     }
@@ -128,20 +141,25 @@ const loadJornadas = async () => {
       
       if ($.fn.DataTable.isDataTable('#tablajornadas')) {
         const table = $('#tablajornadas').DataTable();
-        table.clear().rows.add(jornadasStore.jornadasByTorneo[selectedTorneoId.value]).draw();
+        table.clear().rows.add(jornadasStore.jornadasByTorneo[selectedTorneoId.value] || []).draw();
       } else {
-        initializeDataTable('tablajornadas', jornadasStore.jornadasByTorneo[selectedTorneoId.value], columns);
+        initializeDataTable('tablajornadas', jornadasStore.jornadasByTorneo[selectedTorneoId.value] || [], columns);
         attachTableEvents('tablajornadas', handleEdit, handleDelete);
       }
     } else {
-      await jornadasStore.loadJornadas();
-      
-      if ($.fn.DataTable.isDataTable('#tablajornadas')) {
-        const table = $('#tablajornadas').DataTable();
-        table.clear().rows.add(jornadasStore.jornadas).draw();
+      // If no torneo is selected, show an empty table or select the first available torneo
+      if (torneoStore.torneos.length > 0) {
+        selectedTorneoId.value = torneoStore.torneos[0].id;
+        await loadJornadas(); // Call recursively with the selected torneo
       } else {
-        initializeDataTable('tablajornadas', jornadasStore.jornadas, columns);
-        attachTableEvents('tablajornadas', handleEdit, handleDelete);
+        // Initialize with empty array if no torneos available
+        if ($.fn.DataTable.isDataTable('#tablajornadas')) {
+          const table = $('#tablajornadas').DataTable();
+          table.clear().draw();
+        } else {
+          initializeDataTable('tablajornadas', [], columns);
+          attachTableEvents('tablajornadas', handleEdit, handleDelete);
+        }
       }
     }
   } catch (error) {
