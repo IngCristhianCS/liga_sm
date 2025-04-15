@@ -66,7 +66,7 @@ import Notification from '@/utils/notification';
 import { useAuthStore } from '@/stores/auth';
 import { useJornadasStore } from '@/stores/jornadas';
 import { useTorneoStore } from '@/stores/torneos';
-import JornadaForm from '@/components/jornadas/jornadaform.vue';
+import JornadaForm from '@/components/jornadas/JornadaForm.vue';
 import TorneosMenu from '@/components/global/TorneosMenu.vue';
 
 const authStore = useAuthStore();
