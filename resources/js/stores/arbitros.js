@@ -21,7 +21,7 @@ export const useArbitrosStore = defineStore('arbitros', {
                 this.arbitros = response.data.data;
                 return this.arbitros;
             } catch (error) {
-                this.error = 'Error al cargar árbitros';
+                this.error = error.response?.data?.message || error.message || 'Error cargando arbitros';
                 return [];
             } finally {
                 this.loading = false;

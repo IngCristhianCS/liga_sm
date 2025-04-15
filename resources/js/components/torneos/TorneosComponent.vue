@@ -58,6 +58,12 @@
     @submit="handleSubmit" 
     @cancel="resetForm" 
   />
+  
+  <!-- Modal para asignar equipos a torneos -->
+  <TorneoEquiposModal 
+    :torneoId="selectedTorneoId"
+    @updated="handleEquiposUpdated"
+  />
 </template>
 
 <script setup>
@@ -70,6 +76,7 @@ import { useTorneoStore } from '@/stores/torneos';
 import { useCategoriasStore } from '@/stores/categorias';
 import { useTemporadasStore } from '@/stores/temporadas';
 import TorneoForm from './TorneoForm.vue';
+import TorneoEquiposModal from './TorneoEquiposModal.vue';
 
 const authStore = useAuthStore();
 const torneoStore = useTorneoStore();
@@ -77,6 +84,7 @@ const categoriasStore = useCategoriasStore();
 const temporadasStore = useTemporadasStore();
 const equipos = ref([]);
 const mode = ref('create');
+const selectedTorneoId = ref(null);
 
 /** @type {import('vue').Ref<Torneo>} */
 const currentTorneo = reactive({
@@ -132,6 +140,10 @@ const columns = [
         <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar"
                 data-id="${row.id}">
           <i class="zmdi zmdi-delete"></i>
+        </button>
+        <button class="btn btn-icon btn-neutral btn-icon-mini btnAsignarEquipos"
+                data-id="${row.id}">
+          <i class="zmdi zmdi-accounts"></i>
         </button>`;
     }
   }
@@ -151,9 +163,8 @@ const loadInitialData = async () => {
       loadEquipos()
     ]);
 
-
     initializeDataTable('torneos', torneoStore.torneos, columns);
-    attachTableEvents('torneos', editTorneo, deleteTorneo);
+    attachTableEvents('torneos', editTorneo, deleteTorneo, asignarEquipos);
 
   } catch (error) {
     console.error('Error cargando datos:', error);
@@ -215,6 +226,25 @@ const deleteTorneo = async (id) => {
       Notification.error('Error al eliminar torneo');
     }
   }
+};
+
+/**
+ * Abre el modal para asignar equipos a un torneo
+ * @param {number} id - ID del torneo
+ * @returns {void}
+ */
+const asignarEquipos = async (id) => {
+  selectedTorneoId.value = id;
+  $('#torneoEquiposModal').modal('show');
+};
+
+/**
+ * Maneja la actualización de equipos asignados
+ * @returns {Promise<void>}
+ */
+const handleEquiposUpdated = async () => {
+  await loadInitialData();
+  Notification.success('Equipos asignados correctamente');
 };
 
 /**

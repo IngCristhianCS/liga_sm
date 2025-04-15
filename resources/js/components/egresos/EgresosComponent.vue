@@ -68,11 +68,9 @@
 import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import Notification from '@/utils/notification';
-import { useAuthStore } from '@/stores/auth';
 import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
-import EgresoForm from './EgresoForm.vue';
+import EgresoForm from '@/components/egresos/EgresoForm.vue';
 
-const authStore = useAuthStore();
 const egresoFormRef = ref(null);
 const egresos = ref([]);
 const mode = ref('create');

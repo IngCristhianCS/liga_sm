@@ -14,7 +14,8 @@
             </ul>
           </div>
         </div>
-      </div>
+      </div>      
+      <TorneosMenu @torneoSeleccionado="handleTorneoSeleccionado" />  
       <div class="row clearfix">
         <div class="col-lg-12">
           <div class="card">
@@ -24,8 +25,7 @@
                     data-target="#largeModal" @click="openCreateModal"><i class="zmdi zmdi-plus-circle zmdi-hc-3x"></i></a></li>
               </ul>
             </div>
-            <div class="body">
-              <TorneosMenu @torneoSeleccionado="handleTorneoSeleccionado" />              
+            <div class="body">            
               <div class="table-responsive">
                 <table id="tablajornadas" class="table table-bordered table-striped table-hover js-basic-example dataTable">
                   <thead>

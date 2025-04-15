@@ -16,6 +16,7 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\JornadaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TorneoEquipoController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -54,3 +55,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 // Add this route to your api.php file
 Route::get('/entrenadores', [UsuarioController::class, 'entrenadores']);
+
+// Add these routes to your existing routes
+Route::get('/torneos/{torneo}/equipos', [TorneoEquipoController::class, 'getEquiposByTorneo']);
+Route::post('/torneos/{torneo}/equipos', [TorneoEquipoController::class, 'assignEquipos']);

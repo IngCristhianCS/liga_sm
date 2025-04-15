@@ -1,24 +1,30 @@
 <template>
   <div v-if="store.loading">
-    <AppLoader/>
+    <AppLoader />
   </div>
-  
+
   <div v-else-if="store.error">
     <p>Error al cargar torneos: {{ store.error }}</p>
   </div>
-  
-  <div v-else-if="store.torneosCatalog.length > 0">
-    <ul class="nav nav-tabs padding-0">
-      <li class="nav-item inlineblock" v-for="torneo in store.torneosCatalog" :key="torneo.id">
-        <a class="nav-link" href="#" 
-           @click.prevent="seleccionarTorneo(torneo.id)"
-           :class="{ 'active': torneoSeleccionado === torneo.id }">
-          {{ torneo.nombre }}
-        </a>
-      </li>
-    </ul>
+
+
+  <div v-else-if="store.torneosCatalog.length > 0" class="row clearfix">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="body">
+          <ul class="nav nav-tabs padding-0">
+            <li class="nav-item inlineblock" v-for="torneo in store.torneosCatalog" :key="torneo.id">
+              <a class="nav-link" href="#" @click.prevent="seleccionarTorneo(torneo.id)"
+                :class="{ 'active': torneoSeleccionado === torneo.id }">
+                {{ torneo.nombre }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
-  
+
   <div v-else>
     <p>No hay torneos disponibles.</p>
   </div>
@@ -33,7 +39,7 @@ const store = useTorneoStore();
 const torneoSeleccionado = ref(null);
 const hasEmitted = ref(false);
 
-onMounted(async () => {  
+onMounted(async () => {
   if (store.torneosCatalog.length > 0 && !hasEmitted.value) {
     hasEmitted.value = true;
     torneoSeleccionado.value = store.torneosCatalog[0].id;

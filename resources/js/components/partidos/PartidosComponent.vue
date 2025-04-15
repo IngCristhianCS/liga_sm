@@ -15,26 +15,14 @@
           </div>
         </div>
       </div>
-
-      <!-- Componente de selección de torneos -->
-      <div class="row clearfix">
-        <div class="col-lg-12">
-          <div class="card">
-            <div class="body">
-              <TorneosMenu @torneoSeleccionado="loadPartidosByTorneo" />
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <TorneosMenu @torneoSeleccionado="loadPartidosByTorneo" />
       <div class="row clearfix">
         <div class="col-lg-12">
           <div class="card">
             <div class="header">
               <ul class="header-dropdown">
-                <li class="nav-item"><a href="#largeModal" data-toggle="modal"
-                    data-target="#largeModal" @click="openCreateModal"><i
-                      class="zmdi zmdi-plus-circle zmdi-hc-3x"></i></a>
+                <li class="nav-item"><a href="#largeModal" data-toggle="modal" data-target="#largeModal"
+                    @click="openCreateModal"><i class="zmdi zmdi-plus-circle zmdi-hc-3x"></i></a>
                 </li>
               </ul>
             </div>
@@ -144,7 +132,7 @@ const loadPartidosByTorneo = async (torneoId) => {
   try {
     // Load jornadas for this torneo first
     await jornadaStore.loadJornadasByTorneo(torneoId);
-    
+
     // Use the partido store to fetch partidos
     await partidoStore.fetchPartidosByTorneo(torneoId);
 

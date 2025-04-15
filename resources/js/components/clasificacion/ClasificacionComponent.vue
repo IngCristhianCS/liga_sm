@@ -23,19 +23,11 @@
           </div>
         </div>
       </div>
-
+      <TorneosMenu @torneoSeleccionado="actualizarClasificacion" />
       <div class="row clearfix">
         <div class="col-lg-12">
-          <div class="card">
-            <div class="body">
-              <TorneosMenu @torneoSeleccionado="actualizarClasificacion" />
-            </div>
-          </div>
-
           <div class="card" id="details">
             <div class="body">
-              <h4 class="margin-0"></h4>
-              <div class="mt-40"></div>
               <div class="row">
                 <div class="col-md-12">
                   <div class="table-responsive">

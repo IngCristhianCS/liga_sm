@@ -25,24 +25,32 @@ export const initializeDataTable = (tableId, data, columns) => {
 };
 
 /**
- * Asigna eventos de clic a los botones de edición y eliminación en una tabla DataTable.
- * @param tableId - El ID del elemento HTML de la tabla.
- * @param onEdit - Función de callback para manejar la edición.
- * @param onDelete - Función de callback para manejar la eliminación.
+ * Attach event handlers to table buttons
+ * @param {string} tableId - ID of the table
+ * @param {Function} editHandler - Handler for edit button
+ * @param {Function} deleteHandler - Handler for delete button
+ * @param {Function} [assignEquiposHandler] - Optional handler for assign equipos button
  */
-export const attachTableEvents = (tableId, onEdit, onDelete) => {
-    const tabla = `#${tableId}`;
-    const tbody = $(tabla + ' tbody');
-    tbody.off('click', '.btnEditar');
-    tbody.off('click', '.btnEliminar');
-
-    tbody.on('click', '.btnEditar', function () {
-        const id = $(this).data('id');
-        onEdit(id);
+export const attachTableEvents = (tableId, editHandler, deleteHandler, assignEquiposHandler = null) => {
+  const table = $(`#${tableId}`);
+  
+  // Edit button handler
+  table.on('click', '.btnEditar', function() {
+    const id = $(this).data('id');
+    editHandler(id);
+  });
+  
+  // Delete button handler
+  table.on('click', '.btnEliminar', function() {
+    const id = $(this).data('id');
+    deleteHandler(id);
+  });
+  
+  // Assign equipos button handler (if provided)
+  if (assignEquiposHandler) {
+    table.on('click', '.btnAsignarEquipos', function() {
+      const id = $(this).data('id');
+      assignEquiposHandler(id);
     });
-
-    tbody.on('click', '.btnEliminar', function () {
-        const id = $(this).data('id');
-        onDelete(id);
-    });
+  }
 };

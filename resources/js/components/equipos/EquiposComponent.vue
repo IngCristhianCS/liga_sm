@@ -15,19 +15,18 @@
           </div>
         </div>
       </div>
+      <TorneosMenu @torneoSeleccionado="handleTorneoSeleccionado" />
       <div class="row clearfix">
         <div class="col-lg-12">
           <div class="card">
             <div class="header">
               <ul class="header-dropdown">
                 <li class="nav-item" v-if="authStore.isAdmin"><a href="#largeModal" data-toggle="modal"
-                    data-target="#largeModal" @click="openCreateModal"><i class="zmdi zmdi-plus-circle zmdi-hc-3x"></i></a></li>
+                    data-target="#largeModal" @click="openCreateModal"><i
+                      class="zmdi zmdi-plus-circle zmdi-hc-3x"></i></a></li>
               </ul>
             </div>
             <div class="body">
-              <!-- Tournament selector -->
-              <TorneosMenu @torneoSeleccionado="handleTorneoSeleccionado" />
-              
               <div class="table-responsive">
                 <table id="equipos" class="table table-bordered table-striped table-hover js-basic-example dataTable">
                   <thead>
@@ -50,15 +49,8 @@
     </div>
   </section>
 
-  <EquipoForm 
-    :mode="formMode" 
-    :current-equipo="currentEquipo" 
-    :entrenadores="entrenadores"
-    @submit="handleFormSubmit" 
-    @cancel="resetForm"
-    @torneoSelected="handleFormTorneoSelected"
-    ref="equipoFormRef"
-  />
+  <EquipoForm :mode="formMode" :current-equipo="currentEquipo" :entrenadores="entrenadores" @submit="handleFormSubmit"
+    @cancel="resetForm" @torneoSelected="handleFormTorneoSelected" ref="equipoFormRef" />
 </template>
 
 <script setup>
@@ -85,8 +77,8 @@ const selectedTorneoId = ref(null);
  * @type {import('datatables.net').ColumnSettings[]}
  */
 const columns = [
-  { 
-    data: 'imagen', 
+  {
+    data: 'imagen',
     title: 'Imagen',
     render: (data) => {
       if (data) {
@@ -98,13 +90,13 @@ const columns = [
     }
   },
   { data: 'nombre', title: 'Nombre' },
-  { 
-    data: 'categoria', 
+  {
+    data: 'categoria',
     title: 'Categoría',
     render: (data) => data ? data.nombre : 'N/A'
   },
-  { 
-    data: 'entrenador', 
+  {
+    data: 'entrenador',
     title: 'Entrenador',
     render: (data) => data ? data.name : 'Sin entrenador'
   },
@@ -132,7 +124,7 @@ const loadEquipos = async (torneoId = null) => {
   try {
     if (torneoId) {
       await equiposStore.loadEquiposByTorneo(torneoId);
-      
+
       // If DataTable already exists, clear and reload
       if ($.fn.DataTable.isDataTable('#equipos')) {
         const table = $('#equipos').DataTable();
@@ -200,7 +192,7 @@ const handleFormSubmit = async (formData) => {
   try {
     // Make sure formData is a FormData object
     let processedFormData = formData;
-    
+
     // If it's not already a FormData object, create one
     if (!(formData instanceof FormData)) {
       processedFormData = new FormData();
@@ -208,11 +200,11 @@ const handleFormSubmit = async (formData) => {
         processedFormData.append(key, formData[key]);
       }
     }
-    
+
     // Handle base64 image if present
     if (processedFormData.get('imagen_base64')) {
       const base64Data = processedFormData.get('imagen_base64');
-      
+
       // Create a new FormData to avoid mutation issues
       const newFormData = new FormData();
       for (const [key, value] of processedFormData.entries()) {
@@ -220,16 +212,16 @@ const handleFormSubmit = async (formData) => {
           newFormData.append(key, value);
         }
       }
-      
+
       newFormData.append('imagen', base64Data);
       processedFormData = newFormData;
     }
-    
+
     // Add torneo_id if needed
     if (selectedTorneoId.value && !processedFormData.get('torneo_id')) {
       processedFormData.append('torneo_id', selectedTorneoId.value);
     }
-    
+
     if (formMode.value === 'create') {
       await equiposStore.createEquipo(processedFormData);
       Notification.success('Equipo creado correctamente');
@@ -237,11 +229,11 @@ const handleFormSubmit = async (formData) => {
       await equiposStore.updateEquipo(currentEquipo.value.id, processedFormData);
       Notification.success('Equipo actualizado correctamente');
     }
-    
+
     // Cerrar el modal
     document.querySelector('[data-dismiss="modal"]').click();
     await loadEquipos(selectedTorneoId.value);
-    
+
     // Resetear el formulario
     resetForm();
   } catch (error) {
@@ -263,7 +255,7 @@ const deleteEquipo = async (id) => {
       'Sí, eliminar',
       'Cancelar'
     );
-    
+
     if (result.isConfirmed) {
       await equiposStore.deleteEquipo(id);
       await loadEquipos(selectedTorneoId.value);
@@ -282,7 +274,7 @@ onMounted(async () => {
   if (torneoStore.torneosCatalog.length === 0) {
     await torneoStore.fetchTorneosCatalog();
   }
-  
+
   await Promise.all([
     loadEntrenadores()
   ]);
