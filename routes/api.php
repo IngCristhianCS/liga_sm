@@ -14,6 +14,7 @@ use App\Http\Controllers\EgresoController;
 use App\Http\Controllers\TemporadaController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\EventoPartidoController;
 use App\Http\Controllers\JornadaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TorneoEquipoController;
@@ -51,11 +52,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('partidos', PartidoController::class);
     Route::apiResource('jornadas', JornadaController::class);
     Route::apiResource('ubicaciones', UbicacionController::class);
+    Route::apiResource('eventos-partido', EventoPartidoController::class);
 });
 
-// Add this route to your api.php file
+Route::get('/equipos/{equipo}/jugadores', [EquipoController::class, 'getJugadoresByEquipo']);
 Route::get('/entrenadores', [UsuarioController::class, 'entrenadores']);
 
-// Add these routes to your existing routes
 Route::get('/torneos/{torneo}/equipos', [TorneoEquipoController::class, 'getEquiposByTorneo']);
 Route::post('/torneos/{torneo}/equipos', [TorneoEquipoController::class, 'assignEquipos']);
+
+Route::get('/partidos/{partido}/eventos', [EventoPartidoController::class, 'getByPartido']);
+
+// Add this route to your existing routes
+Route::get('/arbitros', [App\Http\Controllers\ArbitroController::class, 'index']);
+

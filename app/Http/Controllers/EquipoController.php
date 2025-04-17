@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Equipo;
+use App\Models\User;
 use App\Services\EquipoService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -70,5 +71,13 @@ class EquipoController extends Controller
         $this->authorize('delete', $equipo);
         $this->equipoService->deleteEquipo($id);
         return response()->json(null, 204);
+    }
+
+    public function getJugadoresByEquipo($equipoId)
+    {
+        $jugadores = $this->equipoService->getJugadoresByEquipo($equipoId);
+        return response()->json([
+            'data' => $jugadores
+        ]);
     }
 }

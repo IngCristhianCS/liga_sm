@@ -6,7 +6,9 @@ export const useEquiposStore = defineStore('equipos', {
         equiposByTorneo: {},
         currentEquipo: null,
         loading: false,
-        error: null
+        error: null,
+        // Add a new state property to store jugadores by equipo
+        jugadoresByEquipo: {}
     }),
     
     getters: {
@@ -24,6 +26,11 @@ export const useEquiposStore = defineStore('equipos', {
             }
             
             return null;
+        },
+        
+        // Add a new getter to get jugadores by equipo
+        getJugadoresByEquipo: (state) => (equipoId) => {
+            return state.jugadoresByEquipo[equipoId] || [];
         }
     },
     
@@ -219,9 +226,33 @@ export const useEquiposStore = defineStore('equipos', {
             }
         },
         
+        // Add a new action to load jugadores by equipo
+        async loadJugadoresByEquipo(equipoId) {
+            // If we already have the jugadores for this equipo, don't fetch again
+            if (this.jugadoresByEquipo[equipoId]) {
+                return this.jugadoresByEquipo[equipoId];
+            }
+            
+            try {
+                this.loading = true;
+                this.error = null;
+                const response = await axios.get(`/api/equipos/${equipoId}/jugadores`);
+                this.jugadoresByEquipo[equipoId] = response.data.data;
+                return this.jugadoresByEquipo[equipoId];
+            } catch (error) {
+                console.error(`Error loading jugadores for equipo ${equipoId}:`, error);
+                this.error = 'Error al cargar jugadores del equipo';
+                return [];
+            } finally {
+                this.loading = false;
+            }
+        },
+        
+        // Update the clearEquipos method to also clear jugadores
         clearEquipos() {
             this.equiposByTorneo = {};
             this.currentEquipo = null;
+            this.jugadoresByEquipo = {}; // Clear jugadores as well
             this.error = null;
         }
     },

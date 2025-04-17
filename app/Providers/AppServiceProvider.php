@@ -17,9 +17,11 @@ use App\Policies\TorneoPolicy;
 use App\Models\Temporada;
 use App\Policies\TemporadaPolicy;
 use App\Models\Categoria;
+use App\Models\EventoPartido;
 use App\Models\Jornada;
 use App\Models\Partido;
 use App\Policies\CategoriaPolicy;
+use App\Policies\EventoPartidoPolicy;
 use App\Policies\JornadaPolicy;
 use App\Policies\PartidoPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -44,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
         Categoria::class => CategoriaPolicy::class,
         Partido::class => PartidoPolicy::class,
         Jornada::class => JornadaPolicy::class,
+        EventoPartido::class => EventoPartidoPolicy::class,
         // Agregar otras políticas aquí
     ];
 

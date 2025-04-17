@@ -81,6 +81,11 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "partidos" */ './components/partidos/PartidosComponent.vue')
     },
     {
+      path: '/partidos/:id/detalles',
+      name: 'partido-detalles',
+      component: () => import(/* webpackChunkName: "partido-detalles" */ './components/partidos/PartidoDetalles.vue')
+    },
+    {
       path: '/jornadas',
       name: 'Jornadas',
       component: () => import(/* webpackChunkName: "jornadas" */ './components/jornadas/JornadasComponent.vue')

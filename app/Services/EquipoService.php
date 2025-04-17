@@ -152,4 +152,9 @@ class EquipoService
         
         return null;
     }
+
+    public function getJugadoresByEquipo($equipoId)
+    {
+        return $this->equipoRepository->getJugadoresByEquipo($equipoId);
+    }
 }

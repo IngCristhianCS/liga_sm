@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class EventoPartido extends Model
 {
     use HasFactory;
+    protected $table = 'evento_partido';
 
     protected $fillable = ['partido_id', 'minuto', 'tipo_evento', 'jugador_id'];
 
