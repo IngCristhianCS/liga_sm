@@ -104,8 +104,8 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal" @click="cancel">CANCELAR</button>
-            <button type="submit" class="btn btn-primary waves-effect">GUARDAR</button>
+            <button type="button" class="btn btn-danger btn-simple btn-round waves-effect" data-dismiss="modal" @click="cancel">Cancelar</button>
+            <button type="submit" class="btn btn-default btn-round waves-effect">Guardar</button>
           </div>
         </form>
       </div>

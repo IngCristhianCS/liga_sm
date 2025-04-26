@@ -68,8 +68,8 @@
 import { ref, onMounted } from 'vue';
 import Notification from '@/utils/notification';
 import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
-import PartidoForm from './PartidoForm.vue';
-import TorneosMenu from '../global/TorneosMenu.vue';
+import PartidoForm from '@/components/partidos/PartidoForm.vue';
+import TorneosMenu from '@/components/global/TorneosMenu.vue';
 import { useJornadasStore } from '@/stores/jornadas';
 import { usePartidoStore } from '@/stores/partidos';
 import EventoEquipoForm from './EventoEquipoForm.vue';

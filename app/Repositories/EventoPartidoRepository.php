@@ -20,7 +20,7 @@ class EventoPartidoRepository
 
     public function getByPartidoId($partidoId)
     {
-        return $this->model->with(['jugador'])
+        return $this->model->with(['jugador.user'])
             ->where('partido_id', $partidoId)
             ->orderBy('minuto', 'asc')
             ->get();

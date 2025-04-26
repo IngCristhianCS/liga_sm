@@ -5,7 +5,7 @@
                 <li>
                     <div class="navbar-header">
                         <a href="javascript:void(0);" class="h-bars"></a>
-                        <a class="navbar-brand" href="/"><img src="assets/images/logo.webp" width="50"
+                        <a class="navbar-brand" href="/"><img src="/assets/images/logo.webp" width="50"
                                 alt="San Miguel"><span class="m-l-10">San Miguel</span></a>
                     </div>
                 </li>

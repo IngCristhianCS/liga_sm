@@ -31,7 +31,13 @@ class PartidoRepository
 
     public function findById($id)
     {
-        return $this->model->findOrFail($id);
+        return $this->model->with([
+            'ubicacion',
+            'equipoLocal',
+            'equipoVisitante',
+            'torneo',
+            'jornada'
+        ])->findOrFail($id);
     }
 
     public function create(array $data)

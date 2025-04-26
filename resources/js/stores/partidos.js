@@ -223,40 +223,18 @@ export const usePartidoStore = defineStore('partidos', {
         
         const updatedPartido = response.data.data;
         
-        // Ensure we have a torneo_id in the updated partido
-        if (!updatedPartido.torneo_id) {
-          // Use the torneo_id from the request data first
-          if (torneoId) {
-            updatedPartido.torneo_id = torneoId;
+        updatedPartido.torneo_id = torneoId;
+
+        if (oldTorneoId !== updatedPartido.torneo_id) {
+          if (oldTorneoId && this.partidosByTorneo[oldTorneoId]) {
+            this.partidosByTorneo[oldTorneoId] = this.partidosByTorneo[oldTorneoId]
+             .filter(p => p.id!== id);
           } 
-          // If not available, use the old torneo_id
-          else if (oldTorneoId) {
-            updatedPartido.torneo_id = oldTorneoId;
-          }
         }
-        
-        // Remove from old torneo array
-        if (oldTorneoId && this.partidosByTorneo[oldTorneoId]) {
-          this.partidosByTorneo[oldTorneoId] = this.partidosByTorneo[oldTorneoId]
-            .filter(p => p.id !== id);
+        if (torneoId && this.partidosByTorneo[torneoId]) {
+          this.partidosByTorneo[torneoId].push(updatedPartido);
+          return updatedPartido; 
         }
-        
-        const effectiveTorneoId = updatedPartido.torneo_id || oldTorneoId || torneoId;
-        
-        if (effectiveTorneoId) {
-          if (!this.partidosByTorneo[effectiveTorneoId]) {
-            this.partidosByTorneo[effectiveTorneoId] = [];
-          }
-          this.partidosByTorneo[effectiveTorneoId].push(updatedPartido);
-        } else {
-          console.warn(`No torneo_id found for partido ${id}, cannot add to any array`);
-        }
-        
-        // Update currentPartido if it's the one being edited
-        if (this.currentPartido && this.currentPartido.id === id) {
-          this.currentPartido = updatedPartido;
-        }
-        
         return updatedPartido;
       } catch (error) {
         console.error(`Error updating partido ${id}:`, error);

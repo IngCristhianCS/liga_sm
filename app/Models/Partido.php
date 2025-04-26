@@ -36,4 +36,9 @@ class Partido extends Model
     {
         return $this->belongsTo(Torneo::class);
     }
+    
+    public function jornada()
+    {
+        return $this->belongsTo(Jornada::class);
+    }
 }

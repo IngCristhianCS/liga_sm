@@ -102,7 +102,15 @@ export const useEventoPartidoStore = defineStore('eventoPartido', {
         return true;
       } catch (error) {
         this.error = error.response?.data?.message || 'Error al eliminar evento';
-        return false;
+        console.error('Error en deleteEvento:', error.response?.data);
+        
+        // Si es un error de autorización, manejarlo específicamente
+        if (error.response?.status === 403 || 
+            error.response?.data?.message === 'This action is unauthorized.') {
+          this.error = 'No tienes permiso para eliminar este evento';
+        }
+        
+        throw error; // Propagar el error para que el componente pueda manejarlo
       } finally {
         this.loading = false;
       }

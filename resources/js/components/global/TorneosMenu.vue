@@ -7,7 +7,6 @@
     <p>Error al cargar torneos: {{ store.error }}</p>
   </div>
 
-
   <div v-else-if="store.torneosCatalog.length > 0" class="row clearfix">
     <div class="col-lg-12">
       <div class="card">
