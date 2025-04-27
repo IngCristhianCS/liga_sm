@@ -179,7 +179,7 @@ const columns = [
     data: 'tipo_evento', 
     title: 'Tipo de Evento',
     render: function(data) {
-      return getIconoEvento(data) + getTipoEventoTexto(data);
+      return `<i class="${getIconoEvento(data)}"></i> ${getTipoEventoTexto(data)}`;
     }
   }
 ];
@@ -257,10 +257,10 @@ const getTipoEventoTexto = (tipo) => {
 
 const getIconoEvento = (tipo) => {
   switch (tipo) {
-    case 'gol': return 'zmdi zmdi-soccer zmdi-hc-2x';
+    case 'gol': return 'zmdi zmdi-google-earth zmdi-hc-2x';
     case 'tarjeta_amarilla': return 'zmdi zmdi-card zmdi-hc-2x text-warning';
     case 'tarjeta_roja': return 'zmdi zmdi-card zmdi-hc-2x text-danger';
-    case 'tarjeta_azul': return 'zmdi zmdi-card zmdi-hc-2x text-primary';
+    case 'tarjeta_azul': return 'zmdi zmdi-card zmdi-hc-2x text-info';
     case 'falta': return 'zmdi zmdi-alert-triangle zmdi-hc-2x text-warning';
     case 'lesion': return 'zmdi zmdi-hospital zmdi-hc-2x';
     case 'penal': return 'zmdi zmdi-dot-circle zmdi-hc-2x';
