@@ -19,7 +19,6 @@ class PartidoController extends Controller
     {
         $this->partidoService = $partidoService;
         $this->jornadaService = $jornadaService;
-        $this->middleware('auth:sanctum');
     }
 
     public function index(Request $request)
@@ -48,7 +47,7 @@ class PartidoController extends Controller
     public function show($id)
     {
         $partido = $this->partidoService->findById($id);
-        $this->authorize('view', $partido);
+        //$this->authorize('view', $partido);
         return response()->json(['data' => $partido]);
     }
 

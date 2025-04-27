@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\Equipo;
-use App\Models\User;
 
 class EquipoRepository
 {
@@ -49,8 +48,18 @@ class EquipoRepository
 
     public function getJugadoresByEquipo($equipoId)
     {
-        return User::whereHas('jugador', function($query) use ($equipoId) {
-            $query->where('equipo_id', $equipoId);
-        })->select('id', 'name as nombre')->get();
+        return \Illuminate\Support\Facades\DB::table('jugador as j')
+            ->join('users as u', 'j.user_id', '=', 'u.id')
+            ->join('equipo as e', 'e.id', '=', 'j.equipo_id')
+            ->where('e.id', $equipoId)
+            ->select('j.id', 'u.name as nombre', 'u.id as user_id')
+            ->get()
+            ->map(function($item) {
+                return [
+                    'id' => $item->id,
+                    'nombre' => $item->nombre,
+                    'user_id' => $item->user_id
+                ];
+            });
     }
 }

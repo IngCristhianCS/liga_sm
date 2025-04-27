@@ -28,6 +28,7 @@ Route::get('/torneos', [TorneoController::class, 'index']);
 Route::get('/torneos/catalog', [TorneoController::class, 'catalog']);
 Route::get('/torneos/{torneo}', [TorneoController::class, 'show']);
 Route::get('/torneos/{torneoId}/jornadas', [TorneoController::class, 'jornadas']);
+Route::get('/partidos/{id}', [PartidoController::class, 'show']);
 
 Route::get('/clasificacion/{torneoId}', [ClasificacionController::class, 'index']);
 
@@ -41,15 +42,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('categorias', CategoriaController::class);
     Route::apiResource('equipos', EquipoController::class);
 
-    // Rutas protegidas de Torneos (POST, PUT, DELETE)
+    // Rutas protegidas (POST, PUT, DELETE)
     Route::post('/torneos', [TorneoController::class, 'store']);
     Route::put('/torneos/{torneo}', [TorneoController::class, 'update']);
     Route::delete('/torneos/{torneo}', [TorneoController::class, 'destroy']);
 
+    Route::post('/partidos', [TorneoController::class, 'store']);
+    Route::put('/partidos/{partido}', [TorneoController::class, 'update']);
+    Route::delete('/partidos/{partido}', [TorneoController::class, 'destroy']);
+    Route::get('/partidos', [PartidoController::class,'index']);
+
     Route::get('/jornadas/partidos-equipo', [PartidoController::class, 'obtenerPartidosPorEquipo']);
     Route::put('password', [PasswordController::class, 'update']);
     Route::patch('/profile', [ProfileController::class, 'update']);
-    Route::apiResource('partidos', PartidoController::class);
+
     Route::apiResource('jornadas', JornadaController::class);
     Route::apiResource('ubicaciones', UbicacionController::class);
     Route::apiResource('eventos-partido', EventoPartidoController::class);

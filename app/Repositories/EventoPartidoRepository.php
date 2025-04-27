@@ -15,7 +15,7 @@ class EventoPartidoRepository
 
     public function getAll()
     {
-        return $this->model->with(['partido', 'jugador'])->get();
+        return $this->model->with(['partido', 'jugador.user'])->get();
     }
 
     public function getByPartidoId($partidoId)
@@ -28,18 +28,18 @@ class EventoPartidoRepository
 
     public function findById($id)
     {
-        return $this->model->with(['partido', 'jugador'])->findOrFail($id);
+        return $this->model->with(['partido', 'jugador.user'])->findOrFail($id);
     }
 
     public function create(array $data)
     {
-        return $this->model->create($data);
+        return $this->model->create($data)->load(['partido', 'jugador.user']);
     }
 
     public function update($eventoPartido, array $data)
     {
         $eventoPartido->update($data);
-        return $eventoPartido->fresh();
+        return $eventoPartido->fresh()->load(['partido', 'jugador.user']);
     }
 
     public function delete($eventoPartido)

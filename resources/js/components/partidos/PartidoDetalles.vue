@@ -16,10 +16,8 @@
         </div>
       </div>
       <!-- Loading indicator -->
-      <div v-if="loading" class="text-center p-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Cargando...</span>
-        </div>
+      <div v-if="loading">
+        <AppLoader />
       </div>
 
       <!-- Error message -->
@@ -28,7 +26,7 @@
       </div>
 
       <!-- Main content -->
-      <div v-else class="row clearfix">
+      <div class="row clearfix">
         <div class="col-lg-12">
           <div class="card">
             <div class="body text-center">
@@ -153,24 +151,65 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, nextTick, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { usePartidoStore } from '@/stores/partidos';
 import { useEventoPartidoStore } from '@/stores/eventoPartido';
 import { useAuthStore } from '@/stores/auth';
 import EventoEquipoForm from '@/components/partidos/EventoEquipoForm.vue';
 import Notification from '@/utils/notification';
+import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
+
 
 const route = useRoute();
 const partidoStore = usePartidoStore();
 const eventoPartidoStore = useEventoPartidoStore();
 const authStore = useAuthStore();
+// Configuración de columnas para DataTable
+const columns = [
+  { data: 'minuto', title: 'Minuto' },
+  { 
+    data: 'jugador', 
+    title: 'Jugador',
+    render: function(data) {
+      return data?.user?.name || 'Desconocido';
+    }
+  },
+  { 
+    data: 'tipo_evento', 
+    title: 'Tipo de Evento',
+    render: function(data) {
+      return getIconoEvento(data) + getTipoEventoTexto(data);
+    }
+  }
+];
+
+if(authStore.isAdmin) {
+  columns.push(
+    
+  { 
+    data: null, 
+    title: 'Acciones',
+    orderable: false,
+    render: function(data) {
+      if (authStore.isAdmin) {
+        return `
+          <button class="btn btn-icon btn-neutral btn-icon-mini btnEditar" data-id="${data.id}">
+            <i class="zmdi zmdi-edit"></i>
+          </button>
+          <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar" data-id="${data.id}">
+            <i class="zmdi zmdi-delete"></i>
+          </button>
+        `;
+      }
+      return '';
+    }
+  })
+}
 
 const loading = ref(true);
 const error = ref(null);
 const partido = ref({});
-// Usar eventos directamente del store
-const eventos = computed(() => eventoPartidoStore.getEventosByPartidoId(partido.value?.id || 0) || []);
 const estadisticas = ref({
   faltas_local: 0,
   faltas_visitante: 0,
@@ -203,10 +242,6 @@ const formatHora = computed(() => {
   return partido.value.hora_inicio;
 });
 
-const sortedEventos = computed(() => {
-  return [...(eventos.value ?? [])].sort((a, b) => a.minuto - b.minuto);
-});
-
 const getTipoEventoTexto = (tipo) => {
   switch (tipo) {
     case 'gol': return 'Gol';
@@ -222,14 +257,14 @@ const getTipoEventoTexto = (tipo) => {
 
 const getIconoEvento = (tipo) => {
   switch (tipo) {
-    case 'gol': return 'fa fa-futbol-o';
-    case 'tarjeta_amarilla': return 'fa fa-square text-warning';
-    case 'tarjeta_roja': return 'fa fa-square text-danger';
-    case 'tarjeta_azul': return 'fa fa-square text-primary';
-    case 'falta': return 'fa fa-exclamation-triangle';
-    case 'lesion': return 'fa fa-medkit';
-    case 'penal': return 'fa fa-bullseye';
-    default: return 'fa fa-circle';
+    case 'gol': return 'zmdi zmdi-soccer zmdi-hc-2x';
+    case 'tarjeta_amarilla': return 'zmdi zmdi-card zmdi-hc-2x text-warning';
+    case 'tarjeta_roja': return 'zmdi zmdi-card zmdi-hc-2x text-danger';
+    case 'tarjeta_azul': return 'zmdi zmdi-card zmdi-hc-2x text-primary';
+    case 'falta': return 'zmdi zmdi-alert-triangle zmdi-hc-2x text-warning';
+    case 'lesion': return 'zmdi zmdi-hospital zmdi-hc-2x';
+    case 'penal': return 'zmdi zmdi-dot-circle zmdi-hc-2x';
+    default: return 'zmdi zmdi-circle zmdi-hc-2x';
   }
 };
 
@@ -260,20 +295,30 @@ const cargarEventos = async () => {
     try {
       await eventoPartidoStore.fetchEventosByPartido(partido.value.id);
       calcularEstadisticas();
+      
+      inicializarTabla();
     } catch (err) {
       console.error('Error al cargar eventos:', err);
     }
   }
 };
 
+const inicializarTabla = () =>{
+  if ($.fn.DataTable.isDataTable('#tabla-eventos')) {
+    $('#tabla-eventos').DataTable().destroy();
+  }
+
+  const sortedEventos = eventoPartidoStore.getEventosByPartidoId(partido.value.id).sort((a, b) => a.minuto - b.minuto);
+  console.log('Eventos ordenados:', sortedEventos);
+  initializeDataTable('tabla-eventos', sortedEventos, columns);
+  attachTableEvents('tabla-eventos', editarEvento, eliminarEvento);
+}
+
 const calcularEstadisticas = () => {
   Object.keys(estadisticas.value).forEach(key => {
     estadisticas.value[key] = 0;
   });
-
-  if (!eventos.value?.length) return;
-
-  eventos.value.forEach(evento => {
+  eventoPartidoStore.getEventosByPartidoId(partido.value.id).forEach(evento => {
     const esLocal = evento.jugador?.user?.equipo_id === partido.value?.equipo_local_id;
     const equipoKey = esLocal ? 'local' : 'visitante';
 
@@ -297,30 +342,46 @@ const calcularEstadisticas = () => {
   });
 };
 
-// Gestión de eventos
 const openEventoModal = () => {
   eventoMode.value = 'create';
   currentEvento.value = {};
-  nextTick(() => {
-    $('#eventoPartidoModal').modal('show');
-  });
+  $('#eventoPartidoModal').modal('show');
 };
 
 const closeEventoModal = () => {
-  nextTick(() => {
-    $('#eventoPartidoModal').modal('hide');
-  });
+  $('#eventoPartidoModal').modal('hide');
 };
 
-const editarEvento = (evento) => {
+const editarEvento = (eventoId) => {
+  // Buscar el evento completo usando el ID
+  const eventos = eventoPartidoStore.getEventosByPartidoId(partido.value.id);
+  const evento = eventos.find(e => e.id === eventoId);
+  
+  if (!evento) {
+    console.error('No se encontró el evento con ID:', eventoId);
+    Notification.error('No se pudo encontrar el evento para editar', 'Error');
+    return;
+  }
+  
+  console.log('Editando evento:', evento);
   currentEvento.value = { ...evento };
   eventoMode.value = 'edit';
-  nextTick(() => {
-    $('#eventoPartidoModal').modal('show');
-  });
+  $('#eventoPartidoModal').modal('show');
 };
 
-const eliminarEvento = (evento) => {
+const eliminarEvento = (eventoId) => {
+  // Buscar el evento completo usando el ID
+  const eventos = eventoPartidoStore.getEventosByPartidoId(partido.value.id);
+  const evento = eventos.find(e => e.id === eventoId);
+  
+  if (!evento) {
+    console.error('No se encontró el evento con ID:', eventoId);
+    Notification.error('No se pudo encontrar el evento para eliminar', 'Error');
+    return;
+  }
+  
+  console.log('Eliminando evento:', evento);
+  
   Notification.confirm(
     "Esta acción no se puede revertir",
     '¿Estás seguro?',
@@ -332,6 +393,9 @@ const eliminarEvento = (evento) => {
         await eventoPartidoStore.deleteEvento(evento.id, partido.value.id);
         // El store ya actualiza el array de eventos internamente
         calcularEstadisticas();
+        
+        inicializarTabla();
+        
         await Notification.success('El evento ha sido eliminado correctamente', 'Eliminado');
       } catch (error) {
         console.error('Error al eliminar evento:', error);
@@ -350,17 +414,17 @@ const eliminarEvento = (evento) => {
 
 const handleEventoSubmit = async (formData) => {
   try {
-    let eventoActualizado;
     if (eventoMode.value === 'create') {
-      eventoActualizado = await eventoPartidoStore.createEvento(formData);
+      await eventoPartidoStore.createEvento(formData);
       // El store ya actualiza el array de eventos internamente
     } else {
-      eventoActualizado = await eventoPartidoStore.updateEvento(currentEvento.value.id, formData);
+      await eventoPartidoStore.updateEvento(currentEvento.value.id, formData);
       // El store ya actualiza el evento en su estado interno
     }
 
     closeEventoModal();
-    calcularEstadisticas();
+    calcularEstadisticas();    
+    inicializarTabla();
 
     await Notification.success(
       eventoMode.value === 'create' ? 'Evento creado' : 'Evento actualizado'
@@ -371,81 +435,11 @@ const handleEventoSubmit = async (formData) => {
   }
 }
 
-// Watch for route changes
-watch(() => route.params.id, (newId) => {
-  if (newId) {
-    cargarPartido();
-  }
-}, { immediate: true });
-
-import { initializeDataTable, attachTableEvents } from '@/utils/datatables-utils';
-
-// Configuración de columnas para DataTable
-const columns = [
-  { data: 'minuto', title: 'Minuto' },
-  { 
-    data: 'jugador', 
-    title: 'Jugador',
-    render: function(data) {
-      return data?.user?.name || 'Desconocido';
-    }
-  },
-  { 
-    data: 'tipo_evento', 
-    title: 'Tipo de Evento',
-    render: function(data) {
-      return getTipoEventoTexto(data);
-    }
-  },
-  { 
-    data: null, 
-    title: 'Acciones',
-    orderable: false,
-    render: function(data) {
-      if (authStore.isAdmin) {
-        return `
-          <button class="btn btn-icon btn-neutral btn-icon-mini btnEditar" data-id="${data.id}">
-            <i class="zmdi zmdi-edit"></i>
-          </button>
-          <button class="btn btn-icon btn-neutral btn-icon-mini btnEliminar" data-id="${data.id}">
-            <i class="zmdi zmdi-delete"></i>
-          </button>
-        `;
-      }
-      return '';
-    }
-  }
-];
-
-const initDataTable = () => {
-  nextTick(() => {
-    initializeDataTable('tabla-eventos', sortedEventos.value, columns);
-    attachTableEvents('tabla-eventos', editarEvento, eliminarEvento);
-    
-  });
-};
-
-// Solo actualizar la tabla cuando cambian los eventos, sin recargar datos
-watch(eventos, () => {
-  nextTick(() => {
-    // Solo actualizar la tabla DataTable
-    if ($.fn.DataTable.isDataTable('#tabla-eventos')) {
-      $('#tabla-eventos').DataTable().destroy();
-    }
-    initDataTable();
-  });
-});
-
+// Cargar partido cuando se monta el componente
 onMounted(() => {
-  // No es necesario llamar a cargarPartido() aquí porque ya se llama en el watcher con immediate: true
-  nextTick(() => {
-    initDataTable();
-  });
-});
-
-onBeforeUnmount(() => {
-  if ($.fn.DataTable.isDataTable('#tabla-eventos')) {
-    $('#tabla-eventos').DataTable().destroy();
+  const partidoId = route.params.id;
+  if (partidoId) {
+    cargarPartido();
   }
 });
 </script>

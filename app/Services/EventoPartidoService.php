@@ -26,7 +26,7 @@ class EventoPartidoService
 
     public function getEventoById($id)
     {
-        return $this->eventoPartidoRepository->findById($id)->with(['jugador.user']);
+        return $this->eventoPartidoRepository->findById($id);
     }
 
     public function createEvento(array $data)

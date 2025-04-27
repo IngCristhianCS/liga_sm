@@ -29,12 +29,12 @@
     <script src="/assets/bundles/vendorscripts.bundle.js"></script>
     <script src="/assets/bundles/knob.bundle.js"></script>
     <script src="/assets/bundles/mainscripts.bundle.js"></script>
+    <script src="/assets/bundles/datatablescripts.bundle.js"></script>
     @auth
         <script>
             window.authUser = @json(auth()->user()->load('role'));
             window.authUser.apiToken = "{{ session('api_token') }}";
         </script>
-        <script src="/assets/bundles/datatablescripts.bundle.js"></script>
     @else
         <script>
             window.authUser = null;

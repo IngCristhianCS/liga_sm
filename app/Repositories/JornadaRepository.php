@@ -57,6 +57,7 @@ class JornadaRepository
             ->where('p.torneo_id', $torneoId)
             ->where('p.jornada_id', $jornadaId)
             ->select(
+                'p.id',
                 'el.nombre AS equipo_local',
                 'el.imagen AS imagen_local',
                 'p.goles_equipo_local',

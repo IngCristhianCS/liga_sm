@@ -53,15 +53,6 @@
   <!-- Modal para crear/editar partido -->
   <PartidoForm :mode="formMode" :current-partido="currentPartido" @submit="handleFormSubmit" @cancel="resetForm"
     ref="partidoForm" />
-
-    <EventoEquipoForm 
-    ref="eventoFormRef"
-    :mode="eventoMode" 
-    :partido="selectedPartido"
-    :current-evento="currentEvento"
-    @submit="handleEventoSubmit"
-    @cancel="closeEventoModal"
-  />
 </template>
 
 <script setup>
@@ -72,8 +63,6 @@ import PartidoForm from '@/components/partidos/PartidoForm.vue';
 import TorneosMenu from '@/components/global/TorneosMenu.vue';
 import { useJornadasStore } from '@/stores/jornadas';
 import { usePartidoStore } from '@/stores/partidos';
-import EventoEquipoForm from './EventoEquipoForm.vue';
-import { useEventoPartidoStore } from '@/stores/eventoPartido';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
@@ -135,10 +124,10 @@ const columns = [
                 data-id="${row.id}">
             <i class="zmdi zmdi-delete"></i>
           </button>
-          <a class="btn btn-icon btn-neutral btn-icon-mini btnDetalles"
+          <button class="btn btn-icon btn-neutral btn-icon-mini btnDetalles"
              data-id="${row.id}">
             <i class="zmdi zmdi-calendar-note"></i>
-          </a>`;
+          </button>`;
     }
   }
 ];
@@ -251,67 +240,6 @@ const formatDate = (dateString) => {
     minute: '2-digit'
   }).format(date);
 };
-
-// Add these refs after your existing refs
-const eventoPartidoStore = useEventoPartidoStore();
-const selectedPartido = ref({});
-const eventoFormRef = ref(null);
-const eventoMode = ref('create');
-const currentEvento = ref({});
-
-// Add these methods before onMounted
-const handleEventoButtonClick = async (id) => {
-  try {
-    // Fetch the partido details
-    const partido = await partidoStore.fetchPartidoById(id);
-    if (partido) {
-      selectedPartido.value = partido;
-      eventoMode.value = 'create';
-      currentEvento.value = {};
-      // Open the modal
-      $('#eventoPartidoModal').modal('show');
-    }
-  } catch (error) {
-    Notification.error('No se pudieron cargar los detalles del partido');
-  }
-};
-
-const handleEventoSubmit = async (formData) => {
-  try {
-    if (eventoMode.value === 'create') {
-      await eventoPartidoStore.createEvento(formData);
-      Notification.success('Evento creado correctamente');
-    } else {
-      await eventoPartidoStore.updateEvento(currentEvento.value.id, formData);
-      Notification.success('Evento actualizado correctamente');
-    }
-    
-    closeEventoModal();
-  } catch (error) {
-    console.error('Error al guardar evento:', error);
-    
-    if (error.response?.status === 422 && eventoFormRef.value) {
-      eventoFormRef.value.handleApiErrors(error.response.data.errors);
-    } else {
-      Notification.error('Error al guardar evento');
-    }
-  }
-};
-
-const closeEventoModal = () => {
-  $('#eventoPartidoModal').modal('hide');
-};
-
-// Modify your onMounted function to include the event handler for the btnEventos button
-onMounted(() => {
-  partidoStore.clearPartidos();
-  
-  // Add event handler for btnEventos
-  $(document).on('click', '.btnEventos', function() {
-    const id = $(this).data('id');
-    handleEventoButtonClick(id);
-  });
-});
 
 // Then add an event handler in your script:
 onMounted(() => {

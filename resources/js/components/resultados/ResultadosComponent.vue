@@ -30,6 +30,7 @@
                         <th>Goles Local</th>
                         <th>Equipo Visitante</th>
                         <th>Goles Visitante</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -51,6 +52,11 @@
                           {{ resultado.equipo_visitante }}
                         </td>
                         <td>{{ resultado.goles_equipo_visitante }}</td>
+                        <td>
+                          <router-link :to="`/partidos/${resultado.id}/detalles`" class="nav-link">
+                            <i class="zmdi zmdi-calendar-note"></i>
+                          </router-link>
+                        </td>
                       </tr>
                     </tbody>
                   </table>

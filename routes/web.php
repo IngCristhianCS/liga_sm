@@ -8,7 +8,8 @@ Route::get('/resultados', function () {return view('dashboard');})->name('result
 Route::get('/reglamento', function () {return view('galeria');})->name('reglamento');
 Route::get('/contacto', function () {return view('contacto');})->name('contacto');
 Route::get('/patrocinadores', function () {return view('galeria');})->name('patrocinadores');
-
+Route::get('/partidos/{id}/detalles', function () {return view('dashboard');})->name('partido.detalles');
+   
 
 Route::middleware('auth')->group(function () {
     Route::get('/mi-perfil', function () {return view('dashboard');})->name('mi-perfil');
@@ -22,7 +23,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/categorias', function () {return view('dashboard');})->name('categorias');
     Route::get('/equipos', function () {return view('dashboard');})->name('equipos');
     Route::get('/partidos', function () {return view('dashboard');})->name('partidos');
-    Route::get('/partidos/{id}/detalles', function () {return view('dashboard');})->name('partido.detalles');
     Route::get('/jornadas', function () {return view('dashboard');})->name('jornadas');
 });
 
