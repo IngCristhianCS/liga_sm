@@ -279,8 +279,9 @@ const cargarPartido = async () => {
   try {
     loading.value = true;
     error.value = null;
-    // Change partidosStore to partidoStore (singular)
+    // Obtener los datos del partido desde el store
     partido.value = await partidoStore.fetchPartidoById(partidoId);
+    // Cargar eventos y actualizar estadísticas (incluido el marcador)
     await cargarEventos();
   } catch (err) {
     console.error('Error al cargar partido:', err);
@@ -338,8 +339,36 @@ const calcularEstadisticas = () => {
       case 'penal':
         estadisticas.value[`penales_${equipoKey}`]++;
         break;
+      case 'gol':
+        break;
     }
   });
+  
+  // Actualizar el marcador después de calcular estadísticas
+  actualizarMarcador();
+};
+
+const actualizarMarcador = () => {
+  // Inicializar contadores de goles
+  let golesLocal = 0;
+  let golesVisitante = 0;
+  
+  // Contar goles por equipo
+  eventoPartidoStore.getEventosByPartidoId(partido.value.id).forEach(evento => {
+    if (evento.tipo_evento === 'gol') {
+      const esLocal = evento.jugador?.equipo_id === partido.value?.equipo_local_id;
+      if (esLocal) {
+        golesLocal++;
+      } else {
+        golesVisitante++;
+      }
+    }
+  });
+  
+  if (partido.value) {
+    partido.value.goles_equipo_local = golesLocal;
+    partido.value.goles_equipo_visitante = golesVisitante;
+  }
 };
 
 const openEventoModal = () => {
@@ -353,7 +382,6 @@ const closeEventoModal = () => {
 };
 
 const editarEvento = (eventoId) => {
-  // Buscar el evento completo usando el ID
   const eventos = eventoPartidoStore.getEventosByPartidoId(partido.value.id);
   const evento = eventos.find(e => e.id === eventoId);
   
@@ -390,8 +418,8 @@ const eliminarEvento = (eventoId) => {
   ).then(async (result) => {
     if (result.isConfirmed) {
       try {
+        
         await eventoPartidoStore.deleteEvento(evento.id, partido.value.id);
-        // El store ya actualiza el array de eventos internamente
         calcularEstadisticas();
         
         inicializarTabla();
@@ -399,7 +427,6 @@ const eliminarEvento = (eventoId) => {
         await Notification.success('El evento ha sido eliminado correctamente', 'Eliminado');
       } catch (error) {
         console.error('Error al eliminar evento:', error);
-        // Verificar si es un error de autorización
         if (error.response?.status === 403 || 
             error.response?.data?.message === 'This action is unauthorized.' ||
             eventoPartidoStore.error === 'No tienes permiso para eliminar este evento') {
@@ -414,16 +441,15 @@ const eliminarEvento = (eventoId) => {
 
 const handleEventoSubmit = async (formData) => {
   try {
+    
     if (eventoMode.value === 'create') {
       await eventoPartidoStore.createEvento(formData);
-      // El store ya actualiza el array de eventos internamente
     } else {
       await eventoPartidoStore.updateEvento(currentEvento.value.id, formData);
-      // El store ya actualiza el evento en su estado interno
     }
 
     closeEventoModal();
-    calcularEstadisticas();    
+    calcularEstadisticas(); // Esto ya llama a actualizarMarcador()
     inicializarTabla();
 
     await Notification.success(
@@ -435,7 +461,6 @@ const handleEventoSubmit = async (formData) => {
   }
 }
 
-// Cargar partido cuando se monta el componente
 onMounted(() => {
   const partidoId = route.params.id;
   if (partidoId) {

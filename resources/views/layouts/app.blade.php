@@ -13,9 +13,11 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="stylesheet" href="/assets/css/color_skins.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/color_skins.css') }}">
+    <!-- Vite Assets -->
+    @vite(['resources/css/app.css'])
 </head>
 <body class="theme-black">
 
@@ -24,12 +26,28 @@
     <!-- Main Content -->
     {{ $slot }}
 
+    <footer class="footer mt-auto py-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <span class="text-muted">&copy; 2025 Liga Futbol San Miguel. All rights reserved.</span>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item"><a href="#" class="text-muted">Contacto</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+      </footer>
+
+
     <!-- Scripts -->
-    <script src="/assets/bundles/libscripts.bundle.js"></script>
-    <script src="/assets/bundles/vendorscripts.bundle.js"></script>
-    <script src="/assets/bundles/knob.bundle.js"></script>
-    <script src="/assets/bundles/mainscripts.bundle.js"></script>
-    <script src="/assets/bundles/datatablescripts.bundle.js"></script>
+    <script src="{{ asset('assets/bundles/libscripts.bundle.js') }}"></script>
+    <script src="{{ asset('assets/bundles/vendorscripts.bundle.js') }}"></script>
+    <script src="{{ asset('assets/bundles/knob.bundle.js') }}"></script>
+    <script src="{{ asset('assets/bundles/mainscripts.bundle.js') }}"></script>    
+    <script src="{{ asset('assets/bundles/datatablescripts.bundle.js') }}"></script>
     @auth
         <script>
             window.authUser = @json(auth()->user()->load('role'));
