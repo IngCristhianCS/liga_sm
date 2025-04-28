@@ -71,6 +71,11 @@ const router = createRouter({
       name: 'Resultados',
       component: () => import(/* webpackChunkName: "resultados" */ './components/resultados/ResultadosComponent.vue')
     },
+    {
+      path: '/estadisticas',
+      name: 'Estadisticas',
+      component: () => import(/* webpackChunkName: "resultados" */ './components/estadisticas/EstadisticasComponent.vue')
+    },
     { 
       path: '/', 
       redirect: '/clasificacion' 

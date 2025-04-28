@@ -37,7 +37,7 @@
                         alt="Logo Local" class="rounded-circle img-raised"></span></div>
                   <h6>{{ partido?.equipo_local?.nombre || 'Equipo Local' }}</h6>
                 </div>
-                <div class="col  text-center">
+                <div class="col  text-center align-self-center">
                   <h3>{{ partido?.goles_equipo_local || 0 }} - {{ partido?.goles_equipo_visitante || 0 }}</h3>
                   <small>{{ formatFecha.value }} - {{ formatHora.value }}</small>
                 </div>

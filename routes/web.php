@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {return view('dashboard');})->name('dashboard');
 Route::get('/clasificacion', function () {return view('dashboard');})->name('clasificacion');
 Route::get('/resultados', function () {return view('dashboard');})->name('resultados');
-Route::get('/reglamento', function () {return view('galeria');})->name('reglamento');
+Route::get('/estadisticas', function () {return view('dashboard');})->name('estadisticas');
 Route::get('/contacto', function () {return view('contacto');})->name('contacto');
 Route::get('/patrocinadores', function () {return view('galeria');})->name('patrocinadores');
 Route::get('/partidos/{id}/detalles', function () {return view('dashboard');})->name('partido.detalles');

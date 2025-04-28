@@ -4,6 +4,7 @@ import axios from 'axios';
 export const useEventoPartidoStore = defineStore('eventoPartido', {
   state: () => ({
     eventos: {},
+    eventosByTorneo: {},
     loading: false,
     error: null
   }),
@@ -11,6 +12,10 @@ export const useEventoPartidoStore = defineStore('eventoPartido', {
   getters: {
     getEventosByPartidoId: (state) => (partidoId) => {
       return state.eventos[partidoId] || [];
+    },
+    
+    getEventosByTorneoId: (state) => (torneoId) => {
+      return state.eventosByTorneo[torneoId] || [];
     }
   },
   
@@ -99,6 +104,11 @@ export const useEventoPartidoStore = defineStore('eventoPartido', {
           this.eventos[partidoId] = this.eventos[partidoId].filter(e => e.id !== id);
         }
         
+        // También eliminar de eventosByTorneo si existe
+        Object.keys(this.eventosByTorneo).forEach(torneoId => {
+          this.eventosByTorneo[torneoId] = this.eventosByTorneo[torneoId].filter(e => e.id !== id);
+        });
+        
         return true;
       } catch (error) {
         this.error = error.response?.data?.message || 'Error al eliminar evento';
@@ -111,6 +121,30 @@ export const useEventoPartidoStore = defineStore('eventoPartido', {
         }
         
         throw error; // Propagar el error para que el componente pueda manejarlo
+      } finally {
+        this.loading = false;
+      }
+    },
+    
+    async fetchEventosByTorneo(torneoId) {
+      if (!torneoId) return [];
+      
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        // Si ya tenemos los eventos para este torneo, no los volvemos a cargar
+        if (this.eventosByTorneo[torneoId]) {
+          return this.eventosByTorneo[torneoId];
+        }
+        
+        const response = await axios.get(`/api/torneos/${torneoId}/eventos`);
+        this.eventosByTorneo[torneoId] = response.data.data;
+        return this.eventosByTorneo[torneoId];
+      } catch (error) {
+        this.error = error.message || 'Error al cargar eventos del torneo';
+        console.error('Error en fetchEventosByTorneo:', error);
+        return [];
       } finally {
         this.loading = false;
       }

@@ -47,9 +47,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/torneos/{torneo}', [TorneoController::class, 'update']);
     Route::delete('/torneos/{torneo}', [TorneoController::class, 'destroy']);
 
-    Route::post('/partidos', [TorneoController::class, 'store']);
-    Route::put('/partidos/{partido}', [TorneoController::class, 'update']);
-    Route::delete('/partidos/{partido}', [TorneoController::class, 'destroy']);
+    Route::post('/partidos', [PartidoController::class, 'store']);
+    Route::put('/partidos/{partido}', [PartidoController::class, 'update']);
+    Route::delete('/partidos/{partido}', [PartidoController::class, 'destroy']);
     Route::get('/partidos', [PartidoController::class,'index']);
 
     Route::get('/jornadas/partidos-equipo', [PartidoController::class, 'obtenerPartidosPorEquipo']);
@@ -68,6 +68,7 @@ Route::get('/torneos/{torneo}/equipos', [TorneoEquipoController::class, 'getEqui
 Route::post('/torneos/{torneo}/equipos', [TorneoEquipoController::class, 'assignEquipos']);
 
 Route::get('/partidos/{partido}/eventos', [EventoPartidoController::class, 'getByPartido']);
+Route::get('/torneos/{torneoId}/eventos', [App\Http\Controllers\API\EventoPartidoTorneoController::class, 'getEventosByTorneo']);
 
 // Add this route to your existing routes
 Route::get('/arbitros', [App\Http\Controllers\ArbitroController::class, 'index']);

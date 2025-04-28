@@ -54,8 +54,8 @@ class PartidoController extends Controller
     public function update(Request $request, $id)
     {
         $partido = $this->partidoService->findById($id);
-        $this->authorize('update', $partido);
-
+        //$this->authorize('update', $partido);
+        
         $result = $this->partidoService->update($id, $request->all());
 
         if (!$result['success']) {
