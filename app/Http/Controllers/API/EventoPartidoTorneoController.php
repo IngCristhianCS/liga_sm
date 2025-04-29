@@ -7,13 +7,12 @@ use App\Models\EventoPartido;
 use App\Models\Partido;
 use App\Models\Torneo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class EventoPartidoTorneoController extends Controller
 {
     /**
      * Obtiene los eventos de tipo 'gol' para un torneo específico
-     * 
+     *
      * @param int $torneoId ID del torneo
      * @return \Illuminate\Http\JsonResponse
      */
